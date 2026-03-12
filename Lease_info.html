@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="/Current Resident CSS/Lease_info.css">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="cr-04-my-lease">
+    <img class="background" src="background0.png" />
+    <div class="header"></div>
+    <div class="action-items">
+      <img class="image-1" src="image-10.png" />
+      <a href="index.html" class="Logout">Logout</a>
+      <div class="ellipse-1"></div>
+    </div>
+    <img class="logo" src="logo0.png" />
+    <div class="my-lease">My Lease</div>
+    <div class="sidebar"></div>
+    <div class="nav-buttons">
+      <a href="Res_Dash2.html" class="dashboard">Dashboard</a>
+      <a href="Pay_rent.html" class="pay-rent">Pay Rent</a>
+      <a href="Maint_req.html" class="maintenance">Maintenance</a>
+      <a href="Lease_info.html" class="my-lease2">My Lease</a>
+    </div>
+    <div class="rectangle-2"></div>
+    <div class="lease-summary">Lease Summary</div>
+    <div class="rectangle-5"></div>
+    <div class="simple-button">
+      <button class="request-renewal-button" type="button" id="request-renewal-button">
+        Request Renewal
+      </button>
+    </div>
+    <div class="options-notes">Options / Notes</div>
+    <div class="renewal">Renewal</div>
+    <div class="rectangle-16"></div>
+    <div class="simple-button2">
+      <div class="cancel">Cancel</div>
+    </div>
+    <div class="simple-button3">
+      <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
+        Download Lease PDF
+      </button>
+    </div>
+    <div
+      class="lease-id-l-unit-building-unit-floor-plan-lease-term-to-residents-on-lease-name-1-name-2"
+    >
+      Lease ID: L-#####
+      <br />
+      Unit: Building __/ Unit __/ Floor plan__
+      <br />
+      Lease Term: __/__/____ to __/__/____
+      <br />
+      Residents on Lease (Name1, Name 2...)
+    </div>
+    <div class="documents-notices">Documents &amp; Notices</div>
+    <div class="renewal-status-renewal-deadline-proposed-new-term">
+      Renewal Status: ___
+      <br />
+      Renewal Deadline: __/__/___
+      <br />
+      Proposed New term: __/__/___
+      <br />
+    </div>
+    <div class="rectangle-19"></div>
+    <div class="placeholder-renewal-terms-messages-from-office-etc">
+      <ul class="placeholder-renewal-terms-messages-from-office-etc-span">
+        <li>Placeholder: renewal terms, messages from office, etc</li>
+      </ul>
+    </div>
+    <div class="frame-8">
+      <div class="document-name-date-type-action">
+        Document Name Date Type Action
+      </div>
+    </div>
+    <div class="frame-9">
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+    </div>
+    <div class="frame-10">
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+    </div>
+    <div class="frame-11">
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+      <div class="lease-addendum-notice-view-download">
+        Lease Addendum __ __/__ Notice View/Download
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    (function () {
+      const btn = document.getElementById("request-renewal-button");
+      if (!btn) return;
+
+      btn.addEventListener("click", () => {
+        const ok = confirm("Confirm renewal request?");
+        if (ok) alert("Renewal request sent");
+      });
+    })();
+  </script>
+
+</body>
+</html>
