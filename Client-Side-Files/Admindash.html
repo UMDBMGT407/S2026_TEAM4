@@ -16,21 +16,20 @@
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="./css/vars.css" />
-  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/admin-dashboard.css" />
 </head>
 <body>
   <div class="admin-page">
-    <img class="background" src="background0.png" alt="Courtyards background" />
     <header class="top-header">
       <div class="header-left">
-        <img class="logo" src="logo0.png" alt="Courtyards logo" />
+        <img class="logo" src="images/logo0.png" alt="Courtyards logo" />
       </div>
       <div class="header-center">
         <h1>Admin Dashboard</h1>
       </div>
       <div class="header-right">
         <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator">Admin</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
@@ -39,10 +38,11 @@
         <!-- Sidebar -->
         <aside class="col-lg-2 col-md-3 sidebar">
           <nav class="sidebar-nav">
-            <a class="nav-link-custom active" href="index.html">Dashboard</a>
-            <a class="nav-link-custom" href="applications.html">Applications</a>
+            <a class="nav-link-custom active" href="Admindash.html">Dashboard</a>
+            <a class="nav-link-custom" href="#applications-section">Applications</a>
             <a class="nav-link-custom" href="payments.html">Payments</a>
-            <a class="nav-link-custom" href="workorders.html">Work Orders</a>
+            <a class="nav-link-custom" href="work_order.html?role=admin">Work Orders</a>
+            <a class="nav-link-custom" href="schedule.html?role=admin">Schedule</a>
           </nav>
         </aside>
         <!-- Main Content -->
@@ -51,16 +51,16 @@
           <section class="row g-4 summary-row">
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
-                <h2>Occupancy</h2>
-                <p class="metric" id="occupancyValue">95%</p>
-                <a class="card-link" href="applications.html">View Occupancy</a>
+                <h2>Scheduled Today</h2>
+                <p class="metric" id="scheduledTodayValue">6</p>
+                <a class="card-link" href="schedule.html?role=admin">View Schedule</a>
               </div>
             </div>
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
                 <h2>New Applications</h2>
                 <p class="metric" id="newApplicationsValue">7</p>
-                <a class="card-link" href="applications.html">Review Queue</a>
+                <a class="card-link" href="#applications-section">Review Queue</a>
               </div>
             </div>
             <div class="col-xl-3 col-sm-6">
@@ -74,14 +74,14 @@
               <div class="summary-card">
                 <h2>Open Work Orders</h2>
                 <p class="metric" id="openWorkOrdersValue">3</p>
-                <a class="card-link" href="workorders.html">View Work Orders</a>
+                <a class="card-link" href="work_order.html?role=admin">View Work Orders</a>
               </div>
             </div>
           </section>
           <!-- Middle Panels -->
           <section class="row g-4 panel-row">
-            <div class="col-xl-6">
-              <div class="panel-box">
+            <div class="col-xl-7">
+              <div class="panel-box applications-panel" id="applications-section">
                 <div class="panel-header">
                   <h2>Applications Queue</h2>
                 </div>
@@ -100,12 +100,12 @@
                   </table>
                 </div>
                 <div class="panel-footer-btn-wrap">
-                  <a class="panel-footer-btn" href="applications.html">Review Applications</a>
+                  <a class="panel-footer-btn" href="#applications-section">Review Applications</a>
                 </div>
               </div>
             </div>
-            <div class="col-xl-6">
-              <div class="panel-box">
+            <div class="col-xl-5">
+              <div class="panel-box work-orders-panel" id="work-orders-section">
                 <div class="panel-header">
                   <h2>Work Orders</h2>
                 </div>
@@ -124,7 +124,7 @@
                   </table>
                 </div>
                 <div class="panel-footer-btn-wrap">
-                  <a class="panel-footer-btn" href="workorders.html">Assign Work Order</a>
+                  <a class="panel-footer-btn" href="work_order.html?role=admin">Open Work Orders</a>
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@
           <!-- Quick Summaries -->
           <section class="row mt-4">
             <div class="col-12">
-              <div class="quick-summary-box">
+              <div class="quick-summary-box" id="quick-summary-section">
                 <h2>Quick Summaries</h2>
                 <ul class="quick-summary-list" id="quickSummaryList"></ul>
               </div>
@@ -167,7 +167,7 @@
           <td>${app.name}</td>
           <td>${app.date}</td>
           <td>${app.status}</td>
-          <td><a class="action-link" href="applications.html">View</a></td>
+          <td><a class="action-link" href="#applications-section">View</a></td>
         </tr>
         `;
         table.innerHTML += row;
@@ -182,7 +182,7 @@
           <td>${order.unit}</td>
           <td>${order.priority}</td>
           <td>${order.status}</td>
-          <td><a class="action-link" href="workorders.html">View</a></td>
+          <td><a class="action-link" href="work_order.html?role=admin">View</a></td>
         </tr>
         `;
         table.innerHTML += row;
@@ -195,12 +195,10 @@
         list.innerHTML += li;
       });
     }
-    document.getElementById("logoutBtn").onclick = function(){
-      alert("Logged out successfully");
-    }
     loadApplications();
     loadWorkOrders();
     loadQuickSummary();
     </script>
+    <script src="./js/logout.js"></script>
   </body>
   </html>
