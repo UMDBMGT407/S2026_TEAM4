@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./css/deposit.css">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="pr-03-deposit-payment-process-1-4">
+    <img class="background" src="/images/background0.png" />
+    <div class="header"></div>
+    <div class="action-items">
+      <img class="image-1" src="/images/image-10.png" />
+      <a href="index.html" class="logout">Logout</a>
+      <div class="ellipse-1"></div>
+    </div>
+    <img class="logo" src="/images/logo0.png" />
+    <div class="deposit">Deposit</div>
+    <div class="sidebar"></div>
+    <div class="nav-buttons">
+      <a href="floorplan.html" class="floor-plans">Floor plans</a>
+      <a href="apply.html" class="apply">Apply</a>
+      <a href="status.html" class="application-status">Application Status</a>
+    </div>
+    <div class="frame-5">
+      <div class="frame-3">
+        <div class="rectangle-2"></div>
+        <div class="rectangle-5"></div>
+        <div class="deposit-summary-card">Deposit Summary Card</div>
+        <div class="expiration-date">Expiration + SEC / Routing Number</div>
+        <div class="card-number-account-number">Card / Account Number</div>
+        <div class="rectangle-9">
+          <form>
+            <input type="text" class="form-control" />
+          </form>
+        </div>
+        <div class="rectangle-8">
+          <form>
+            <input type="text" class="form-control" />
+          </form>
+        </div>
+        <select class="rectangle-7 payment-method-select" id="payment-method">
+          <option value="" disabled selected>Select payment method</option>
+          <option value="card">Credit/Debit Card</option>
+          <option value="bank">Bank</option>
+        </select>
+        <div class="rectangle-13">
+          <form>
+            <input type="text" class="form-control" />
+          </form>
+        </div>
+        <div class="rectangle-14">
+          <form>
+            <input type="text" class="form-control" />
+          </form>
+        </div>
+        <div class="rectangle-15">
+          <form>
+            <input type="text" class="form-control" />
+          </form>
+        </div>
+        <div class="billing-zip">Zip Code</div>
+        <div class="payment-method-card-bank">Payment Method (card/Bank)</div>
+        <div class="name-on-card-account-holder">
+          Name on Card / Account
+        </div>
+        <div class="billing-address">Billing Address</div>
+        <div class="simple-button">
+          <a href="status.html" class="view-application">View Application</a>
+        </div>
+        <div class="application-id-deposit-amount-due-date">
+          Application ID:
+          <br />
+          Deposit Amount: $
+          <br />
+          Due Date: 
+        </div>
+        <input type="checkbox" class="rectangle-17" id="authorize-deposit" aria-label="Authorize deposit payment" />
+        <div class="i-authorize-this-deposit-payment-placeholder-text">
+          I authorize this deposit payment (placeholder text)
+        </div>
+      </div>
+      <div class="frame-4">
+        </div>
+        <div class="simple-button2">
+          <a href= "status.html" class="pay-deposit">Pay Deposit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
