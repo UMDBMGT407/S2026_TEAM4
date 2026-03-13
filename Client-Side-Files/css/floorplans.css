@@ -28,18 +28,22 @@
   top: 0px;
 }
 .action-items {
-  width: 356px;
+  width: 430px;
   height: 66px;
   position: absolute;
-  left: 1004px;
+  left: 930px;
   top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
 }
 .image-1 {
   width: 109px;
   height: 66px;
-  position: absolute;
-  left: 132px;
-  top: 0px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
   object-fit: cover;
   aspect-ratio: 109/66;
 }
@@ -49,20 +53,40 @@
   font-family: "Montserrat-Bold", sans-serif;
   font-size: 26px;
   font-weight: 700;
-  position: absolute;
-  left: 253px;
-  top: 19px;
-  width: 127px;
-  height: 47px;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
 }
-.ellipse-1 {
+.role-indicator {
   background: #757575;
-  border-radius: 50%;
-  width: 120px;
+  border-radius: 999px;
+  min-width: 140px;
   height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+.page-title-wrap {
   position: absolute;
-  left: 0px;
-  top: 12.5px;
+  left: 426px;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .logo {
   width: 205px;
@@ -77,19 +101,17 @@
   color: #000000;
   text-align: left;
   font-family: "Montserrat-Bold", sans-serif;
-  font-size: 25px;
-  font-weight: 600px;
-  position: absolute;
-  left: 426px;
-  top: 20px;
-  width: 501px;
-  height: 66px;
+  font-size: 34px;
+  font-weight: 700;
+  width: 560px;
+  line-height: 1.05;
 }
 .sidebar {
   background: #d9d9d9;
   opacity: 0.8;
   width: 244px;
-  height: 931px;
+  height: calc(100% - 93px);
+  min-height: 931px;
   position: absolute;
   left: 0px;
   top: 93px;
@@ -97,13 +119,17 @@
 .left-side-options {
   display: flex;
   flex-direction: column;
-  gap: 35px;
+  gap: 28px;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 266px;
+  width: 261px;
   position: absolute;
-  left: 2px;
-  top: 260px;
+  left: 26px;
+  top: 240px;
+}
+.left-side-options a {
+  font-size: 22px;
+  line-height: 1.2;
 }
 .floor-plans2 {
   color: #000000;
