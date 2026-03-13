@@ -84,24 +84,39 @@ button {
   font-size: 1.15rem;
   font-weight: 700;
 }
+
+.role-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 136px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #6b6b6b;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+}
 /* Sidebar */
 .sidebar {
   background: rgba(217, 217, 217, 0.8);
   min-height: calc(100vh - 100px);
-  padding: 140px 18px 40px;
+  padding: 132px 20px 28px;
 }
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 28px;
 }
 .nav-link-custom {
   display: inline-block;
   width: fit-content;
-  font-size: 1rem;
+  font-size: 22px;
   font-weight: 700;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
   transition: background 0.2s ease;
 }
 .nav-link-custom:hover,
