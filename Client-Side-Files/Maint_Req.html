@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./vars.css">
-  <link rel="stylesheet" href="/Current Resident CSS/Maint_Req.css">
+  <link rel="stylesheet" href="./css/Maint_Req.css">
   
   
   <style>
@@ -35,26 +34,28 @@
        padding: 0;
    }
    </style>
-  <title>Document</title>
+  <title>The Courtyards | Maintenance Request</title>
 </head>
 <body>
   <div class="cr-02-maintenance-request">
     <div class="rectangle-5"></div>
-    <img class="background" src="background0.png" />
+    <img class="background" src="./images/background0.png" />
     <div class="header"></div>
     <div class="action-items">
-      <img class="image-1" src="image-10.png" />
-      <a href="index.html" class="Logout">Logout</a>
-      <div class="ellipse-1"></div>
+      <img class="image-1" src="./images/image-10.png" />
+      <a href="./index.html" class="Logout">Logout</a>
+      <div class="role-indicator">
+        <div class="user-role">Prospective Resident</div>
+      </div>
     </div>
-    <img class="logo" src="logo0.png" />
+    <img class="logo" src="./images/logo0.png" />
     <div class="maintenance-request">Maintenance Request</div>
     <div class="sidebar"></div>
     <div class="nav-buttons">
-      <a href="Res_Dash2.html" class="dashboard">Dashboard</a>
-      <a href="Pay_rent.html" class="pay-rent">Pay Rent</a>
-      <a href="Maint_req.html" class="maintenance">Maintenance</a>
-      <a href="Lease_info.html" class="my-lease">My Lease</a>
+      <a href="./Res_Dash2.html" class="dashboard">Dashboard</a>
+      <a href="./Pay_rent.html" class="pay-rent">Pay Rent</a>
+      <a href="./Maint_Req.html" class="maintenance">Maintenance</a>
+      <a href="./Lease_info.html" class="my-lease">My Lease</a>
     </div>
     <div class="rectangle-9"></div>
     <div class="priority">Priority</div>
@@ -62,7 +63,7 @@
     <div class="submit-a-maintenance-request">Submit A Maintenance Request</div>
     <div class="rectangle-10"></div>
     <div class="rectangle-12"></div>
-    <img class="polygon-2" src="polygon-20.svg" />
+    <img class="polygon-2" src="./images/polygon-20.svg" />
     <div class="rectangle-14"></div>
     <div class="rectangle-11"></div>
     <div class="rectangle-13"></div>
@@ -110,9 +111,9 @@
       placeholder="Type details"
       rows="3"
     ></textarea>
-    <img class="polygon-1" src="polygon-10.svg" />
-    <img class="polygon-3" src="polygon-30.svg" />
-    <img class="polygon-4" src="polygon-40.svg" />
+    <img class="polygon-1" src="./images/polygon-10.svg" />
+    <img class="polygon-3" src="./images/polygon-30.svg" />
+    <img class="polygon-4" src="./images/polygon-40.svg" />
     <div class="rectangle-18"></div>
     <button
       class="submit-request-button"
@@ -122,7 +123,13 @@
       Submit Request
     </button>
     <input class="upload-photo-file" type="file" name="upload-photo-file" aria-label="Upload photo or file" />
-    <input class="access-notes-instructions" type="text" name="access-notes" aria-label="Access notes / instructions" placeholder="Access notes / instructions" />
+    <button
+      class="access-notes-instructions"
+      type="button"
+      aria-label="Access notes / instructions"
+    >
+      Access Notes / Instructions
+    </button>
   </div>
   <script>
     (function () {
@@ -154,5 +161,6 @@
       }
     })();
   </script>
+  <script src="./js/logout.js"></script>
 </body>
 </html>
