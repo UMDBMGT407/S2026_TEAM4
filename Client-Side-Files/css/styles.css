@@ -8,7 +8,7 @@ body {
   color: #000;
   background:
     linear-gradient(rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.58)),
-    url("../background0.png") center / cover no-repeat;
+    url("../images/background0.png") center / cover no-repeat;
 }
 
 .admin-page {
