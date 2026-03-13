@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./vars.css">
-  <link rel="stylesheet" href="/css/Lease_info.css">
+  <link rel="stylesheet" href="./css/Lease_info.css">
   
   
   <style>
@@ -35,25 +34,27 @@
        padding: 0;
    }
    </style>
-  <title>Document</title>
+  <title>The Courtyards | My Lease</title>
 </head>
 <body>
   <div class="cr-04-my-lease">
-    <img class="background" src="background0.png" />
+    <img class="background" src="./images/background0.png" />
     <div class="header"></div>
     <div class="action-items">
-      <img class="image-1" src="image-10.png" />
-      <a href="index.html" class="Logout">Logout</a>
-      <div class="ellipse-1"></div>
+      <img class="image-1" src="./images/image-10.png" />
+      <a href="./index.html" class="Logout">Logout</a>
+      <div class="role-indicator">
+        <div class="user-role">Prospective Resident</div>
+      </div>
     </div>
-    <img class="logo" src="logo0.png" />
+    <img class="logo" src="./images/logo0.png" />
     <div class="my-lease">My Lease</div>
     <div class="sidebar"></div>
     <div class="nav-buttons">
-      <a href="Res_Dash2.html" class="dashboard">Dashboard</a>
-      <a href="Pay_rent.html" class="pay-rent">Pay Rent</a>
-      <a href="Maint_req.html" class="maintenance">Maintenance</a>
-      <a href="Lease_info.html" class="my-lease2">My Lease</a>
+      <a href="./Res_Dash2.html" class="dashboard">Dashboard</a>
+      <a href="./Pay_rent.html" class="pay-rent">Pay Rent</a>
+      <a href="./Maint_Req.html" class="maintenance">Maintenance</a>
+      <a href="./Lease_info.html" class="my-lease2">My Lease</a>
     </div>
     <div class="rectangle-2"></div>
     <div class="lease-summary">Lease Summary</div>
@@ -67,81 +68,211 @@
     <div class="renewal">Renewal</div>
     <div class="rectangle-16"></div>
     <div class="simple-button2">
-      <div class="cancel">Cancel</div>
+      <button class="cancel" type="button" id="clear-notes-button">Clear Notes</button>
     </div>
     <div class="simple-button3">
       <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
         Download Lease PDF
       </button>
     </div>
-    <div
-      class="lease-id-l-unit-building-unit-floor-plan-lease-term-to-residents-on-lease-name-1-name-2"
-    >
-      Lease ID: L-#####
-      <br />
-      Unit: Building __/ Unit __/ Floor plan__
-      <br />
-      Lease Term: __/__/____ to __/__/____
-      <br />
-      Residents on Lease (Name1, Name 2...)
+    <div class="lease-summary-details">
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Lease ID:</span>
+        <span class="lease-summary-value">L-28451</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Unit:</span>
+        <span class="lease-summary-value">Bldg 3 / Unit 214</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Floor Plan:</span>
+        <span class="lease-summary-value">Aspen 2BR / 2BA</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Lease Term:</span>
+        <span class="lease-summary-value">06/01/25 - 05/31/26</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Residents:</span>
+        <span class="lease-summary-value">Taylor Brooks, Jordan Lee</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Monthly Rent:</span>
+        <span class="lease-summary-value">$1,650.00</span>
+      </div>
     </div>
     <div class="documents-notices">Documents &amp; Notices</div>
-    <div class="renewal-status-renewal-deadline-proposed-new-term">
-      Renewal Status: ___
-      <br />
-      Renewal Deadline: __/__/___
-      <br />
-      Proposed New term: __/__/___
-      <br />
-    </div>
-    <div class="rectangle-19"></div>
-    <div class="placeholder-renewal-terms-messages-from-office-etc">
-      <ul class="placeholder-renewal-terms-messages-from-office-etc-span">
-        <li>Placeholder: renewal terms, messages from office, etc</li>
-      </ul>
-    </div>
-    <div class="frame-8">
-      <div class="document-name-date-type-action">
-        Document Name Date Type Action
+    <div class="renewal-details">
+      <div class="renewal-item">
+        <span class="renewal-label">Status:</span>
+        <span class="renewal-value">Eligible to Renew</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Deadline:</span>
+        <span class="renewal-value">04/10/2026</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Proposed Term:</span>
+        <span class="renewal-value">12 Months</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Proposed Rent:</span>
+        <span class="renewal-value">$1,695.00 / month</span>
       </div>
     </div>
-    <div class="frame-9">
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
-      </div>
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
+    <textarea
+      class="options-notes-textbox"
+      id="options-notes-textbox"
+      name="options-notes"
+      aria-label="Options / Notes"
+      rows="3"
+    ></textarea>
+    <div class="frame-8 document-table-header">
+      <span>Document Name</span>
+      <span>Date</span>
+      <span>Type</span>
+      <span>Actions</span>
+    </div>
+    <div class="frame-9 document-row">
+      <span class="document-cell document-title">2026 Renewal Offer</span>
+      <span class="document-cell">03/01/2026</span>
+      <span class="document-cell">Renewal</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="2026 Renewal Offer"
+          data-doc-content="12-month renewal offer at $1,695.00 per month beginning June 1, 2026."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="2026 Renewal Offer"
+          data-doc-filename="2026-renewal-offer.txt"
+          data-doc-content="The Courtyards\n2026 Renewal Offer\nOffered term: 12 months\nMonthly rent: $1,695.00\nEffective date: 06/01/2026"
+        >
+          Download
+        </button>
       </div>
     </div>
-    <div class="frame-10">
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
-      </div>
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
+    <div class="frame-10 document-row">
+      <span class="document-cell document-title">Parking Addendum</span>
+      <span class="document-cell">02/01/2026</span>
+      <span class="document-cell">Addendum</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="Parking Addendum"
+          data-doc-content="Assigned parking space B-14 remains attached to the lease through the current term."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="Parking Addendum"
+          data-doc-filename="parking-addendum.txt"
+          data-doc-content="The Courtyards\nParking Addendum\nAssigned space: B-14\nMonthly parking fee: $40.00\nResident must display a valid permit."
+        >
+          Download
+        </button>
       </div>
     </div>
-    <div class="frame-11">
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
-      </div>
-      <div class="lease-addendum-notice-view-download">
-        Lease Addendum __ __/__ Notice View/Download
+    <div class="frame-11 document-row">
+      <span class="document-cell document-title">Water Shutoff Notice</span>
+      <span class="document-cell">03/07/2026</span>
+      <span class="document-cell">Notice</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="Water Shutoff Notice"
+          data-doc-content="Water service will be interrupted on March 18 from 10:00 AM to 2:00 PM for building-wide maintenance."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="Water Shutoff Notice"
+          data-doc-filename="water-shutoff-notice.txt"
+          data-doc-content="The Courtyards\nWater Shutoff Notice\nDate: 03/18/2026\nTime: 10:00 AM - 2:00 PM\nReason: Building plumbing maintenance."
+        >
+          Download
+        </button>
       </div>
     </div>
   </div>
   
   <script>
     (function () {
-      const btn = document.getElementById("request-renewal-button");
-      if (!btn) return;
+      const requestBtn = document.getElementById("request-renewal-button");
+      const downloadLeaseBtn = document.getElementById("download-lease-pdf-button");
+      const clearNotesBtn = document.getElementById("clear-notes-button");
+      const notesBox = document.getElementById("options-notes-textbox");
+      const docButtons = document.querySelectorAll(".doc-action-button");
 
-      btn.addEventListener("click", () => {
-        const ok = confirm("Confirm renewal request?");
-        if (ok) alert("Renewal request sent");
+      function downloadTextFile(filename, content) {
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      if (requestBtn) {
+        requestBtn.addEventListener("click", () => {
+          const ok = confirm("Confirm renewal request?");
+          if (ok) alert("Renewal request sent");
+        });
+      }
+
+      if (clearNotesBtn && notesBox) {
+        clearNotesBtn.addEventListener("click", () => {
+          notesBox.value = "";
+        });
+      }
+
+      if (downloadLeaseBtn) {
+        downloadLeaseBtn.addEventListener("click", () => {
+          alert("Use Save as PDF in the print dialog to export this sample lease page.");
+          window.print();
+        });
+      }
+
+      docButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.action;
+          const title = button.dataset.docTitle || "Document";
+          const content = button.dataset.docContent || "";
+
+          if (action === "view") {
+            alert(title + "\n\n" + content);
+            return;
+          }
+
+          if (action === "download") {
+            const filename = button.dataset.docFilename || "document.txt";
+            downloadTextFile(filename, content);
+          }
+        });
       });
     })();
   </script>
+  <script src="./js/logout.js"></script>
 
 </body>
 </html>
