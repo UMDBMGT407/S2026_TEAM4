@@ -15,21 +15,22 @@
   <div class="admin-page">
     <header class="top-header">
       <div class="header-left">
-        <img class="logo" src="logo0.png" alt="Courtyards logo">
+        <img class="logo" src="images/logo0.png" alt="Courtyards logo">
       </div>
       <div class="header-center">
         <h1>Payments</h1>
       </div>
       <div class="header-right">
+        <div class="role-indicator">Admin</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
     <aside class="sidebar">
   <nav class="sidebar-nav">
-    <a href="index.html">Dashboard</a>
+    <a href="Admindash.html">Dashboard</a>
     <a href="payments.html" class="active">Payments</a>
-    <a href="maintenance.html">My Work Orders</a>
-    <a href="schedule.html">Schedule</a>
+    <a href="work_order.html?role=admin">Work Orders</a>
+    <a href="schedule.html?role=admin">Schedule</a>
   </nav>
 </aside>
     <main class="main-content">
@@ -148,7 +149,7 @@
             </div>
             <p id="actionMessage"></p>
             <div class="back-dashboard">
-              <a href="index.html" class="back-btn">Back to Dashboard</a>
+              <a href="Admindash.html" class="back-btn">Back to Dashboard</a>
             </div>
           </div>
         </div>
@@ -249,9 +250,6 @@
     statusFilter.addEventListener("change", filterPayments);
     buildingFilter.addEventListener("change", filterPayments);
     dateFilter.addEventListener("change", filterPayments);
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      alert("Logout clicked");
-    });
     document.getElementById("receiptBtn").addEventListener("click", () => {
       actionMessage.textContent = "Receipt sent.";
     });
@@ -262,5 +260,6 @@
       actionMessage.textContent = "Payment marked as resolved.";
     });
   </script>
+  <script src="./js/logout.js"></script>
 </body>
 </html>
