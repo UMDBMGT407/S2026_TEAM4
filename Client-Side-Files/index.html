@@ -38,7 +38,6 @@
                 <div class="col-12 col-md-10 position-relative">
                   <select name="role" id="role" class="form-select form-select-lg select-underline" required>
                     <option value="" selected disabled>Role Selector</option>
-                    <option value="prospect">Prospective Resident</option>
                     <option value="resident">Current Resident</option>
                     <option value="admin">Admin</option>
                     <option value="maintenance">Maintenance</option>
@@ -72,7 +71,6 @@
       if (!loginForm || !roleSelect) return;
 
       var roleDestinations = {
-        prospect: "floorplan.html",
         resident: "Res_Dash2.html",
         admin: "Admindash.html",
         maintenance: "maintenance.html"
