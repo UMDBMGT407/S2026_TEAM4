@@ -8,7 +8,7 @@ body {
   color: #000;
   background:
     linear-gradient(rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.58)),
-    url("../background0.png") center / cover no-repeat;
+    url("../images/background0.png") center / cover no-repeat;
 }
 
 .admin-page {
@@ -55,6 +55,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 12px;
 }
 
 .logout-btn {
@@ -69,6 +70,21 @@ body {
   cursor: pointer;
 }
 
+.role-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #6b6b6b;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .logout-btn:hover {
   opacity: 0.92;
 }
@@ -77,18 +93,18 @@ body {
 
 .sidebar {
   background: rgba(217, 217, 217, 0.82);
-  padding: 135px 24px 24px;
+  padding: 132px 20px 28px;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 28px;
 }
 
 .sidebar-nav a {
   width: fit-content;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 10px;
   color: #000;
   text-decoration: none;
