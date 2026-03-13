@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Courtyards Work Orders</title>
+  <title>Courtyards My Work Orders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -20,16 +20,17 @@
 </head>
 <body>
   <div class="workorders-page">
-    <img class="background" src="background0.png" alt="Courtyards background" />
+    <img class="background" src="images/background0.png" alt="Courtyards background" />
     <header class="top-header">
       <div class="header-left">
-        <img class="logo" src="logo0.png" alt="Courtyards logo" />
+        <img class="logo" src="images/logo0.png" alt="Courtyards logo" />
       </div>
       <div class="header-center">
-        <h1>Work Orders</h1>
+        <h1 id="pageTitle">My Work Orders</h1>
       </div>
       <div class="header-right">
         <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator" id="roleIndicator">Maintenance</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
@@ -38,10 +39,9 @@
         <!-- Sidebar -->
         <aside class="col-lg-2 col-md-3 sidebar">
           <nav class="sidebar-nav">
-            <a class="nav-link-custom" href="index.html">Dashboard</a>
-            <a class="nav-link-custom" href="applications.html">Applications</a>
-            <a class="nav-link-custom" href="payments.html">Payments</a>
-            <a class="nav-link-custom active" href="work_order.html">Work Orders</a>
+            <a class="nav-link-custom" id="dashboardLink" href="maintenance.html">Dashboard</a>
+            <a class="nav-link-custom active" id="workOrdersLink" href="work_order.html">My Work Orders</a>
+            <a class="nav-link-custom" id="scheduleLink" href="schedule.html">Schedule</a>
           </nav>
         </aside>
         <!-- Main Content -->
@@ -157,6 +157,24 @@
     </div>
   </div>
   <script>
+    const pageParams = new URLSearchParams(window.location.search);
+    const isAdminView = pageParams.get("role") === "admin";
+    const roleIndicator = document.getElementById("roleIndicator");
+    const pageTitle = document.getElementById("pageTitle");
+    const dashboardLink = document.getElementById("dashboardLink");
+    const workOrdersLink = document.getElementById("workOrdersLink");
+    const scheduleLink = document.getElementById("scheduleLink");
+
+    if (isAdminView) {
+      document.title = "Courtyards Work Orders";
+      roleIndicator.textContent = "Admin";
+      pageTitle.textContent = "Work Orders";
+      dashboardLink.href = "Admindash.html";
+      workOrdersLink.href = "work_order.html?role=admin";
+      workOrdersLink.textContent = "Work Orders";
+      scheduleLink.href = "schedule.html?role=admin";
+    }
+
     const workOrders = [
       {
         id: "WO501",
@@ -320,11 +338,9 @@
     document.getElementById("closeBtn").addEventListener("click", () => {
       alert("Work order closed.");
     });
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      alert("You have been logged out.");
-    });
     renderQueue();
     renderDetails();
   </script>
+  <script src="./js/logout.js"></script>
 </body>
 </html>
