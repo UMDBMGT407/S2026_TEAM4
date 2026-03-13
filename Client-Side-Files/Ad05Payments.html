@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Courtyards | Payments</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="site-page">
+  <div class="container-fluid px-0 dashboard-shell">
+    <div class="row g-0 dashboard-layout">
+
+      <div class="col-12">
+        <header class="panel dashboard-topbar p-3 p-md-4">
+          <div class="row align-items-center">
+            <div class="col-4 col-md-3 col-lg-2">
+              <img src="assets/logo0.png" alt="The Courtyards logo" class="img-fluid header-logo">
+            </div>
+
+            <div class="col-4 col-md-6 col-lg-8 text-center">
+              <h1 class="page-title mb-0">Payments</h1>
+            </div>
+
+            <div class="col-4 col-md-3 col-lg-2 d-flex justify-content-end gap-3 align-items-center">
+              <span class="profile-pill">Admin</span>
+              <a class="logout-link" href="index.html">Logout</a>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div class="col-12 col-lg-3 col-xl-2 dashboard-sidebar-col">
+        <aside class="panel dashboard-sidebar p-3 p-xl-4 h-100">
+          <nav class="d-grid gap-2">
+            <a class="btn nav-btn" href="AD-01-Admin-Dashboard.html">Dashboard</a>
+            <a class="btn nav-btn" href="AD-02-Review-Applications.html">Applications</a>
+            <a class="btn nav-btn" href="AD-04-Renewals.html">Renewals</a>
+            <a class="btn nav-btn active" href="Ad05Payments.html">Payments</a>
+            <a class="btn nav-btn" href="AD-03-Work-Orders.html">Work Orders</a>
+            <a class="btn nav-btn" href="AD-06-Occupancy.html">Occupancy</a>
+          </nav>
+        </aside>
+      </div>
+
+      <div class="col-12 col-lg-9 col-xl-10 dashboard-main">
+        <section class="panel filter-panel p-3 p-md-4 mb-4">
+          <div class="row g-2 align-items-center">
+            <div class="col-12 col-md-2">
+              <span class="filter-label">Filters</span>
+            </div>
+
+            <div class="col-6 col-md-2">
+              <select class="form-select">
+                <option selected disabled>Status</option>
+                <option>Pending</option>
+                <option>Overdue</option>
+                <option>Resolved</option>
+              </select>
+            </div>
+
+            <div class="col-6 col-md-2">
+              <select class="form-select">
+                <option selected disabled>Building</option>
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+              </select>
+            </div>
+
+            <div class="col-6 col-md-2">
+              <select class="form-select">
+                <option selected disabled>Date Range</option>
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+              </select>
+            </div>
+
+            <div class="col-6 col-md-3">
+              <input class="form-control" placeholder="Resident/lease ID/Unit">
+            </div>
+
+            <div class="col-12 col-md-1 d-grid">
+              <button class="btn btn-dark" type="button">Apply</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="panel stat-card h-100">
+              <h2>Total Collected (7D)</h2>
+              <p class="stat-value mb-0">$_____</p>
+              <small>Details</small>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="panel stat-card h-100">
+              <h2>Overdue Accounts</h2>
+              <p class="stat-value mb-0">_____</p>
+              <small>Details</small>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="panel stat-card h-100">
+              <h2>Failed Payment</h2>
+              <p class="stat-value mb-0">_____</p>
+              <small>Details</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="row g-4">
+          <div class="col-12 col-xl-6">
+            <div class="panel queue-panel p-3 p-md-4 h-100">
+              <h2 class="section-title">Payments Queue</h2>
+
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0 dashboard-table queue-table">
+                  <thead>
+                    <tr>
+                      <th>Payment ID</th>
+                      <th>Resident</th>
+                      <th>Unit</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>P-####</td>
+                      <td>_____</td>
+                      <td>__/__</td>
+                      <td>_____</td>
+                      <td>Pending</td>
+                    </tr>
+                    <tr>
+                      <td>P-####</td>
+                      <td>_____</td>
+                      <td>__/__</td>
+                      <td>_____</td>
+                      <td>Pending</td>
+                    </tr>
+                    <tr>
+                      <td>P-####</td>
+                      <td>_____</td>
+                      <td>__/__</td>
+                      <td>_____</td>
+                      <td>Pending</td>
+                    </tr>
+                    <tr>
+                      <td>P-####</td>
+                      <td>_____</td>
+                      <td>__/__</td>
+                      <td>_____</td>
+                      <td>Pending</td>
+                    </tr>
+                    <tr>
+                      <td>P-####</td>
+                      <td>_____</td>
+                      <td>__/__</td>
+                      <td>_____</td>
+                      <td>Pending</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="d-flex justify-content-between gap-2 mt-3">
+                <button class="btn btn-outline-dark" type="button">Prev</button>
+                <button class="btn btn-outline-dark" type="button">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-6">
+            <div class="panel details-panel p-3 p-md-4 mb-4">
+              <h2 class="section-title">Payment Details</h2>
+
+              <div class="details-grid">
+                <div><strong>Payment ID:</strong> P-###</div>
+                <div><strong>Status:</strong> ___</div>
+                <div><strong>Resident:</strong> ______</div>
+                <div><strong>Phone:</strong> ___-___-____</div>
+                <div><strong>Lease ID:</strong> L-#####</div>
+                <div><strong>Unit:</strong> Building __ / Unit __</div>
+                <div><strong>Method:</strong> Card/Bank</div>
+                <div><strong>Confirmation #:</strong> _____</div>
+              </div>
+            </div>
+
+            <div class="panel notes-panel p-3 p-md-4 mb-4">
+              <h2 class="section-title">Notes / Flags</h2>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="panel actions-panel p-3 p-md-4">
+              <h2 class="section-title">Actions</h2>
+              <div class="row g-2">
+                <div class="col-12 col-sm-4 d-grid">
+                  <button class="btn btn-outline-dark" type="button">Send Receipt</button>
+                </div>
+                <div class="col-12 col-sm-4 d-grid">
+                  <button class="btn btn-outline-dark" type="button">Retry Payment</button>
+                </div>
+                <div class="col-12 col-sm-4 d-grid">
+                  <button class="btn btn-outline-dark" type="button">Mark Resolved</button>
+                </div>
+                <div class="col-12 d-grid mt-1">
+                  <a class="btn btn-dark" href="AD-01-Admin-Dashboard.html">Back to Dashboard</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
