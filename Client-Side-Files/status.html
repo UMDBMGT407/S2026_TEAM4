@@ -39,14 +39,16 @@
 </head>
 <body>
   <div class="pr-04-application-status-process-1-3-decision-updated-records">
-    <img class="background" src="/images/PRbackground0.png" />
+    <img class="background" src="images/background0.png" />
     <div class="header"></div>
     <div class="action-items">
-      <img class="image-1" src="/images/PRimage-10.png" />
+      <img class="image-1" src="images/image-10.png" />
       <a href="index.html" class="logout">Logout</a>
-      <div class="ellipse-1"></div>
+      <div class="role-indicator">
+        <div class="user-role">Prospective Resident</div>
+      </div>
     </div>
-    <img class="logo" src="/images/PRlogo0.png" />
+    <img class="logo" src="images/logo0.png" />
     <div class="application-status">Application Status</div>
     <div class="sidebar"></div>
     <div class="nav-buttons">
@@ -59,20 +61,20 @@
         <div class="rectangle-2"></div>
         <div class="rectangle-5"></div>
         <div class="rectangle-6"></div>
-        <div class="application-id">Application ID: #####</div>
+        <div class="application-id">Application ID: APP-48271</div>
         <div class="application-submitted">Application Submitted</div>
         <div class="deposit-paid">Deposit Paid</div>
         <div class="under-review">Under Review</div>
         <div class="decision">Decision</div>
         <div
-          class="your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details"
+          class="status-message-card your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details"
         >
           <ul
-            class="your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details-span"
+            class="status-message-list your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details-span"
           >
             <li>Your application is being reviewed by Administration Staff.</li>
             <li>You will receive an update when a decision has been made.</li>
-            <li>If approved: you will be prompted to view/sign lease.</li>
+            <li>If approved: you will receive an email confirmation with next steps.</li>
             <li>If denied: you may contact office for more details.</li>
           </ul>
         </div>
@@ -90,11 +92,12 @@
           <a href="floorplan.html" class="back-to-floor-plans">Back to Floor Plans</a>
         </div>
         <div class="simple-button2">
-          <a href="lease_info.html" class="view-lease-next-step">View Lease</a>
+          <button type="button" class="email-confirmation">Email Confirmation</button>
         </div>
       </div>
     </div>
   </div>
   
+  <script src="./js/logout.js"></script>
 </body>
 </html>
