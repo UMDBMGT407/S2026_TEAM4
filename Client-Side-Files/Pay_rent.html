@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./vars.css">
-  <link rel="stylesheet" href="/Current Resident CSS/Pay_rent.css">
+  <link rel="stylesheet" href="./css/Pay_rent.css">
   
   
   <style>
@@ -35,25 +34,27 @@
        padding: 0;
    }
    </style>
-  <title>Document</title>
+  <title>The Courtyards | Pay Rent</title>
 </head>
 <body>
   <div class="cr-03-pay-rent">
-    <img class="background" src="background0.png" />
+    <img class="background" src="./images/background0.png" />
     <div class="header"></div>
     <div class="action-items">
-      <img class="image-1" src="image-10.png" />
-      <a href="index.html" class="Logout">Logout</a>
-      <div class="ellipse-1"></div>
+      <img class="image-1" src="./images/image-10.png" />
+      <a href="./index.html" class="Logout">Logout</a>
+      <div class="role-indicator">
+        <div class="user-role">Prospective Resident</div>
+      </div>
     </div>
-    <img class="logo" src="logo0.png" />
+    <img class="logo" src="./images/logo0.png" />
     <div class="Pay-Rent">Pay Rent</div>
     <div class="sidebar"></div>
     <div class="nav-buttons">
-      <a href="Res_Dash2.html" class="dashboard">Dashboard</a>
-      <a href="Pay_rent.html" class="pay-rent">Pay Rent</a>
-      <a href="Maint_req.html" class="maintenance">Maintenance</a>
-      <a href="Lease_info.html" class="my-lease">My Lease</a>
+      <a href="./Res_Dash2.html" class="dashboard">Dashboard</a>
+      <a href="./Pay_rent.html" class="pay-rent">Pay Rent</a>
+      <a href="./Maint_Req.html" class="maintenance">Maintenance</a>
+      <a href="./Lease_info.html" class="my-lease">My Lease</a>
     </div>
     <div class="rectangle-2"></div>
     <div class="simple-button">
@@ -129,9 +130,30 @@
       </button>
     </div>
     <div class="balance-due-due-date">
-      Balance Due: $_____
-      <br />
-      Due Date: __/__/____
+      <div class="summary-item">
+        <span class="summary-label">Current Balance:</span>
+        <span class="summary-value">$1,785.00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Monthly Rent:</span>
+        <span class="summary-value">$1,650.00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Utility Charges:</span>
+        <span class="summary-value">$95.00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Parking Fee:</span>
+        <span class="summary-value">$40.00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Last Payment:</span>
+        <span class="summary-value">02/01/2026</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Due Date:</span>
+        <span class="summary-value">03/15/2026</span>
+      </div>
     </div>
     <input class="authorize-checkbox" type="checkbox" id="authorize-rent-payment" name="authorize-rent-payment" />
     <div class="i-authorize-this-rent-payment">
@@ -172,6 +194,7 @@
       }
     })();
   </script>
+  <script src="./js/logout.js"></script>
 
 </body>
 </html>
