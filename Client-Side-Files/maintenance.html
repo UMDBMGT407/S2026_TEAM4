@@ -18,20 +18,20 @@
   <div class="admin-page">
     <header class="top-header">
       <div class="header-left">
-        <img src="logo0.png" class="logo" alt="Courtyards logo">
+        <img src="images/logo0.png" class="logo" alt="Courtyards logo">
       </div>
       <div class="header-center">
         <h1>Maintenance Dashboard</h1>
       </div>
       <div class="header-right">
+        <div class="role-indicator">Maintenance</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
-    <aside class="sidebar">
+<aside class="sidebar">
   <nav class="sidebar-nav">
-    <a href="index.html">Dashboard</a>
-    <a href="payments.html">Payments</a>
-    <a href="maintenance.html" class="active">My Work Orders</a>
+    <a href="maintenance.html" class="active">Dashboard</a>
+    <a href="work_order.html">My Work Orders</a>
     <a href="schedule.html">Schedule</a>
   </nav>
 </aside>
@@ -78,101 +78,104 @@
       <section class="maintenance-layout">
         <div class="maintenance-left">
           <div class="content-card">
-            <h2>My Work Orders</h2>
-            <table class="maintenance-table">
-              <thead>
-                <tr>
-                  <th>WO#</th>
-                  <th>Unit</th>
-                  <th>Issue</th>
-                  <th>Priority</th>
-                  <th>Status</th>
-                  <th>Due</th>
-                </tr>
-              </thead>
-              <tbody id="workOrdersTable">
-                <tr data-wo="WO501" data-status="Open" data-priority="High">
-                  <td>WO501</td>
-                  <td>101A</td>
-                  <td>Leaking Sink</td>
-                  <td>High</td>
-                  <td>Open</td>
-                  <td>03/14/26</td>
-                </tr>
-                <tr data-wo="WO502" data-status="Assigned" data-priority="Medium">
-                  <td>WO502</td>
-                  <td>235B</td>
-                  <td>Broken Heater</td>
-                  <td>Medium</td>
-                  <td>Assigned</td>
-                  <td>03/15/26</td>
-                </tr>
-                <tr data-wo="WO503" data-status="In Progress" data-priority="Low">
-                  <td>WO503</td>
-                  <td>402C</td>
-                  <td>Light Flickering</td>
-                  <td>Low</td>
-                  <td>In Progress</td>
-                  <td>03/16/26</td>
-                </tr>
-                <tr data-wo="WO504" data-status="Assigned" data-priority="Urgent">
-                  <td>WO504</td>
-                  <td>118D</td>
-                  <td>No Hot Water</td>
-                  <td>Urgent</td>
-                  <td>Assigned</td>
-                  <td>03/14/26</td>
-                </tr>
-                <tr data-wo="WO505" data-status="Completed" data-priority="Medium">
-                  <td>WO505</td>
-                  <td>320A</td>
-                  <td>Window Lock</td>
-                  <td>Medium</td>
-                  <td>Completed</td>
-                  <td>03/12/26</td>
-                </tr>
-                <tr data-wo="WO506" data-status="Open" data-priority="High">
-                  <td>WO506</td>
-                  <td>214C</td>
-                  <td>Clogged Toilet</td>
-                  <td>High</td>
-                  <td>Open</td>
-                  <td>03/17/26</td>
-                </tr>
-                <tr data-wo="WO507" data-status="In Progress" data-priority="Urgent">
-                  <td>WO507</td>
-                  <td>509B</td>
-                  <td>Power Outage</td>
-                  <td>Urgent</td>
-                  <td>In Progress</td>
-                  <td>03/14/26</td>
-                </tr>
-                <tr data-wo="WO508" data-status="Assigned" data-priority="Medium">
-                  <td>WO508</td>
-                  <td>126B</td>
-                  <td>Cabinet Hinge Loose</td>
-                  <td>Medium</td>
-                  <td>Assigned</td>
-                  <td>03/18/26</td>
-                </tr>
-                <tr data-wo="WO509" data-status="Completed" data-priority="Low">
-                  <td>WO509</td>
-                  <td>417D</td>
-                  <td>Smoke Detector Battery</td>
-                  <td>Low</td>
-                  <td>Completed</td>
-                  <td>03/11/26</td>
-                </tr>
-                <tr data-wo="WO510" data-status="Open" data-priority="Urgent">
-                  <td>WO510</td>
-                  <td>223A</td>
-                  <td>Water Leak Bathroom</td>
-                  <td>Urgent</td>
-                  <td>Open</td>
-                  <td>03/14/26</td>
-                </tr>
-              </tbody>
-            </table>
+            <h2>Assigned Work Orders</h2>
+            <div class="maintenance-table-wrap">
+              <table class="maintenance-table">
+                <thead>
+                  <tr>
+                    <th>WO#</th>
+                    <th>Unit</th>
+                    <th>Issue</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Due</th>
+                  </tr>
+                </thead>
+                <tbody id="workOrdersTable">
+                  <tr data-wo="WO501" data-status="Open" data-priority="High">
+                    <td>WO501</td>
+                    <td>101A</td>
+                    <td>Leaking Sink</td>
+                    <td>High</td>
+                    <td>Open</td>
+                    <td>03/14/26</td>
+                  </tr>
+                  <tr data-wo="WO502" data-status="Assigned" data-priority="Medium">
+                    <td>WO502</td>
+                    <td>235B</td>
+                    <td>Broken Heater</td>
+                    <td>Medium</td>
+                    <td>Assigned</td>
+                    <td>03/15/26</td>
+                  </tr>
+                  <tr data-wo="WO503" data-status="In Progress" data-priority="Low">
+                    <td>WO503</td>
+                    <td>402C</td>
+                    <td>Light Flickering</td>
+                    <td>Low</td>
+                    <td>In Progress</td>
+                    <td>03/16/26</td>
+                  </tr>
+                  <tr data-wo="WO504" data-status="Assigned" data-priority="Urgent">
+                    <td>WO504</td>
+                    <td>118D</td>
+                    <td>No Hot Water</td>
+                    <td>Urgent</td>
+                    <td>Assigned</td>
+                    <td>03/14/26</td>
+                  </tr>
+                  <tr data-wo="WO505" data-status="Completed" data-priority="Medium">
+                    <td>WO505</td>
+                    <td>320A</td>
+                    <td>Window Lock</td>
+                    <td>Medium</td>
+                    <td>Completed</td>
+                    <td>03/12/26</td>
+                  </tr>
+                  <tr data-wo="WO506" data-status="Open" data-priority="High">
+                    <td>WO506</td>
+                    <td>214C</td>
+                    <td>Clogged Toilet</td>
+                    <td>High</td>
+                    <td>Open</td>
+                    <td>03/17/26</td>
+                  </tr>
+                  <tr data-wo="WO507" data-status="In Progress" data-priority="Urgent">
+                    <td>WO507</td>
+                    <td>509B</td>
+                    <td>Power Outage</td>
+                    <td>Urgent</td>
+                    <td>In Progress</td>
+                    <td>03/14/26</td>
+                  </tr>
+                  <tr data-wo="WO508" data-status="Assigned" data-priority="Medium">
+                    <td>WO508</td>
+                    <td>126B</td>
+                    <td>Cabinet Hinge Loose</td>
+                    <td>Medium</td>
+                    <td>Assigned</td>
+                    <td>03/18/26</td>
+                  </tr>
+                  <tr data-wo="WO509" data-status="Completed" data-priority="Low">
+                    <td>WO509</td>
+                    <td>417D</td>
+                    <td>Smoke Detector Battery</td>
+                    <td>Low</td>
+                    <td>Completed</td>
+                    <td>03/11/26</td>
+                  </tr>
+                  <tr data-wo="WO510" data-status="Open" data-priority="Urgent">
+                    <td>WO510</td>
+                    <td>223A</td>
+                    <td>Water Leak Bathroom</td>
+                    <td>Urgent</td>
+                    <td>Open</td>
+                    <td>03/14/26</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <a href="work_order.html" class="view-all-btn">View All Work Orders</a>
           </div>
         </div>
         <div class="maintenance-right">
@@ -190,7 +193,7 @@
           </div>
           <div class="content-card">
             <h2>Issue Description</h2>
-            <textarea id="issueBox" rows="4">Resident reported water leaking under the sink.</textarea>
+            <textarea id="issueBox" rows="4" placeholder="Type issue description..."></textarea>
           </div>
           <div class="content-card">
             <h2>Update Status</h2>
@@ -203,7 +206,7 @@
           </div>
           <div class="content-card">
             <h2>Notes to Resident</h2>
-            <textarea id="residentNotesBox" rows="4">Maintenance scheduled for tomorrow.</textarea>
+            <textarea id="residentNotesBox" rows="4" placeholder="Type note to resident..."></textarea>
           </div>
           <div class="content-card">
             <h2>Actions</h2>
@@ -213,7 +216,7 @@
             </div>
             <p id="actionMessage"></p>
 
-            <a href="index.html" class="back-btn">Back to Dashboard</a>
+            <a href="work_order.html" class="back-btn">View All Work Orders</a>
           </div>
         </div>
       </section>
@@ -346,8 +349,8 @@
         <p><strong>Priority:</strong> ${order.priority}</p>
         <p><strong>Status:</strong> ${order.status}</p>
       `;
-      issueBox.value = order.issue;
-      residentNotesBox.value = order.notes;
+      issueBox.value = "";
+      residentNotesBox.value = "";
       updateStatusSelect.value = order.status;
       rows.forEach((row) => row.classList.remove("selected-row"));
       document.querySelector(`[data-wo="${woId}"]`)?.classList.add("selected-row");
@@ -415,10 +418,8 @@
       applyStatusToSelectedWO("Completed");
       actionMessage.textContent = "Work order closed.";
     });
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      alert("Logout clicked");
-    });
     loadWorkOrder("WO501");
   </script>
+  <script src="./js/logout.js"></script>
 </body>
 </html>
