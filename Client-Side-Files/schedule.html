@@ -32,6 +32,7 @@
     <aside class="sidebar">
   <nav class="sidebar-nav">
     <a id="dashboardLink" href="maintenance.html">Dashboard</a>
+    <a id="paymentsLink" href="payments.html" hidden>Payments</a>
     <a id="workOrdersLink" href="work_order.html">My Work Orders</a>
     <a id="scheduleLink" href="schedule.html" class="active">Schedule</a>
   </nav>
@@ -136,6 +137,7 @@
     const isAdminView = pageParams.get("role") === "admin";
     const roleIndicator = document.getElementById("roleIndicator");
     const dashboardLink = document.getElementById("dashboardLink");
+    const paymentsLink = document.getElementById("paymentsLink");
     const workOrdersLink = document.getElementById("workOrdersLink");
     const scheduleLink = document.getElementById("scheduleLink");
     const backLink = document.getElementById("backLink");
@@ -144,6 +146,8 @@
       document.title = "Admin Schedule";
       roleIndicator.textContent = "Admin";
       dashboardLink.href = "Admindash.html";
+      paymentsLink.hidden = false;
+      paymentsLink.href = "payments.html";
       workOrdersLink.href = "work_order.html?role=admin";
       workOrdersLink.textContent = "Work Orders";
       scheduleLink.href = "schedule.html?role=admin";
