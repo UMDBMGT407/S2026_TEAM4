@@ -21,19 +21,23 @@
 <body>
   <div class="workorders-page">
     <img class="background" src="images/background0.png" alt="Courtyards background" />
+
     <header class="top-header">
       <div class="header-left">
         <img class="logo" src="images/logo0.png" alt="Courtyards logo" />
       </div>
+
       <div class="header-center">
         <h1 id="pageTitle">My Work Orders</h1>
       </div>
+
       <div class="header-right">
         <button class="profile-btn" type="button" aria-label="Profile"></button>
         <div class="role-indicator" id="roleIndicator">Maintenance</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
+
     <div class="container-fluid page-shell">
       <div class="row">
         <!-- Sidebar -->
@@ -44,11 +48,13 @@
             <a class="nav-link-custom" id="scheduleLink" href="schedule.html">Schedule</a>
           </nav>
         </aside>
+
         <!-- Main Content -->
         <main class="col-lg-10 col-md-9 main-content">
           <!-- Filters -->
           <section class="filters-bar">
             <div class="filters-label">Filters</div>
+
             <select id="statusFilter" class="filter-input">
               <option value="">Status</option>
               <option value="Open">Open</option>
@@ -56,31 +62,37 @@
               <option value="Assigned">Assigned</option>
               <option value="Closed">Closed</option>
             </select>
+
             <select id="priorityFilter" class="filter-input">
               <option value="">Priority</option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
+
             <select id="buildingFilter" class="filter-input">
               <option value="">Building</option>
               <option value="A">Building A</option>
               <option value="B">Building B</option>
               <option value="C">Building C</option>
             </select>
+
             <input
               id="searchFilter"
               class="filter-input search-input"
               type="text"
               placeholder="WO# / Unit / Resident"
             />
+
             <button id="applyFiltersBtn" class="apply-btn" type="button">Apply</button>
           </section>
+
           <section class="row g-4 content-row">
             <!-- Left side -->
             <div class="col-xl-5">
               <div class="panel-box workorder-list-panel">
                 <h2>Work Order Queue</h2>
+
                 <div class="table-responsive workorder-scroll">
                   <table class="table custom-table align-middle mb-3">
                     <thead>
@@ -95,30 +107,36 @@
                     <tbody id="workOrderQueueBody"></tbody>
                   </table>
                 </div>
+
                 <div class="pager-wrap">
                   <button class="pager-btn" id="prevBtn" type="button">Prev</button>
                   <button class="pager-btn" id="nextBtn" type="button">Next</button>
                 </div>
               </div>
             </div>
+
             <!-- Right side -->
             <div class="col-xl-7">
               <div class="details-panel">
                 <h2>Work Order Details</h2>
+
                 <div class="detail-card">
                   <p id="woMeta1"></p>
                   <p id="woMeta2"></p>
                   <p id="woMeta3"></p>
                   <p id="woMeta4"></p>
                 </div>
+
                 <h3>Issue Description</h3>
                 <div class="detail-card description-card">
                   <p id="issueDescription"></p>
                 </div>
+
                 <h3>Attachments</h3>
                 <div class="detail-card attachments-card">
                   <a href="#" id="attachmentLink">Photo/File View/Download</a>
                 </div>
+
                 <h3>Assign &amp; Schedule</h3>
                 <div class="assign-grid">
                   <select id="assignUnit" class="assign-input">
@@ -127,7 +145,9 @@
                     <option>Building B / Unit 3C</option>
                     <option>Building C / Unit 1B</option>
                   </select>
+
                   <input id="scheduleDate" class="assign-input" type="date" />
+
                   <select id="timeWindow" class="assign-input">
                     <option>Time Window</option>
                     <option>8:00 AM - 10:00 AM</option>
@@ -135,6 +155,7 @@
                     <option>1:00 PM - 3:00 PM</option>
                     <option>3:00 PM - 5:00 PM</option>
                   </select>
+
                   <select id="statusUpdate" class="assign-input">
                     <option>Update Status</option>
                     <option>Assigned</option>
@@ -142,8 +163,10 @@
                     <option>Closed</option>
                   </select>
                 </div>
+
                 <h4>Notes to Maintenance / Resident</h4>
                 <textarea id="notesBox" class="notes-box" placeholder="Enter notes here..."></textarea>
+
                 <div class="action-buttons">
                   <button id="assignBtn" class="action-btn" type="button">Assign Work Order</button>
                   <button id="saveBtn" class="action-btn" type="button">Save Update</button>
@@ -156,6 +179,7 @@
       </div>
     </div>
   </div>
+
   <script>
     const pageParams = new URLSearchParams(window.location.search);
     const isAdminView = pageParams.get("role") === "admin";
@@ -173,6 +197,14 @@
       workOrdersLink.href = "work_order.html?role=admin";
       workOrdersLink.textContent = "Work Orders";
       scheduleLink.href = "schedule.html?role=admin";
+    } else {
+      document.title = "Courtyards My Work Orders";
+      roleIndicator.textContent = "Maintenance";
+      pageTitle.textContent = "My Work Orders";
+      dashboardLink.href = "maintenance.html";
+      workOrdersLink.href = "work_order.html";
+      workOrdersLink.textContent = "My Work Orders";
+      scheduleLink.href = "schedule.html";
     }
 
     const workOrders = [
@@ -261,12 +293,14 @@
         attachment: "window-report.pdf"
       }
     ];
+
     let filteredOrders = [...workOrders];
     let currentIndex = 0;
+
     function renderQueue() {
       const tbody = document.getElementById("workOrderQueueBody");
       tbody.innerHTML = filteredOrders.map((order, index) => `
-        <tr data-index="${index}" class="queue-row ${index === currentIndex ? 'selected-row' : ''}">
+        <tr data-index="${index}" class="queue-row ${index === currentIndex ? "selected-row" : ""}">
           <td>${order.id}</td>
           <td>${order.unit}</td>
           <td>${order.issue}</td>
@@ -274,7 +308,8 @@
           <td>${order.status}</td>
         </tr>
       `).join("");
-      document.querySelectorAll(".queue-row").forEach(row => {
+
+      document.querySelectorAll(".queue-row").forEach((row) => {
         row.addEventListener("click", () => {
           currentIndex = Number(row.dataset.index);
           renderQueue();
@@ -282,9 +317,19 @@
         });
       });
     }
+
     function renderDetails() {
       const order = filteredOrders[currentIndex];
-      if (!order) return;
+      if (!order) {
+        document.getElementById("woMeta1").textContent = "";
+        document.getElementById("woMeta2").textContent = "";
+        document.getElementById("woMeta3").textContent = "";
+        document.getElementById("woMeta4").textContent = "";
+        document.getElementById("issueDescription").textContent = "No work orders match the current filters.";
+        document.getElementById("attachmentLink").textContent = "";
+        document.getElementById("attachmentLink").removeAttribute("href");
+        return;
+      }
 
       document.getElementById("woMeta1").textContent = `WO #: ${order.id}   Status: ${order.status}`;
       document.getElementById("woMeta2").textContent = `Unit: Building ${order.building} / Unit ${order.unit}   Priority: ${order.priority}`;
@@ -292,13 +337,16 @@
       document.getElementById("woMeta4").textContent = `Issue Category: ${order.category}   Requested: ${order.requested}`;
       document.getElementById("issueDescription").textContent = order.description;
       document.getElementById("attachmentLink").textContent = order.attachment;
+      document.getElementById("attachmentLink").setAttribute("href", "#");
     }
+
     function applyFilters() {
       const status = document.getElementById("statusFilter").value;
       const priority = document.getElementById("priorityFilter").value;
       const building = document.getElementById("buildingFilter").value;
       const search = document.getElementById("searchFilter").value.toLowerCase().trim();
-      filteredOrders = workOrders.filter(order => {
+
+      filteredOrders = workOrders.filter((order) => {
         const matchesStatus = !status || order.status === status;
         const matchesPriority = !priority || order.priority === priority;
         const matchesBuilding = !building || order.building === building;
@@ -310,11 +358,14 @@
 
         return matchesStatus && matchesPriority && matchesBuilding && matchesSearch;
       });
+
       currentIndex = 0;
       renderQueue();
       renderDetails();
     }
+
     document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
+
     document.getElementById("prevBtn").addEventListener("click", () => {
       if (currentIndex > 0) {
         currentIndex--;
@@ -322,6 +373,7 @@
         renderDetails();
       }
     });
+
     document.getElementById("nextBtn").addEventListener("click", () => {
       if (currentIndex < filteredOrders.length - 1) {
         currentIndex++;
@@ -329,18 +381,23 @@
         renderDetails();
       }
     });
+
     document.getElementById("assignBtn").addEventListener("click", () => {
       alert("Work order assigned.");
     });
+
     document.getElementById("saveBtn").addEventListener("click", () => {
       alert("Work order update saved.");
     });
+
     document.getElementById("closeBtn").addEventListener("click", () => {
       alert("Work order closed.");
     });
+
     renderQueue();
     renderDetails();
   </script>
+
   <script src="./js/logout.js"></script>
 </body>
 </html>
