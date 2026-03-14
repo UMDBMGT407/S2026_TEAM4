@@ -5,12 +5,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maintenance Dashboard</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
+
   <link rel="stylesheet" href="./css/vars2.css">
   <link rel="stylesheet" href="./css/style2.css">
 </head>
@@ -20,21 +22,25 @@
       <div class="header-left">
         <img src="images/logo0.png" class="logo" alt="Courtyards logo">
       </div>
+
       <div class="header-center">
         <h1>Maintenance Dashboard</h1>
       </div>
+
       <div class="header-right">
         <div class="role-indicator">Maintenance</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
-<aside class="sidebar">
-  <nav class="sidebar-nav">
-    <a href="maintenance.html" class="active">Dashboard</a>
-    <a href="work_order.html">My Work Orders</a>
-    <a href="schedule.html">Schedule</a>
-  </nav>
-</aside>
+
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="maintenance.html" class="active">Dashboard</a>
+        <a href="work_order.html">My Work Orders</a>
+        <a href="schedule.html">Schedule</a>
+      </nav>
+    </aside>
+
     <main class="main-content">
       <section class="summary-row">
         <div class="summary-card">
@@ -42,19 +48,23 @@
           <h3>6</h3>
           <span>details</span>
         </div>
+
         <div class="summary-card">
           <p>Due Today</p>
           <h3>2</h3>
           <span>details</span>
         </div>
+
         <div class="summary-card">
           <p>Completed (7d)</p>
           <h3>14</h3>
           <span>details</span>
         </div>
       </section>
+
       <section class="filters-card">
         <h2>Filters</h2>
+
         <div class="filters-row">
           <select id="statusFilter">
             <option value="all">Status</option>
@@ -63,6 +73,7 @@
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
+
           <select id="priorityFilter">
             <option value="all">Priority</option>
             <option value="Urgent">Urgent</option>
@@ -70,15 +81,18 @@
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
           </select>
+
           <input id="unitFilter" type="text" placeholder="Unit">
           <input id="woFilter" type="text" placeholder="Search (WO#)">
           <button id="applyBtn" type="button">Apply</button>
         </div>
       </section>
+
       <section class="maintenance-layout">
         <div class="maintenance-left">
           <div class="content-card">
             <h2>Assigned Work Orders</h2>
+
             <div class="maintenance-table-wrap">
               <table class="maintenance-table">
                 <thead>
@@ -91,6 +105,7 @@
                     <th>Due</th>
                   </tr>
                 </thead>
+
                 <tbody id="workOrdersTable">
                   <tr data-wo="WO501" data-status="Open" data-priority="High">
                     <td>WO501</td>
@@ -175,9 +190,11 @@
                 </tbody>
               </table>
             </div>
+
             <a href="work_order.html" class="view-all-btn">View All Work Orders</a>
           </div>
         </div>
+
         <div class="maintenance-right">
           <div class="content-card">
             <h2>Work Order Details</h2>
@@ -191,10 +208,12 @@
               <p><strong>Status:</strong> Open</p>
             </div>
           </div>
+
           <div class="content-card">
             <h2>Issue Description</h2>
             <textarea id="issueBox" rows="4" placeholder="Type issue description..."></textarea>
           </div>
+
           <div class="content-card">
             <h2>Update Status</h2>
             <select id="updateStatusSelect">
@@ -204,16 +223,19 @@
               <option value="Completed">Completed</option>
             </select>
           </div>
+
           <div class="content-card">
             <h2>Notes to Resident</h2>
             <textarea id="residentNotesBox" rows="4" placeholder="Type note to resident..."></textarea>
           </div>
+
           <div class="content-card">
             <h2>Actions</h2>
             <div class="action-buttons">
               <button id="saveUpdateBtn" type="button">Save Update</button>
               <button id="closeWorkOrderBtn" type="button">Close Work Order</button>
             </div>
+
             <p id="actionMessage"></p>
 
             <a href="work_order.html" class="back-btn">View All Work Orders</a>
@@ -222,6 +244,7 @@
       </section>
     </main>
   </div>
+
   <script>
     const workOrderData = {
       WO501: {
@@ -325,7 +348,9 @@
         notes: "Resident asked for same-day response."
       }
     };
+
     let selectedWO = "WO501";
+
     const rows = document.querySelectorAll("#workOrdersTable tr");
     const statusFilter = document.getElementById("statusFilter");
     const priorityFilter = document.getElementById("priorityFilter");
@@ -337,9 +362,13 @@
     const residentNotesBox = document.getElementById("residentNotesBox");
     const updateStatusSelect = document.getElementById("updateStatusSelect");
     const actionMessage = document.getElementById("actionMessage");
+
     function loadWorkOrder(woId) {
       const order = workOrderData[woId];
+      if (!order) return;
+
       selectedWO = woId;
+
       workOrderDetails.innerHTML = `
         <p><strong>WO #:</strong> ${woId}</p>
         <p><strong>Unit:</strong> ${order.unit}</p>
@@ -349,29 +378,41 @@
         <p><strong>Priority:</strong> ${order.priority}</p>
         <p><strong>Status:</strong> ${order.status}</p>
       `;
-      issueBox.value = "";
-      residentNotesBox.value = "";
-      updateStatusSelect.value = order.status;
+
+      issueBox.value = order.issue || "";
+      residentNotesBox.value = order.notes || "";
+      updateStatusSelect.value = order.status || "Open";
+
       rows.forEach((row) => row.classList.remove("selected-row"));
-      document.querySelector(`[data-wo="${woId}"]`)?.classList.add("selected-row");
+
+      const selectedRow = document.querySelector(`[data-wo="${woId}"]`);
+      if (selectedRow) {
+        selectedRow.classList.add("selected-row");
+      }
     }
+
     function filterWorkOrders() {
       const statusValue = statusFilter.value;
       const priorityValue = priorityFilter.value;
       const unitValue = unitFilter.value.toLowerCase().trim();
       const woValue = woFilter.value.toLowerCase().trim();
+
       rows.forEach((row) => {
         const rowWO = row.getAttribute("data-wo").toLowerCase();
         const rowUnit = row.cells[1].textContent.toLowerCase();
         const rowStatus = row.getAttribute("data-status");
         const rowPriority = row.getAttribute("data-priority");
+
         const matchesStatus = statusValue === "all" || rowStatus === statusValue;
         const matchesPriority = priorityValue === "all" || rowPriority === priorityValue;
         const matchesUnit = unitValue === "" || rowUnit.includes(unitValue);
         const matchesWO = woValue === "" || rowWO.includes(woValue);
-        row.style.display = matchesStatus && matchesPriority && matchesUnit && matchesWO ? "" : "none";
+
+        row.style.display =
+          matchesStatus && matchesPriority && matchesUnit && matchesWO ? "" : "none";
       });
     }
+
     function updateTableRowStatus(woId, newStatus) {
       rows.forEach((row) => {
         if (row.getAttribute("data-wo") === woId) {
@@ -380,15 +421,19 @@
         }
       });
     }
+
     function applyStatusToSelectedWO(newStatus) {
-      if (!selectedWO) return;
+      if (!selectedWO || !workOrderData[selectedWO]) return;
+
       workOrderData[selectedWO].status = newStatus;
       updateStatusSelect.value = newStatus;
       updateTableRowStatus(selectedWO, newStatus);
       loadWorkOrder(selectedWO);
       filterWorkOrders();
+
       actionMessage.textContent = `Status changed to ${newStatus}.`;
     }
+
     rows.forEach((row) => {
       row.addEventListener("click", () => {
         const woId = row.getAttribute("data-wo");
@@ -396,30 +441,39 @@
         actionMessage.textContent = "";
       });
     });
+
     updateStatusSelect.addEventListener("change", () => {
       applyStatusToSelectedWO(updateStatusSelect.value);
     });
+
     applyBtn.addEventListener("click", filterWorkOrders);
     statusFilter.addEventListener("change", filterWorkOrders);
     priorityFilter.addEventListener("change", filterWorkOrders);
     unitFilter.addEventListener("input", filterWorkOrders);
     woFilter.addEventListener("input", filterWorkOrders);
+
     document.getElementById("saveUpdateBtn").addEventListener("click", () => {
-      if (!selectedWO) return;
+      if (!selectedWO || !workOrderData[selectedWO]) return;
+
       workOrderData[selectedWO].issue = issueBox.value;
       workOrderData[selectedWO].notes = residentNotesBox.value;
       workOrderData[selectedWO].status = updateStatusSelect.value;
+
       updateTableRowStatus(selectedWO, updateStatusSelect.value);
       loadWorkOrder(selectedWO);
       filterWorkOrders();
+
       actionMessage.textContent = "Update saved.";
     });
+
     document.getElementById("closeWorkOrderBtn").addEventListener("click", () => {
       applyStatusToSelectedWO("Completed");
       actionMessage.textContent = "Work order closed.";
     });
+
     loadWorkOrder("WO501");
   </script>
+
   <script src="./js/logout.js"></script>
 </body>
 </html>
