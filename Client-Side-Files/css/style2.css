@@ -9,7 +9,7 @@ body {
   color: #000;
   background:
     linear-gradient(rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.58)),
-    url("../background0.png") center / cover no-repeat;
+    url("../images/background0.png") center / cover no-repeat;
 }
 
 .admin-page {
@@ -54,6 +54,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 12px;
 }
 
 .logout-btn {
@@ -67,6 +68,21 @@ body {
   cursor: pointer;
 }
 
+.role-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 136px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #6b6b6b;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .logout-btn:hover {
   opacity: 0.92;
 }
@@ -75,13 +91,13 @@ body {
 
 .sidebar {
   background: rgba(217, 217, 217, 0.82);
-  padding: 130px 18px 24px;
+  padding: 132px 20px 28px;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
 
 .sidebar-nav a {
@@ -90,7 +106,7 @@ body {
   border-radius: 10px;
   color: #000;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
 }
 
@@ -231,6 +247,21 @@ textarea,
   border-spacing: 0 10px;
 }
 
+.maintenance-table-wrap {
+  max-height: 474px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.maintenance-table-wrap::-webkit-scrollbar {
+  width: 10px;
+}
+
+.maintenance-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(123, 123, 123, 0.48);
+  border-radius: 999px;
+}
+
 .maintenance-table thead th {
   padding: 0 8px 4px;
   text-align: left;
@@ -338,6 +369,22 @@ textarea {
 }
 
 .back-btn:hover {
+  background: #efefef;
+}
+
+.view-all-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.view-all-btn:hover {
   background: #efefef;
 }
 
