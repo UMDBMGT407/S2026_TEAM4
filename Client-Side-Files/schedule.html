@@ -1,22 +1,285 @@
-<header class="top-header">
-  <div class="header-left">
-    <img src="images/logo0.png" class="logo" alt="Courtyards logo">
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./css/vars3.css">
+  <link rel="stylesheet" href="./css/style3.css">
+</head>
+<body>
+  <div class="admin-page">
+    <header class="top-header">
+      <div class="header-left">
+        <img src="images/logo0.png" class="logo" alt="Courtyards logo">
+      </div>
+      <div class="header-center">
+        <h1>Schedule</h1>
+      </div>
 
-  <div class="header-center">
-    <h1 id="pageTitle">Schedule</h1>
-  </div>
-
-  <div class="header-right">
-    <div class="role-indicator" id="roleIndicator">Maintenance</div>
-    <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
-  </div>
-</header>
-
-<aside class="sidebar">
+      <div class="header-right">
+        <div class="role-indicator" id="roleIndicator">Maintenance</div>
+        <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </header>
+    <aside class="sidebar">
   <nav class="sidebar-nav">
     <a id="dashboardLink" href="maintenance.html">Dashboard</a>
     <a id="workOrdersLink" href="work_order.html">My Work Orders</a>
     <a id="scheduleLink" href="schedule.html" class="active">Schedule</a>
   </nav>
 </aside>
+    <main class="main-content">
+      <section class="summary-row">
+        <div class="summary-card">
+          <p>Staff Scheduled Today</p>
+          <h3>6</h3>
+          <span>March 2026</span>
+        </div>
+        <div class="summary-card">
+          <p>Work Orders Today</p>
+          <h3>5</h3>
+          <span>assigned orders</span>
+        </div>
+        <div class="summary-card">
+          <p>Open Shifts This Week</p>
+          <h3>14</h3>
+          <span>upcoming schedule</span>
+        </div>
+      </section>
+      <section class="filters-card">
+        <h2>Filters</h2>
+        <div class="filters-row">
+          <select id="staffFilter">
+            <option value="all">Staff</option>
+            <option value="Chris Hall">Chris Hall</option>
+            <option value="Daniel White">Daniel White</option>
+            <option value="Olivia Green">Olivia Green</option>
+            <option value="James Carter">James Carter</option>
+            <option value="Nina Patel">Nina Patel</option>
+          </select>
+          <input id="unitFilter" type="text" placeholder="Search Unit">
+          <input id="woFilter" type="text" placeholder="Search WO#">
+          <button id="applyBtn" type="button">Apply</button>
+        </div>
+      </section>
+      <section class="schedule-layout">
+        <div class="schedule-left">
+          <div class="content-card">
+            <div class="calendar-toolbar">
+              <button id="prevMonthBtn" type="button" class="calendar-nav-btn">Previous</button>
+              <h2 id="calendarTitle">March 2026 Staff Schedule</h2>
+              <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
+            </div>
+            <div class="month-grid" id="monthGrid"></div>
+          </div>
+        </div>
+        <div class="schedule-right">
+          <div class="content-card">
+            <h2>Work Orders For Today</h2>
+            <div id="assignmentList" class="assignment-list">
+              <div class="assignment-item" data-staff="Chris Hall" data-unit="101A" data-wo="WO601">
+                <p><strong>WO601</strong> | Unit 101A</p>
+                <p>Issue: Sink Leak</p>
+                <p>Assigned To: Chris Hall</p>
+                <p>Time Received: 8:15 AM</p>
+              </div>
+              <div class="assignment-item" data-staff="Olivia Green" data-unit="435B" data-wo="WO602">
+                <p><strong>WO602</strong> | Unit 435B</p>
+                <p>Issue: Outlet Not Working</p>
+                <p>Assigned To: Olivia Green</p>
+                <p>Time Received: 8:45 AM</p>
+              </div>
+              <div class="assignment-item" data-staff="Daniel White" data-unit="214C" data-wo="WO603">
+                <p><strong>WO603</strong> | Unit 214C</p>
+                <p>Issue: AC Not Cooling</p>
+                <p>Assigned To: Daniel White</p>
+                <p>Time Received: 9:30 AM</p>
+              </div>
+              <div class="assignment-item" data-staff="James Carter" data-unit="118D" data-wo="WO604">
+                <p><strong>WO604</strong> | Unit 118D</p>
+                <p>Issue: No Hot Water</p>
+                <p>Assigned To: James Carter</p>
+                <p>Time Received: 10:10 AM</p>
+              </div>
+              <div class="assignment-item" data-staff="Nina Patel" data-unit="320A" data-wo="WO605">
+                <p><strong>WO605</strong> | Unit 320A</p>
+                <p>Issue: Window Lock</p>
+                <p>Assigned To: Nina Patel</p>
+                <p>Time Received: 11:20 AM</p>
+              </div>
+            </div>
+          </div>
+          <div class="content-card">
+            <h2>Notes</h2>
+            <textarea id="scheduleNotes" rows="6" placeholder="Add notes about today’s staff schedule or work orders..."></textarea>
+          </div>
+          <div class="content-card">
+            <div class="schedule-actions">
+              <a href="maintenance.html" class="back-btn" id="backLink">Back</a>
+              <button id="printBtn" type="button" class="print-btn">Print Schedule</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const pageParams = new URLSearchParams(window.location.search);
+    const isAdminView = pageParams.get("role") === "admin";
+    const roleIndicator = document.getElementById("roleIndicator");
+    const dashboardLink = document.getElementById("dashboardLink");
+    const workOrdersLink = document.getElementById("workOrdersLink");
+    const scheduleLink = document.getElementById("scheduleLink");
+    const backLink = document.getElementById("backLink");
+
+    if (isAdminView) {
+      document.title = "Admin Schedule";
+      roleIndicator.textContent = "Admin";
+      dashboardLink.href = "Admindash.html";
+      workOrdersLink.href = "work_order.html?role=admin";
+      workOrdersLink.textContent = "Work Orders";
+      scheduleLink.href = "schedule.html?role=admin";
+      backLink.href = "Admindash.html";
+      backLink.textContent = "Back to Dashboard";
+    }
+
+    const monthGrid = document.getElementById("monthGrid");
+    const calendarTitle = document.getElementById("calendarTitle");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const staffFilter = document.getElementById("staffFilter");
+    const unitFilter = document.getElementById("unitFilter");
+    const woFilter = document.getElementById("woFilter");
+    const applyBtn = document.getElementById("applyBtn");
+    const assignmentItems = document.querySelectorAll(".assignment-item");
+    let currentMonth = 2;
+    let currentYear = 2026;
+    const shifts = [
+      { date: "2026-03-02", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-03", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-04", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-05", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-03-06", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" },
+      { date: "2026-03-09", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-09", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-10", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-11", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-03-11", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" },
+      { date: "2026-03-12", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-12", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-13", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-13", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-03-13", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" },
+      { date: "2026-03-14", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-14", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-16", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-16", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-03-18", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" },
+      { date: "2026-03-18", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-21", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-21", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-24", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-03-24", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" },
+      { date: "2026-03-27", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-03-27", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
+      { date: "2026-03-30", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-03-31", staff: "James Carter", shift: "8:00 AM - 5:00 PM", className: "staff-james" },
+      { date: "2026-02-24", staff: "Daniel White", shift: "9:00 AM - 6:00 PM", className: "staff-daniel" },
+      { date: "2026-04-03", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
+      { date: "2026-04-08", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" }
+    ];
+    function renderCalendar(month, year) {
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      calendarTitle.textContent = `${monthNames[month]} ${year} Staff Schedule`;
+      monthGrid.innerHTML = "";
+      dayNames.forEach((day) => {
+        const head = document.createElement("div");
+        head.className = "month-head";
+        head.textContent = day;
+        monthGrid.appendChild(head);
+      });
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.className = "month-cell empty-cell";
+        monthGrid.appendChild(blank);
+      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const cell = document.createElement("div");
+        cell.className = "month-cell";
+        const dateLabel = document.createElement("div");
+        dateLabel.className = "month-date";
+        dateLabel.textContent = day;
+        cell.appendChild(dateLabel);
+        const dayShifts = shifts.filter((item) => item.date === dateString);
+        dayShifts.forEach((item) => {
+          const task = document.createElement("div");
+          task.className = `calendar-task ${item.className}`;
+          task.innerHTML = `
+            <strong>${item.staff}</strong>
+            ${item.shift}
+          `;
+          cell.appendChild(task);
+        });
+        monthGrid.appendChild(cell);
+      }
+    }
+    function applyFilters() {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      assignmentItems.forEach((item) => {
+        const itemStaff = item.getAttribute("data-staff").toLowerCase();
+        const itemUnit = item.getAttribute("data-unit").toLowerCase();
+        const itemWO = item.getAttribute("data-wo").toLowerCase();
+        const matchesStaff =
+          staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+        const matchesUnit =
+          unitValue === "" || itemUnit.includes(unitValue);
+        const matchesWO =
+          woValue === "" || itemWO.includes(woValue);
+        item.style.display = matchesStaff && matchesUnit && matchesWO ? "" : "none";
+      });
+    }
+    prevMonthBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    nextMonthBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    applyBtn.addEventListener("click", applyFilters);
+    staffFilter.addEventListener("change", applyFilters);
+    unitFilter.addEventListener("input", applyFilters);
+    woFilter.addEventListener("input", applyFilters);
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
+    renderCalendar(currentMonth, currentYear);
+  </script>
+  <script src="./js/logout.js"></script>
+</body>
+</html>
