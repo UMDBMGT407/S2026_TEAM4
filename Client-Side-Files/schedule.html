@@ -18,22 +18,22 @@
   <div class="admin-page">
     <header class="top-header">
       <div class="header-left">
-        <img src="logo0.png" class="logo" alt="Courtyards logo">
+        <img src="images/logo0.png" class="logo" alt="Courtyards logo">
       </div>
       <div class="header-center">
         <h1>Schedule</h1>
       </div>
 
       <div class="header-right">
+        <div class="role-indicator" id="roleIndicator">Maintenance</div>
         <button class="logout-btn" id="logoutBtn" type="button">Logout</button>
       </div>
     </header>
     <aside class="sidebar">
   <nav class="sidebar-nav">
-    <a href="index.html">Dashboard</a>
-    <a href="payments.html">Payments</a>
-    <a href="maintenance.html">My Work Orders</a>
-    <a href="schedule.html" class="active">Schedule</a>
+    <a id="dashboardLink" href="maintenance.html">Dashboard</a>
+    <a id="workOrdersLink" href="work_order.html">My Work Orders</a>
+    <a id="scheduleLink" href="schedule.html" class="active">Schedule</a>
   </nav>
 </aside>
     <main class="main-content">
@@ -123,7 +123,7 @@
           </div>
           <div class="content-card">
             <div class="schedule-actions">
-              <a href="maintenance.html" class="back-btn">Back</a>
+              <a href="maintenance.html" class="back-btn" id="backLink">Back</a>
               <button id="printBtn" type="button" class="print-btn">Print Schedule</button>
             </div>
           </div>
@@ -132,6 +132,25 @@
     </main>
   </div>
   <script>
+    const pageParams = new URLSearchParams(window.location.search);
+    const isAdminView = pageParams.get("role") === "admin";
+    const roleIndicator = document.getElementById("roleIndicator");
+    const dashboardLink = document.getElementById("dashboardLink");
+    const workOrdersLink = document.getElementById("workOrdersLink");
+    const scheduleLink = document.getElementById("scheduleLink");
+    const backLink = document.getElementById("backLink");
+
+    if (isAdminView) {
+      document.title = "Admin Schedule";
+      roleIndicator.textContent = "Admin";
+      dashboardLink.href = "Admindash.html";
+      workOrdersLink.href = "work_order.html?role=admin";
+      workOrdersLink.textContent = "Work Orders";
+      scheduleLink.href = "schedule.html?role=admin";
+      backLink.href = "Admindash.html";
+      backLink.textContent = "Back to Dashboard";
+    }
+
     const monthGrid = document.getElementById("monthGrid");
     const calendarTitle = document.getElementById("calendarTitle");
     const prevMonthBtn = document.getElementById("prevMonthBtn");
@@ -256,13 +275,11 @@
     staffFilter.addEventListener("change", applyFilters);
     unitFilter.addEventListener("input", applyFilters);
     woFilter.addEventListener("input", applyFilters);
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      alert("Logout clicked");
-    });
     document.getElementById("printBtn").addEventListener("click", () => {
       window.print();
     });
     renderCalendar(currentMonth, currentYear);
   </script>
+  <script src="./js/logout.js"></script>
 </body>
 </html>
