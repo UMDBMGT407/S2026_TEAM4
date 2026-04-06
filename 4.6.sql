@@ -1,0 +1,92 @@
+-- MySQL dump 10.13  Distrib 8.0.45, for macos15 (x86_64)
+--
+-- Host: localhost    Database: 407_courtyards
+-- ------------------------------------------------------
+-- Server version	9.6.0
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup 
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '090b0c06-28b4-11f1-8031-88fc58c2c697:1-43';
+
+--
+-- Table structure for table `floorplans`
+--
+
+DROP TABLE IF EXISTS `floorplans`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `floorplans` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `rent` int NOT NULL,
+  `bedrooms` int NOT NULL,
+  `bathrooms` int NOT NULL,
+  `size` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `floorplans`
+--
+
+LOCK TABLES `floorplans` WRITE;
+/*!40000 ALTER TABLE `floorplans` DISABLE KEYS */;
+INSERT INTO `floorplans` VALUES (1,'4B/4B',974,4,4,1189),(2,'4B/2B',888,4,2,1493),(3,'2B/2B S',1082,2,2,785),(4,'2B/2B D',1118,2,2,991);
+/*!40000 ALTER TABLE `floorplans` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('Admin','Resident','Staff') NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Admin1','admin1@umd.edu','scrypt:32768:8:1$4nAi86mEzIGtrRHj$74bb26a9020de36579155370c9a9eee4953e56eb59fccb75aa9755a758e804a3598a52c6ce67db34250849fa60f80e8cbc6d6b7a0beb60cc6e1e34cdcbd969d4','Admin'),(2,'Resident1','resident1@umd.edu','scrypt:32768:8:1$U2XzVOzxdUaIOl9j$5f3dc6a2cc29f1a82d4d03e7109fd51833a8a80090a7339d14370a0f1acb60047888c9c7ecd42d82e8359aca4fec33c8817869f0f8096c8ab8c5325aeffdad61','Resident'),(3,'Staff1','staff1@umd.edu','scrypt:32768:8:1$TXOwFe5N00ygkQxq$e455c323077ba577624d34b8c611e925ef8df70d2ef3396c351aad7e2cc051c1ae08686f8640581717a46b9b67e1d1c11ed1dc7b7391efab6f4d3f0e5e682b20','Staff');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-04-06 13:45:34
