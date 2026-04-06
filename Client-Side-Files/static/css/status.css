@@ -1,0 +1,480 @@
+@import url("figma-header-admin.css");
+@import url("figma-fullbleed.css");
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)),
+    url("../images/background0.png") center / cover no-repeat fixed;
+}
+
+.pr-04-application-status-process-1-3-decision-updated-records,
+.pr-04-application-status-process-1-3-decision-updated-records * {
+  box-sizing: border-box;
+}
+.pr-04-application-status-process-1-3-decision-updated-records {
+  background: transparent;
+  height: 100vh;
+  min-height: 1024px;
+  position: relative;
+  overflow-x: hidden;
+}
+.background {
+  opacity: 0.7;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+}
+.header {
+  background: #b3b3b3;
+  opacity: 0.85;
+  width: 100%;
+  height: 93px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.action-items {
+  width: 430px;
+  height: 66px;
+  position: absolute;
+  left: 930px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.image-1 {
+  width: 109px;
+  height: 66px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
+  object-fit: cover;
+  aspect-ratio: 109/66;
+}
+.logout {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
+}
+.role-indicator {
+  background: #757575;
+  border-radius: 999px;
+  min-width: 140px;
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+.logo {
+  width: 205px;
+  height: 105px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 205/105;
+}
+.application-status {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 426px;
+  top: 20px;
+  width: 501px;
+  height: 66px;
+}
+.sidebar {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 244px;
+  height: calc(100% - 93px);
+  min-height: 931px;
+  position: absolute;
+  left: 0px;
+  top: 93px;
+}
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 261px;
+  position: absolute;
+  left: 26px;
+  top: 240px;
+}
+.nav-buttons a {
+  font-size: 22px;
+  line-height: 1.2;
+}
+.floor-plans {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.apply {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.application-status2 {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.frame-7 {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 1074px;
+  position: absolute;
+  left: 297px;
+  top: 140px;
+}
+.frame-6 {
+  display: flex;
+  flex-direction: column;
+  gap: 43px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.rectangle-2 {
+  background: #d9d9d9;
+  opacity: 0.8;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 139px;
+  position: relative;
+}
+.rectangle-5 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 194px;
+  position: relative;
+}
+.rectangle-6 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 292px;
+  position: relative;
+}
+.application-id {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  position: absolute;
+  left: 18px;
+  top: 86px;
+  width: 340px;
+  height: 29px;
+}
+.application-submitted {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 65px;
+  top: 340px;
+  width: 174px;
+  height: 18px;
+}
+.deposit-paid {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 359px;
+  top: 340px;
+  width: 98px;
+  height: 18px;
+}
+.under-review {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 602px;
+  top: 344px;
+  width: 107px;
+  height: 18px;
+}
+.decision {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 871px;
+  top: 344px;
+  width: 66px;
+  height: 18px;
+}
+.status-message-card,
+.your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 18px;
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 34px;
+  right: 34px;
+  top: 494px;
+  padding: 24px 28px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  line-height: 1.55;
+}
+.status-details-messages {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  position: absolute;
+  left: 18px;
+  top: 452px;
+  width: 330px;
+  height: 28px;
+}
+.status-message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.status-message-list li {
+  line-height: 1.5;
+}
+.simple-button {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  flex-shrink: 0;
+  width: 280px;
+  height: 40px;
+  position: absolute;
+  left: 758px;
+  top: 51px;
+}
+.contact-office {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: absolute;
+  left: 9px;
+  top: 5px;
+}
+.status-under-review {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 18px;
+  top: 31px;
+  width: 332px;
+  height: 33px;
+}
+.progress-timeline {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  position: absolute;
+  left: 47px;
+  top: 221px;
+  width: 210px;
+  height: 28px;
+}
+.line-1 {
+  margin-top: -1px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px 0 0 0;
+  flex-shrink: 0;
+  width: 958.13px;
+  height: 0px;
+  position: absolute;
+  left: 51px;
+  top: 311px;
+  transform-origin: 0 0;
+  transform: rotate(0deg) scale(1, 1);
+}
+.ellipse-2 {
+  background: #818080;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 140px;
+  top: 288px;
+}
+.ellipse-3 {
+  background: #818080;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 388px;
+  top: 288px;
+}
+.ellipse-4 {
+  background: #322cd1;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 636px;
+  top: 288px;
+}
+.ellipse-5 {
+  background: #818080;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 884px;
+  top: 288px;
+}
+.bottom-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.simple-button2 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 280px;
+  height: 60px;
+  position: relative;
+}
+.back-to-floor-plans {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  position: relative;
+}
+.email-confirmation {
+  color: #000000;
+  text-align: center;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.email-confirmation:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.email-confirmation:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.45);
+  outline-offset: 2px;
+}
+
+.email-confirmation:active {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+}

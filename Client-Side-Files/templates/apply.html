@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/apply.css') }}">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="pr-02-lease-application-form-process-1-2">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('floorplan') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Application</h1>
+      </div>
+      <div class="header-right">
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator"><span class="user-role">Prospective Resident</span></div>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+    <div class="sidebar"></div>
+    <div class="nav-btns">
+      <div class="nav-buttons">
+        <a href="{{ url_for('floorplan') }}" class="floor-plans">Floor plans</a>
+        <a href="{{ url_for('apply') }}" class="apply">Apply</a>
+        <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
+      </div>
+    </div>
+    <div class="page">
+      <div class="frame-2">
+        <div class="rectangle-5"></div>
+        <div class="form-content">
+          <div class="move-in-date">Move-In-Date</div>
+          <div class="preferred-floor-plan-unit">Preferred Floor plan/Unit</div>
+          <div class="rectangle-9">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="emergency contact number">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-10"></div>
+          <input type="file" id="upload-id-file" class="upload-id-file" accept="image/*,application/pdf" hidden />
+          <button type="button" class="upload-id-button" id="upload-id-button">Upload ID</button>
+          <div class="rectangle-16"></div>
+          <input type="file" id="upload-doc-file" class="upload-doc-file" accept="image/*,application/pdf,.doc,.docx,.txt" multiple hidden />
+          <button type="button" class="upload-doc-button" id="upload-doc-button">Upload Documents</button>
+          <div class="rectangle-11"></div>
+          <div class="rectangle-8">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="floor plan">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-7">
+            <form>
+              <div class="mb-3">
+              <input type="email" class="form-control" id="Email">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-6">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="full-name">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-12">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="Student Id">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-13">
+            <form>
+              <div class="mb-3">
+              <input type="tel" class="form-control" id="phone-number">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-14">
+            <form>
+              <div class="mb-3">
+              <input type="date" class="form-control" id="move-in-date">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-15">
+            <form>
+              <div class="mb-3">
+              <input type="tel" class="form-control" id="emergency-contact-phone">
+              </div>
+            </form>
+          </div>
+          <div class="notes-optional">Notes (optional)
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control1" id="notes" placeholder="Any additional information you'd like to provide">
+              </div>
+            </form>
+          </div>
+          <div class="uploads">Uploads</div>
+          <div class="upload-id-placeholder">Upload ID</div>
+          <div class="upload-supporting-documents">Upload Supporting Documents</div>
+          <div class="emergency-contact-name">Emergency Contact Name</div>
+          <div class="full-name">Full Name</div>
+          <div class="email">Email</div>
+          <div class="student-id">Student ID</div>
+          <div class="phone-number">Phone Number</div>
+          <div class="emergency-contact-phone">Emergency Contact Phone</div>
+        </div>
+      </div>
+      <div class="bottom-btns">
+        <div class="simple-button">
+          <a href="{{ url_for('deposit') }}" class="submit-application">Submit Application</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    (function () {
+      function wireUpload(buttonId, inputId, labelPrefix) {
+        var btn = document.getElementById(buttonId);
+        var input = document.getElementById(inputId);
+        if (!btn || !input) return;
+
+        btn.addEventListener('click', function () {
+          input.click();
+        });
+
+        input.addEventListener('change', function () {
+          var files = input.files ? Array.from(input.files) : [];
+          if (files.length === 0) return;
+          if (files.length === 1) btn.textContent = labelPrefix + files[0].name;
+          else btn.textContent = labelPrefix + files.length + ' files selected';
+        });
+      }
+
+      wireUpload('upload-id-button', 'upload-id-file', 'ID: ');
+      wireUpload('upload-doc-button', 'upload-doc-file', 'Docs: ');
+    })();
+  </script>
+    </div>
+</body>
+</html>
