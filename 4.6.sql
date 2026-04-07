@@ -2,10 +2,13 @@ CREATE DATABASE IF NOT EXISTS `407_courtyards`;
 USE `407_courtyards`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS 'lease_renewals';
+DROP TABLE IF EXISTS 'lease_documents';
 DROP TABLE IF EXISTS `staff_schedule`;
 DROP TABLE IF EXISTS `work_orders`;
 DROP TABLE IF EXISTS `maintenance_requests`;
 DROP TABLE IF EXISTS `payments`;
+DROP TABLE IF EXISTS `payment-methods`;
 DROP TABLE IF EXISTS `leases`;
 DROP TABLE IF EXISTS `applications`;
 DROP TABLE IF EXISTS `units`;
@@ -66,15 +69,17 @@ CREATE TABLE `applications` (
 );
 
 CREATE TABLE `leases` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `lease_code` VARCHAR(20) NOT NULL,
-  `resident_user_id` INT NOT NULL,
-  `unit_id` INT NOT NULL,
-  `start_date` DATE NOT NULL,
-  `end_date` DATE NOT NULL,
-  `monthly_rent` DECIMAL(10, 2) NOT NULL,
-  `security_deposit` DECIMAL(10, 2) NOT NULL,
-  `status` ENUM('Pending', 'Active', 'Ended') NOT NULL DEFAULT 'Active',
+  `id`               INT           NOT NULL AUTO_INCREMENT,
+  `lease_code`       VARCHAR(20)   NOT NULL,
+  `resident_user_id` INT           NOT NULL,
+  `unit_id`          INT           NOT NULL,
+  `start_date`       DATE          NOT NULL,
+  `end_date`         DATE          NOT NULL,       
+  `monthly_rent`     DECIMAL(10,2) NOT NULL,
+  `security_deposit` DECIMAL(10,2) NOT NULL,
+  `balance_due`      DECIMAL(10,2) NOT NULL DEFAULT 0.00,   
+  `next_due_date`    DATE          DEFAULT NULL,             
+  `status`           ENUM('Pending', 'Active', 'Ended') NOT NULL DEFAULT 'Active',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_leases_code` (`lease_code`),
   CONSTRAINT `fk_leases_user`
@@ -83,37 +88,62 @@ CREATE TABLE `leases` (
     FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`)
 );
 
+CREATE TABLE `payment_methods` (
+  `id`               INT          NOT NULL AUTO_INCREMENT,
+  `resident_user_id` INT          NOT NULL,
+  `method_type`      ENUM('Card', 'Bank Transfer') NOT NULL,  
+  `account_type`     VARCHAR(50)  DEFAULT NULL,              
+  `last_four`        CHAR(4)      NOT NULL,                 
+  `expiration`       VARCHAR(10)  DEFAULT NULL,               
+  `routing_number`   VARCHAR(20)  DEFAULT NULL,              
+  `billing_address`  VARCHAR(255) DEFAULT NULL,               
+  `billing_zip`      VARCHAR(10)  DEFAULT NULL,               
+  `is_default`       BOOLEAN      NOT NULL DEFAULT FALSE,
+  `created_at`       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_payment_methods_user`
+    FOREIGN KEY (`resident_user_id`) REFERENCES `users` (`id`)
+);
+
 CREATE TABLE `payments` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `payment_code` VARCHAR(20) NOT NULL,
-  `lease_id` INT NOT NULL,
-  `resident_user_id` INT NOT NULL,
-  `amount` DECIMAL(10, 2) NOT NULL,
-  `method` ENUM('Card', 'Bank Transfer', 'Cash', 'Check') NOT NULL,
-  `status` ENUM('Pending', 'Paid', 'Failed', 'Resolved') NOT NULL,
-  `payment_date` DATE DEFAULT NULL,
-  `confirmation_number` VARCHAR(30) DEFAULT NULL,
-  `notes` TEXT,
+  `id`                  INT           NOT NULL AUTO_INCREMENT,
+  `payment_code`        VARCHAR(20)   NOT NULL,
+  `lease_id`            INT           NOT NULL,
+  `resident_user_id`    INT           NOT NULL,
+  `payment_method_id`   INT           DEFAULT NULL,           
+  `amount`              DECIMAL(10,2) NOT NULL,
+  `method`              ENUM('Card', 'Bank Transfer', 'Cash', 'Check') NOT NULL,
+  `status`              ENUM('Pending', 'Paid', 'Failed', 'Resolved') NOT NULL,
+  `payment_date`        DATE          DEFAULT NULL,
+  `confirmation_number` VARCHAR(30)   DEFAULT NULL,
+  `authorized`          BOOLEAN       NOT NULL DEFAULT FALSE,  
+  `notes`               TEXT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_payments_code` (`payment_code`),
   CONSTRAINT `fk_payments_lease`
     FOREIGN KEY (`lease_id`) REFERENCES `leases` (`id`),
   CONSTRAINT `fk_payments_user`
-    FOREIGN KEY (`resident_user_id`) REFERENCES `users` (`id`)
+    FOREIGN KEY (`resident_user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_payments_method`
+    FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`)
 );
 
 CREATE TABLE `maintenance_requests` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `request_code` VARCHAR(20) NOT NULL,
-  `resident_user_id` INT NOT NULL,
-  `lease_id` INT NOT NULL,
-  `category` VARCHAR(100) NOT NULL,
-  `issue_title` VARCHAR(255) NOT NULL,
-  `description` TEXT NOT NULL,
-  `priority` ENUM('Low', 'Medium', 'High', 'Urgent') NOT NULL,
-  `status` ENUM('Open', 'Assigned', 'In Progress', 'Closed') NOT NULL DEFAULT 'Open',
-  `created_at` DATETIME NOT NULL,
-  `attachment_name` VARCHAR(255) DEFAULT NULL,
+  `id`               INT          NOT NULL AUTO_INCREMENT,
+  `request_code`     VARCHAR(20)  NOT NULL,                   
+  `resident_user_id` INT          NOT NULL,
+  `lease_id`         INT          NOT NULL,
+  `category`         VARCHAR(100) NOT NULL,
+  `issue_title`      VARCHAR(255) NOT NULL,                   
+  `description`      TEXT         NOT NULL,
+  `priority`         ENUM('Low', 'Medium', 'High', 'Urgent') NOT NULL,  
+  `location_room`    VARCHAR(150) DEFAULT NULL,               
+  `access_time`      ENUM('Morning', 'Afternoon', 'Evening', 'Any') DEFAULT NULL,
+  `access_notes`     TEXT         DEFAULT NULL,               
+  `status`           ENUM('Open', 'Assigned', 'In Progress', 'Closed')
+                     NOT NULL DEFAULT 'Open',                
+  `created_at`       DATETIME     NOT NULL,                   
+  `attachment_name`  VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_maintenance_requests_code` (`request_code`),
   CONSTRAINT `fk_requests_user`
@@ -150,6 +180,36 @@ CREATE TABLE `staff_schedule` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_staff_schedule_user`
     FOREIGN KEY (`staff_user_id`) REFERENCES `users` (`id`)
+);
+
+CREATE TABLE `lease_documents` (
+  `id`            INT          NOT NULL AUTO_INCREMENT,
+  `lease_id`      INT          NOT NULL,
+  `document_name` VARCHAR(255) NOT NULL,
+  `document_type` ENUM('Lease', 'Addendum', 'Notice', 'Other') NOT NULL DEFAULT 'Notice',
+  `document_date` DATE         DEFAULT NULL,
+  `file_path`     VARCHAR(500) DEFAULT NULL,
+  `uploaded_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_docs_lease`
+    FOREIGN KEY (`lease_id`) REFERENCES `leases` (`id`)
+);
+
+CREATE TABLE `lease_renewals` (
+  `id`               INT           NOT NULL AUTO_INCREMENT,
+  `lease_id`         INT           NOT NULL,
+  `status`           ENUM('Pending', 'Offered', 'Accepted', 'Declined', 'Expired')
+                     NOT NULL DEFAULT 'Pending',
+  `renewal_deadline` DATE          DEFAULT NULL,
+  `proposed_start`   DATE          DEFAULT NULL,
+  `proposed_end`     DATE          DEFAULT NULL,
+  `proposed_rent`    DECIMAL(10,2) DEFAULT NULL,
+  `notes`            TEXT          DEFAULT NULL,
+  `requested_at`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `responded_at`     DATETIME      DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_renewals_lease`
+    FOREIGN KEY (`lease_id`) REFERENCES `leases` (`id`)
 );
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`) VALUES
@@ -198,6 +258,14 @@ INSERT INTO `leases` (
   `status`
 ) VALUES
   (1, 'L2045', 2, 1, '2026-01-01', '2026-12-31', 1082.00, 1082.00, 'Active');
+
+INSERT INTO `payment_methods` (
+  `id`, `resident_user_id`, `method_type`, `account_type`,
+  `last_four`, `expiration`, `routing_number`,
+  `billing_address`, `billing_zip`, `is_default`
+) VALUES
+  (1, 2, 'Card',          NULL,       '4242', '08/27', NULL,        '123 Main St', '20742', TRUE),
+  (2, 2, 'Bank Transfer', 'Checking', '6789', NULL,    '021000021', '123 Main St', '20742', FALSE);
 
 INSERT INTO `payments` (
   `id`,
