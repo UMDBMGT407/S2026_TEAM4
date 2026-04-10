@@ -230,11 +230,6 @@
           </div>
 
           <div class="content-card">
-            <h2>Notes to Resident</h2>
-            <textarea id="residentNotesBox" rows="4" placeholder="Type note to resident..."></textarea>
-          </div>
-
-          <div class="content-card">
             <h2>Actions</h2>
             <div class="action-buttons">
               <button id="saveUpdateBtn" type="button">Save Update</button>
@@ -364,7 +359,6 @@
     const applyBtn = document.getElementById("applyBtn");
     const workOrderDetails = document.getElementById("workOrderDetails");
     const issueBox = document.getElementById("issueBox");
-    const residentNotesBox = document.getElementById("residentNotesBox");
     const updateStatusSelect = document.getElementById("updateStatusSelect");
     const actionMessage = document.getElementById("actionMessage");
 
@@ -385,7 +379,6 @@
       `;
 
       issueBox.value = order.issue || "";
-      residentNotesBox.value = order.notes || "";
       updateStatusSelect.value = order.status || "Open";
 
       rows.forEach((row) => row.classList.remove("selected-row"));
@@ -461,7 +454,6 @@
       if (!selectedWO || !workOrderData[selectedWO]) return;
 
       workOrderData[selectedWO].issue = issueBox.value;
-      workOrderData[selectedWO].notes = residentNotesBox.value;
       workOrderData[selectedWO].status = updateStatusSelect.value;
 
       updateTableRowStatus(selectedWO, updateStatusSelect.value);
