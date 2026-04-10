@@ -145,6 +145,7 @@
                   <a href="#" id="attachmentLink">Photo/File View/Download</a>
                 </div>
 
+                {% if is_admin_view %}
                 <h3>Assign &amp; Schedule</h3>
                 <div class="assign-grid">
                   <select id="assignUnit" class="assign-input">
@@ -166,6 +167,7 @@
 
                   <select id="statusUpdate" class="assign-input">
                     <option>Update Status</option>
+                    <option>Open</option>
                     <option>Assigned</option>
                     <option>In Progress</option>
                     <option>Closed</option>
@@ -174,9 +176,23 @@
 
                 <h4>Notes to Maintenance / Resident</h4>
                 <textarea id="notesBox" class="notes-box" placeholder="Enter notes here..."></textarea>
+                {% else %}
+                <h3>Update Status</h3>
+                <div class="assign-grid">
+                  <select id="statusUpdate" class="assign-input">
+                    <option>Update Status</option>
+                    <option>Open</option>
+                    <option>Assigned</option>
+                    <option>In Progress</option>
+                    <option>Closed</option>
+                  </select>
+                </div>
+                {% endif %}
 
                 <div class="action-buttons">
+                  {% if is_admin_view %}
                   <button id="assignBtn" class="action-btn" type="button">Assign Work Order</button>
+                  {% endif %}
                   <button id="saveBtn" class="action-btn" type="button">Save Update</button>
                   <button id="closeBtn" class="action-btn" type="button">Close WO</button>
                 </div>
@@ -276,6 +292,12 @@
       }
     ];
 
+    const statusUpdate = document.getElementById("statusUpdate");
+    const notesBox = document.getElementById("notesBox");
+    const assignBtn = document.getElementById("assignBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const closeBtn = document.getElementById("closeBtn");
+
     let filteredOrders = [...workOrders];
     let currentIndex = 0;
 
@@ -310,6 +332,12 @@
         document.getElementById("issueDescription").textContent = "No work orders match the current filters.";
         document.getElementById("attachmentLink").textContent = "";
         document.getElementById("attachmentLink").removeAttribute("href");
+        if (statusUpdate) {
+          statusUpdate.value = "Update Status";
+        }
+        if (notesBox) {
+          notesBox.value = "";
+        }
         return;
       }
 
@@ -320,6 +348,12 @@
       document.getElementById("issueDescription").textContent = order.description;
       document.getElementById("attachmentLink").textContent = order.attachment;
       document.getElementById("attachmentLink").setAttribute("href", "#");
+      if (statusUpdate) {
+        statusUpdate.value = order.status;
+      }
+      if (notesBox) {
+        notesBox.value = order.notes || "";
+      }
     }
 
     function applyFilters() {
@@ -364,15 +398,47 @@
       }
     });
 
-    document.getElementById("assignBtn").addEventListener("click", () => {
-      alert("Work order assigned.");
-    });
+    if (assignBtn) {
+      assignBtn.addEventListener("click", () => {
+        const order = filteredOrders[currentIndex];
+        if (!order) {
+          return;
+        }
 
-    document.getElementById("saveBtn").addEventListener("click", () => {
+        order.status = "Assigned";
+        renderQueue();
+        renderDetails();
+        alert("Work order assigned.");
+      });
+    }
+
+    saveBtn.addEventListener("click", () => {
+      const order = filteredOrders[currentIndex];
+      if (!order) {
+        return;
+      }
+
+      if (statusUpdate && statusUpdate.value !== "Update Status") {
+        order.status = statusUpdate.value;
+      }
+      if (notesBox) {
+        order.notes = notesBox.value;
+      }
+
+      renderQueue();
+      renderDetails();
       alert("Work order update saved.");
     });
 
-    document.getElementById("closeBtn").addEventListener("click", () => {
+    closeBtn.addEventListener("click", () => {
+      const order = filteredOrders[currentIndex];
+      if (!order) {
+        return;
+      }
+
+      order.status = "Closed";
+      renderQueue();
+      renderDetails();
       alert("Work order closed.");
     });
 
