@@ -17,6 +17,7 @@
   />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars1.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}" />
 </head>
 <body>
   <div class="workorders-page">
@@ -80,9 +81,9 @@
 
             <select id="buildingFilter" class="filter-input">
               <option value="">Building</option>
-              <option value="A">Building A</option>
-              <option value="B">Building B</option>
-              <option value="C">Building C</option>
+              {% for building in building_options %}
+              <option value="{{ building }}">{{ building }}</option>
+              {% endfor %}
             </select>
 
             <input
@@ -146,15 +147,8 @@
                 </div>
 
                 {% if is_admin_view %}
-                <h3>Assign &amp; Schedule</h3>
+                <h3>Schedule &amp; Status</h3>
                 <div class="assign-grid">
-                  <select id="assignUnit" class="assign-input">
-                    <option>Assign Unit</option>
-                    <option>Building A / Unit 2A</option>
-                    <option>Building B / Unit 3C</option>
-                    <option>Building C / Unit 1B</option>
-                  </select>
-
                   <input id="scheduleDate" class="assign-input" type="date" />
 
                   <select id="timeWindow" class="assign-input">
@@ -190,9 +184,6 @@
                 {% endif %}
 
                 <div class="action-buttons">
-                  {% if is_admin_view %}
-                  <button id="assignBtn" class="action-btn" type="button">Assign Work Order</button>
-                  {% endif %}
                   <button id="saveBtn" class="action-btn" type="button">Save Update</button>
                   <button id="closeBtn" class="action-btn" type="button">Close WO</button>
                 </div>
@@ -205,98 +196,15 @@
   </div>
 
   <script>
-    const workOrders = [
-      {
-        id: "WO501",
-        building: "A",
-        unit: "2A",
-        resident: "Maya Johnson",
-        phone: "410-555-1822",
-        issue: "Leaking sink",
-        category: "Plumbing",
-        requested: "03/11/26",
-        priority: "High",
-        status: "Open",
-        description: "Resident reported steady water leaking from the kitchen sink pipe under the cabinet.",
-        attachment: "plumbing-photo.jpg"
-      },
-      {
-        id: "WO502",
-        building: "B",
-        unit: "3C",
-        resident: "Jordan Lee",
-        phone: "410-555-9931",
-        issue: "Broken AC",
-        category: "HVAC",
-        requested: "03/10/26",
-        priority: "High",
-        status: "In Progress",
-        description: "Air conditioning unit is running but not cooling the apartment properly.",
-        attachment: "ac-unit-ticket.pdf"
-      },
-      {
-        id: "WO503",
-        building: "C",
-        unit: "1B",
-        resident: "Ava Williams",
-        phone: "410-555-6721",
-        issue: "Light fixture out",
-        category: "Electrical",
-        requested: "03/09/26",
-        priority: "Low",
-        status: "Open",
-        description: "Bedroom ceiling light fixture is not turning on even after bulb replacement.",
-        attachment: "electrical-note.docx"
-      },
-      {
-        id: "WO504",
-        building: "A",
-        unit: "4D",
-        resident: "Marcus Lee",
-        phone: "410-555-1144",
-        issue: "Door won’t lock",
-        category: "Security",
-        requested: "03/08/26",
-        priority: "High",
-        status: "Assigned",
-        description: "Front door lock sticks and does not fully engage when closed.",
-        attachment: "door-lock-photo.png"
-      },
-      {
-        id: "WO505",
-        building: "B",
-        unit: "2F",
-        resident: "Jada Thompson",
-        phone: "410-555-8888",
-        issue: "Clogged drain",
-        category: "Plumbing",
-        requested: "03/07/26",
-        priority: "Medium",
-        status: "Open",
-        description: "Bathroom sink draining slowly and backing up after use.",
-        attachment: "drain-request.jpg"
-      },
-      {
-        id: "WO506",
-        building: "C",
-        unit: "5A",
-        resident: "Noah Carter",
-        phone: "410-555-3201",
-        issue: "Window crack",
-        category: "General Repair",
-        requested: "03/06/26",
-        priority: "Low",
-        status: "Closed",
-        description: "Resident noticed a crack in the bedroom window pane after cold weather.",
-        attachment: "window-report.pdf"
-      }
-    ];
+    const workOrders = {{ work_orders | tojson }};
+    const workOrderUpdateUrl = {{ url_for('work_order_update') | tojson }};
 
     const statusUpdate = document.getElementById("statusUpdate");
     const notesBox = document.getElementById("notesBox");
-    const assignBtn = document.getElementById("assignBtn");
     const saveBtn = document.getElementById("saveBtn");
     const closeBtn = document.getElementById("closeBtn");
+    const scheduleDate = document.getElementById("scheduleDate");
+    const timeWindow = document.getElementById("timeWindow");
 
     let filteredOrders = [...workOrders];
     let currentIndex = 0;
@@ -354,6 +262,12 @@
       if (notesBox) {
         notesBox.value = order.notes || "";
       }
+      if (scheduleDate) {
+        scheduleDate.value = order.scheduled_date_iso || "";
+      }
+      if (timeWindow && order.time_window) {
+        timeWindow.value = order.time_window;
+      }
     }
 
     function applyFilters() {
@@ -398,48 +312,62 @@
       }
     });
 
-    if (assignBtn) {
-      assignBtn.addEventListener("click", () => {
-        const order = filteredOrders[currentIndex];
-        if (!order) {
-          return;
-        }
+    function persistWorkOrder(newStatus) {
+      const order = filteredOrders[currentIndex];
+      if (!order) {
+        return;
+      }
 
-        order.status = "Assigned";
-        renderQueue();
-        renderDetails();
-        alert("Work order assigned.");
-      });
+      const statusToSave =
+        newStatus ||
+        (statusUpdate && statusUpdate.value !== "Update Status" ? statusUpdate.value : order.status);
+      const payload = {
+        work_order_code: order.id,
+        status: statusToSave,
+        notes: notesBox ? notesBox.value : order.notes || "",
+      };
+      if (scheduleDate && scheduleDate.value) {
+        payload.scheduled_date = scheduleDate.value;
+      }
+      if (timeWindow && timeWindow.value !== "Time Window") {
+        payload.time_window = timeWindow.value;
+      }
+
+      fetch(workOrderUpdateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify(payload),
+      })
+        .then((res) => res.json().then((data) => ({ res, data })))
+        .then(({ res, data }) => {
+          if (!res.ok) {
+            alert(data.error || "Could not update work order.");
+            return;
+          }
+          order.status = statusToSave;
+          order.notes = payload.notes;
+          if (payload.scheduled_date) order.scheduled_date_iso = payload.scheduled_date;
+          if (payload.time_window) order.time_window = payload.time_window;
+          renderQueue();
+          renderDetails();
+          alert(data.message || "Work order update saved.");
+        })
+        .catch(() => {
+          alert("Could not update work order.");
+        });
     }
 
     saveBtn.addEventListener("click", () => {
-      const order = filteredOrders[currentIndex];
-      if (!order) {
+      if (statusUpdate && statusUpdate.value !== "Update Status") {
+        persistWorkOrder(statusUpdate.value);
         return;
       }
-
-      if (statusUpdate && statusUpdate.value !== "Update Status") {
-        order.status = statusUpdate.value;
-      }
-      if (notesBox) {
-        order.notes = notesBox.value;
-      }
-
-      renderQueue();
-      renderDetails();
-      alert("Work order update saved.");
+      persistWorkOrder();
     });
 
     closeBtn.addEventListener("click", () => {
-      const order = filteredOrders[currentIndex];
-      if (!order) {
-        return;
-      }
-
-      order.status = "Closed";
-      renderQueue();
-      renderDetails();
-      alert("Work order closed.");
+      persistWorkOrder("Closed");
     });
 
     renderQueue();
