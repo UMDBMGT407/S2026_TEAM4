@@ -15,6 +15,7 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars2.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 </head>
 <body>
   <div class="admin-page">
@@ -50,19 +51,19 @@
       <section class="summary-row">
         <div class="summary-card">
           <p>Assigned Open</p>
-          <h3>6</h3>
+          <h3>{{ summary.assigned_open }}</h3>
           <span>details</span>
         </div>
 
         <div class="summary-card">
           <p>Due Today</p>
-          <h3>2</h3>
+          <h3>{{ summary.due_today }}</h3>
           <span>details</span>
         </div>
 
         <div class="summary-card">
           <p>Completed (7d)</p>
-          <h3>14</h3>
+          <h3>{{ summary.closed }}</h3>
           <span>details</span>
         </div>
       </section>
@@ -76,7 +77,7 @@
             <option value="Open">Open</option>
             <option value="Assigned">Assigned</option>
             <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            <option value="Closed">Closed</option>
           </select>
 
           <select id="priorityFilter">
@@ -112,86 +113,20 @@
                 </thead>
 
                 <tbody id="workOrdersTable">
-                  <tr data-wo="WO501" data-status="Open" data-priority="High">
-                    <td>WO501</td>
-                    <td>101A</td>
-                    <td>Leaking Sink</td>
-                    <td>High</td>
-                    <td>Open</td>
-                    <td>03/14/26</td>
+                  {% for order in work_orders %}
+                  <tr data-wo="{{ order.id }}" data-status="{{ order.status }}" data-priority="{{ order.priority }}">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.unit }}</td>
+                    <td>{{ order.issue }}</td>
+                    <td>{{ order.priority }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.due }}</td>
                   </tr>
-                  <tr data-wo="WO502" data-status="Assigned" data-priority="Medium">
-                    <td>WO502</td>
-                    <td>235B</td>
-                    <td>Broken Heater</td>
-                    <td>Medium</td>
-                    <td>Assigned</td>
-                    <td>03/15/26</td>
+                  {% else %}
+                  <tr>
+                    <td colspan="6">No assigned work orders found.</td>
                   </tr>
-                  <tr data-wo="WO503" data-status="In Progress" data-priority="Low">
-                    <td>WO503</td>
-                    <td>402C</td>
-                    <td>Light Flickering</td>
-                    <td>Low</td>
-                    <td>In Progress</td>
-                    <td>03/16/26</td>
-                  </tr>
-                  <tr data-wo="WO504" data-status="Assigned" data-priority="Urgent">
-                    <td>WO504</td>
-                    <td>118D</td>
-                    <td>No Hot Water</td>
-                    <td>Urgent</td>
-                    <td>Assigned</td>
-                    <td>03/14/26</td>
-                  </tr>
-                  <tr data-wo="WO505" data-status="Completed" data-priority="Medium">
-                    <td>WO505</td>
-                    <td>320A</td>
-                    <td>Window Lock</td>
-                    <td>Medium</td>
-                    <td>Completed</td>
-                    <td>03/12/26</td>
-                  </tr>
-                  <tr data-wo="WO506" data-status="Open" data-priority="High">
-                    <td>WO506</td>
-                    <td>214C</td>
-                    <td>Clogged Toilet</td>
-                    <td>High</td>
-                    <td>Open</td>
-                    <td>03/17/26</td>
-                  </tr>
-                  <tr data-wo="WO507" data-status="In Progress" data-priority="Urgent">
-                    <td>WO507</td>
-                    <td>509B</td>
-                    <td>Power Outage</td>
-                    <td>Urgent</td>
-                    <td>In Progress</td>
-                    <td>03/14/26</td>
-                  </tr>
-                  <tr data-wo="WO508" data-status="Assigned" data-priority="Medium">
-                    <td>WO508</td>
-                    <td>126B</td>
-                    <td>Cabinet Hinge Loose</td>
-                    <td>Medium</td>
-                    <td>Assigned</td>
-                    <td>03/18/26</td>
-                  </tr>
-                  <tr data-wo="WO509" data-status="Completed" data-priority="Low">
-                    <td>WO509</td>
-                    <td>417D</td>
-                    <td>Smoke Detector Battery</td>
-                    <td>Low</td>
-                    <td>Completed</td>
-                    <td>03/11/26</td>
-                  </tr>
-                  <tr data-wo="WO510" data-status="Open" data-priority="Urgent">
-                    <td>WO510</td>
-                    <td>223A</td>
-                    <td>Water Leak Bathroom</td>
-                    <td>Urgent</td>
-                    <td>Open</td>
-                    <td>03/14/26</td>
-                  </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
@@ -204,13 +139,17 @@
           <div class="content-card">
             <h2>Work Order Details</h2>
             <div id="workOrderDetails">
-              <p><strong>WO #:</strong> WO501</p>
-              <p><strong>Unit:</strong> 101A</p>
-              <p><strong>Resident:</strong> Ava Johnson / 240-555-1022</p>
-              <p><strong>Category:</strong> Plumbing</p>
-              <p><strong>Requested:</strong> 03/12/2026</p>
-              <p><strong>Priority:</strong> High</p>
-              <p><strong>Status:</strong> Open</p>
+              {% if first_order %}
+              <p><strong>WO #:</strong> {{ first_order.id }}</p>
+              <p><strong>Unit:</strong> {{ first_order.unit }}</p>
+              <p><strong>Resident:</strong> {{ first_order.resident }} / {{ first_order.phone }}</p>
+              <p><strong>Category:</strong> {{ first_order.category }}</p>
+              <p><strong>Requested:</strong> {{ first_order.requested }}</p>
+              <p><strong>Priority:</strong> {{ first_order.priority }}</p>
+              <p><strong>Status:</strong> {{ first_order.status }}</p>
+              {% else %}
+              <p>No work order selected.</p>
+              {% endif %}
             </div>
           </div>
 
@@ -225,7 +164,7 @@
               <option value="Open">Open</option>
               <option value="Assigned">Assigned</option>
               <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+              <option value="Closed">Closed</option>
             </select>
           </div>
 
@@ -246,112 +185,11 @@
   </div>
 
   <script>
-    const workOrderData = {
-      WO501: {
-        unit: "101A",
-        resident: "Ava Johnson / 240-555-1022",
-        category: "Plumbing",
-        requested: "03/12/2026",
-        priority: "High",
-        status: "Open",
-        issue: "Resident reported water leaking under the sink.",
-        notes: "Maintenance scheduled for tomorrow."
-      },
-      WO502: {
-        unit: "235B",
-        resident: "Noah Smith / 301-555-2104",
-        category: "HVAC",
-        requested: "03/11/2026",
-        priority: "Medium",
-        status: "Assigned",
-        issue: "Resident reported that the heater is not working properly.",
-        notes: "Resident is available after 2 PM."
-      },
-      WO503: {
-        unit: "402C",
-        resident: "Mia Brown / 443-555-3308",
-        category: "Electrical",
-        requested: "03/10/2026",
-        priority: "Low",
-        status: "In Progress",
-        issue: "Bedroom light is flickering and may need rewiring.",
-        notes: "Bring replacement bulb and tools."
-      },
-      WO504: {
-        unit: "118D",
-        resident: "James Carter / 202-555-4410",
-        category: "Plumbing",
-        requested: "03/13/2026",
-        priority: "Urgent",
-        status: "Assigned",
-        issue: "Resident has no hot water in the apartment.",
-        notes: "Please prioritize this request."
-      },
-      WO505: {
-        unit: "320A",
-        resident: "Sarah Lee / 410-555-8872",
-        category: "Security",
-        requested: "03/09/2026",
-        priority: "Medium",
-        status: "Completed",
-        issue: "Window lock would not close properly.",
-        notes: "Repair completed and resident informed."
-      },
-      WO506: {
-        unit: "214C",
-        resident: "Daniel White / 240-555-6631",
-        category: "Plumbing",
-        requested: "03/13/2026",
-        priority: "High",
-        status: "Open",
-        issue: "Toilet is clogged and not flushing correctly.",
-        notes: "Resident requested morning visit."
-      },
-      WO507: {
-        unit: "509B",
-        resident: "Olivia Green / 301-555-7719",
-        category: "Electrical",
-        requested: "03/14/2026",
-        priority: "Urgent",
-        status: "In Progress",
-        issue: "Power outage affecting living room and kitchen outlets.",
-        notes: "Electrician dispatched."
-      },
-      WO508: {
-        unit: "126B",
-        resident: "Chris Hall / 240-555-1982",
-        category: "Carpentry",
-        requested: "03/15/2026",
-        priority: "Medium",
-        status: "Assigned",
-        issue: "Kitchen cabinet hinge is loose and the door will not close.",
-        notes: "Resident requested repair before weekend."
-      },
-      WO509: {
-        unit: "417D",
-        resident: "Nina Patel / 301-555-2257",
-        category: "Safety",
-        requested: "03/08/2026",
-        priority: "Low",
-        status: "Completed",
-        issue: "Smoke detector battery replacement needed.",
-        notes: "Battery replaced and tested."
-      },
-      WO510: {
-        unit: "223A",
-        resident: "Marcus Reed / 410-555-6741",
-        category: "Plumbing",
-        requested: "03/14/2026",
-        priority: "Urgent",
-        status: "Open",
-        issue: "Water leak near bathroom sink causing floor puddle.",
-        notes: "Resident asked for same-day response."
-      }
-    };
+    const workOrderData = {{ work_orders_by_code | tojson }};
+    const workOrderUpdateUrl = {{ url_for('work_order_update') | tojson }};
+    let selectedWO = {{ first_order.id | tojson if first_order else "null" }};
 
-    let selectedWO = "WO501";
-
-    const rows = document.querySelectorAll("#workOrdersTable tr");
+    const rows = document.querySelectorAll("#workOrdersTable tr[data-wo]");
     const statusFilter = document.getElementById("statusFilter");
     const priorityFilter = document.getElementById("priorityFilter");
     const unitFilter = document.getElementById("unitFilter");
@@ -364,29 +202,29 @@
 
     function loadWorkOrder(woId) {
       const order = workOrderData[woId];
-      if (!order) return;
+      if (!order) {
+        selectedWO = null;
+        workOrderDetails.innerHTML = "<p>No work order selected.</p>";
+        issueBox.value = "";
+        return;
+      }
 
       selectedWO = woId;
-
       workOrderDetails.innerHTML = `
         <p><strong>WO #:</strong> ${woId}</p>
         <p><strong>Unit:</strong> ${order.unit}</p>
-        <p><strong>Resident:</strong> ${order.resident}</p>
+        <p><strong>Resident:</strong> ${order.resident} / ${order.phone}</p>
         <p><strong>Category:</strong> ${order.category}</p>
         <p><strong>Requested:</strong> ${order.requested}</p>
         <p><strong>Priority:</strong> ${order.priority}</p>
         <p><strong>Status:</strong> ${order.status}</p>
       `;
-
-      issueBox.value = order.issue || "";
+      issueBox.value = order.description || order.issue || "";
       updateStatusSelect.value = order.status || "Open";
 
       rows.forEach((row) => row.classList.remove("selected-row"));
-
       const selectedRow = document.querySelector(`[data-wo="${woId}"]`);
-      if (selectedRow) {
-        selectedRow.classList.add("selected-row");
-      }
+      if (selectedRow) selectedRow.classList.add("selected-row");
     }
 
     function filterWorkOrders() {
@@ -400,12 +238,10 @@
         const rowUnit = row.cells[1].textContent.toLowerCase();
         const rowStatus = row.getAttribute("data-status");
         const rowPriority = row.getAttribute("data-priority");
-
         const matchesStatus = statusValue === "all" || rowStatus === statusValue;
         const matchesPriority = priorityValue === "all" || rowPriority === priorityValue;
         const matchesUnit = unitValue === "" || rowUnit.includes(unitValue);
         const matchesWO = woValue === "" || rowWO.includes(woValue);
-
         row.style.display =
           matchesStatus && matchesPriority && matchesUnit && matchesWO ? "" : "none";
       });
@@ -420,30 +256,48 @@
       });
     }
 
-    function applyStatusToSelectedWO(newStatus) {
+    function persistSelectedWO(newStatus) {
       if (!selectedWO || !workOrderData[selectedWO]) return;
+      const payload = {
+        work_order_code: selectedWO,
+        status: newStatus,
+        notes: issueBox.value,
+      };
 
-      workOrderData[selectedWO].status = newStatus;
-      updateStatusSelect.value = newStatus;
-      updateTableRowStatus(selectedWO, newStatus);
-      loadWorkOrder(selectedWO);
-      filterWorkOrders();
-
-      actionMessage.textContent = `Status changed to ${newStatus}.`;
+      fetch(workOrderUpdateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify(payload),
+      })
+        .then((res) => res.json().then((data) => ({ res, data })))
+        .then(({ res, data }) => {
+          if (!res.ok) {
+            actionMessage.textContent = data.error || "Could not update work order.";
+            return;
+          }
+          workOrderData[selectedWO].status = newStatus;
+          workOrderData[selectedWO].description = issueBox.value;
+          updateTableRowStatus(selectedWO, newStatus);
+          loadWorkOrder(selectedWO);
+          filterWorkOrders();
+          actionMessage.textContent = data.message || "Update saved.";
+        })
+        .catch(() => {
+          actionMessage.textContent = "Could not update work order.";
+        });
     }
 
     rows.forEach((row) => {
       row.addEventListener("click", () => {
-        const woId = row.getAttribute("data-wo");
-        loadWorkOrder(woId);
+        loadWorkOrder(row.getAttribute("data-wo"));
         actionMessage.textContent = "";
       });
     });
 
     updateStatusSelect.addEventListener("change", () => {
-      applyStatusToSelectedWO(updateStatusSelect.value);
+      actionMessage.textContent = "Click Save Update to write this status to MySQL.";
     });
-
     applyBtn.addEventListener("click", filterWorkOrders);
     statusFilter.addEventListener("change", filterWorkOrders);
     priorityFilter.addEventListener("change", filterWorkOrders);
@@ -451,24 +305,15 @@
     woFilter.addEventListener("input", filterWorkOrders);
 
     document.getElementById("saveUpdateBtn").addEventListener("click", () => {
-      if (!selectedWO || !workOrderData[selectedWO]) return;
-
-      workOrderData[selectedWO].issue = issueBox.value;
-      workOrderData[selectedWO].status = updateStatusSelect.value;
-
-      updateTableRowStatus(selectedWO, updateStatusSelect.value);
-      loadWorkOrder(selectedWO);
-      filterWorkOrders();
-
-      actionMessage.textContent = "Update saved.";
+      persistSelectedWO(updateStatusSelect.value || "Open");
     });
 
     document.getElementById("closeWorkOrderBtn").addEventListener("click", () => {
-      applyStatusToSelectedWO("Completed");
-      actionMessage.textContent = "Work order closed.";
+      updateStatusSelect.value = "Closed";
+      persistSelectedWO("Closed");
     });
 
-    loadWorkOrder("WO501");
+    if (selectedWO) loadWorkOrder(selectedWO);
   </script>
 
 </body>
