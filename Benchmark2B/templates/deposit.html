@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/deposit.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   
   
   <style>
@@ -108,6 +109,8 @@
         <div class="application-id-deposit-amount-due-date">
           Application ID: {{ application_code or "—" }}
           <br />
+          Status: {{ application.status if application else "No application found" }}
+          <br />
           Deposit Amount: ${{ deposit_amount }}
           <br />
           Due Date: {{ due_date_display or "—" }}
@@ -120,10 +123,40 @@
       <div class="frame-4">
         </div>
         <div class="simple-button2">
-          <a href= "{{ url_for('status_page') }}" class="pay-deposit">Pay Deposit</a>
+          <a href="{{ url_for('status_page') }}" class="pay-deposit" id="pay-deposit">Pay Deposit</a>
         </div>
       </div>
     </div>
   </div>
+  <script>
+    const DEPOSIT_PAY_URL = {{ url_for('deposit_pay') | tojson }};
+    const payDeposit = document.getElementById("pay-deposit");
+    if (payDeposit) {
+      payDeposit.addEventListener("click", (event) => {
+        event.preventDefault();
+        const authorize = document.getElementById("authorize-deposit");
+        if (authorize && !authorize.checked) {
+          alert("Please authorize the deposit payment first.");
+          return;
+        }
+        fetch(DEPOSIT_PAY_URL, {
+          method: "POST",
+          credentials: "same-origin",
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not submit deposit payment.");
+              return;
+            }
+            alert(data.message || "Deposit submitted.");
+            window.location.href = data.redirect || {{ url_for('status_page') | tojson }};
+          })
+          .catch(() => {
+            alert("Could not submit deposit payment.");
+          });
+      });
+    }
+  </script>
 </body>
 </html>
