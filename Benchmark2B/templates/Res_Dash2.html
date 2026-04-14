@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Res_Dash2.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 
   <style>
     a,
@@ -70,19 +71,19 @@
 
     <div class="frame-1">
       <div class="balance-due">Balance Due</div>
-      <div class="_1-000">$1,000</div>
+      <div class="_1-000">{{ balance_due }}</div>
       <a href="{{ url_for('pay_rent') }}" class="details">View details</a>
     </div>
 
     <div class="frame-2">
       <div class="next-due-date">Next Due Date</div>
-      <div class="_03-15">03/15</div>
+      <div class="_03-15">{{ next_due_short }}</div>
       <a href="{{ url_for('pay_rent') }}" class="details">View details</a>
     </div>
 
     <div class="frame-3">
       <div class="lease-end-date">Lease End Date</div>
-      <div class="_05-31">05/31</div>
+      <div class="_05-31">{{ lease.end_date_short if lease else "—" }}</div>
       <a href="{{ url_for('lease_info') }}" class="details">View details</a>
     </div>
 
@@ -108,37 +109,23 @@
           <div>Priority</div>
         </div>
 
+        {% for request in maintenance_requests %}
         <div class="maintenance-row">
-          <div class="ticket-number">#10482</div>
-          <div>03/02</div>
-          <div>Kitchen faucet leak near sink base</div>
-          <div><span class="status-pill">Open</span></div>
-          <div><span class="priority-pill">High</span></div>
+          <div class="ticket-number">#{{ request.request_code }}</div>
+          <div>{{ request.created_display }}</div>
+          <div>{{ request.issue_title }}</div>
+          <div><span class="status-pill">{{ request.status }}</span></div>
+          <div><span class="priority-pill">{{ request.priority }}</span></div>
         </div>
-
+        {% else %}
         <div class="maintenance-row">
-          <div class="ticket-number">#10467</div>
-          <div>02/28</div>
-          <div>AC not cooling in living room</div>
-          <div><span class="status-pill">In Progress</span></div>
-          <div><span class="priority-pill">Urgent</span></div>
+          <div class="ticket-number">—</div>
+          <div>—</div>
+          <div>No maintenance requests found.</div>
+          <div><span class="status-pill">None</span></div>
+          <div><span class="priority-pill">—</span></div>
         </div>
-
-        <div class="maintenance-row">
-          <div class="ticket-number">#10451</div>
-          <div>02/24</div>
-          <div>Bedroom light flicker after switch use</div>
-          <div><span class="status-pill">Scheduled</span></div>
-          <div><span class="priority-pill">Medium</span></div>
-        </div>
-
-        <div class="maintenance-row">
-          <div class="ticket-number">#10436</div>
-          <div>02/19</div>
-          <div>Garbage disposal jam and humming</div>
-          <div><span class="status-pill">Completed</span></div>
-          <div><span class="priority-pill">Low</span></div>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
