@@ -67,63 +67,30 @@
     </div>
     <div class="account-summary">Account Summary</div>
     <div class="rectangle-5"></div>
-    <div class="expiration-routing-last-4">Expiration / Routing + Last 4</div>
-    <div class="card-number-account-number">Card Number / Account Number</div>
-    <div class="billing-zip">Billing Zip</div>
-    <div class="payment-method-card-bank">Payment Method (card/Bank)</div>
-    <div class="account-to-pay">Account to Pay</div>
-    <div class="billing-address">Billing Address</div>
-    
-    <input
-      class="payment-method-card-bank-input"
-      type="text"
-      id="payment-method-card-bank"
-      name="payment-method-card-bank"
-      placeholder="Card or Bank"
-      autocomplete="cc-type"
-    />
-    <input
-      class="account-to-pay-input"
-      type="text"
-      id="account-to-pay"
-      name="account-to-pay"
-      placeholder="Checking / Savings"
-      autocomplete="off"
-    />
-    <input
-      class="card-number-account-number-input"
-      type="text"
-      id="card-number-account-number"
-      name="card-number-account-number"
-      placeholder="Card number or account number"
-      autocomplete="cc-number"
-      inputmode="numeric"
-    />
-    <input
-      class="expiration-routing-last-4-input"
-      type="text"
-      id="expiration-routing-last-4"
-      name="expiration-routing-last-4"
-      placeholder="MM/YY or routing + last 4"
-      autocomplete="cc-exp"
-    />
-    <input
-      class="billing-zip-input"
-      type="text"
-      id="billing-zip"
-      name="billing-zip"
-      placeholder="ZIP code"
-      autocomplete="postal-code"
-      inputmode="numeric"
-    />
-    <input
-      class="billing-address-input"
-      type="text"
-      id="billing-address"
-      name="billing-address"
-      placeholder="Street address"
-      autocomplete="street-address"
-    />
+    <section class="payment-options" aria-label="Rent payment options">
+      <h2>Choose Payment Type</h2>
+      <label class="payment-option">
+        <input type="radio" name="rent-payment-type" value="one-time" checked>
+        <span>
+          <strong>One-Time Payment</strong>
+          Pay this balance once through the secure payment provider.
+        </span>
+      </label>
+      <label class="payment-option">
+        <input type="radio" name="rent-payment-type" value="recurring">
+        <span>
+          <strong>Monthly Autopay</strong>
+          Set up recurring rent payments with reminders before each charge.
+        </span>
+      </label>
+    </section>
+    <section class="payment-security-note">
+      <h2>Secure Checkout</h2>
+      <p>
+        Card and bank details are entered on the payment provider's secure checkout page.
+        The Courtyards stores only the payment status, confirmation number, and transaction ID.
+      </p>
+    </section>
     <div class="simple-button2">
       <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
     </div>
@@ -162,6 +129,46 @@
     <div class="i-authorize-this-rent-payment">
       I authorize this rent payment
     </div>
+    <div class="payment-history-panel" id="payment-history-panel" hidden>
+      <div class="payment-history-card">
+        <button type="button" class="close-history-button" id="close-history-button">Close</button>
+        <h2>Payment History</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Payment ID</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>02/01/2026</td>
+              <td>P1002</td>
+              <td>One-Time</td>
+              <td>$1,650.00</td>
+              <td>Paid</td>
+            </tr>
+            <tr>
+              <td>01/01/2026</td>
+              <td>P0984</td>
+              <td>Autopay</td>
+              <td>$1,650.00</td>
+              <td>Paid</td>
+            </tr>
+            <tr>
+              <td>12/01/2025</td>
+              <td>P0951</td>
+              <td>Autopay</td>
+              <td>$1,650.00</td>
+              <td>Paid</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   
   <script>
@@ -169,30 +176,51 @@
       const cancelBtn = document.getElementById("cancel-button");
       if (!cancelBtn) return;
 
-      const inputIds = [
-        "payment-method-card-bank",
-        "account-to-pay",
-        "card-number-account-number",
-        "expiration-routing-last-4",
-        "billing-zip",
-        "billing-address",
-      ];
+      const historyBtn = document.getElementById("view-payment-history-button");
+      const historyPanel = document.getElementById("payment-history-panel");
+      const closeHistoryBtn = document.getElementById("close-history-button");
 
       cancelBtn.addEventListener("click", function () {
-        inputIds.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el && "value" in el) el.value = "";
-        });
-
         const authorize = document.getElementById("authorize-rent-payment");
         if (authorize) authorize.checked = false;
+
+        const oneTime = document.querySelector('input[name="rent-payment-type"][value="one-time"]');
+        if (oneTime) oneTime.checked = true;
       });
 
       const submitBtn = document.getElementById("submit-payment-button");
       if (submitBtn) {
         submitBtn.addEventListener("click", function () {
-          const ok = confirm("Confirm payment submission?");
-          if (ok) alert("Payment submitted");
+          const authorize = document.getElementById("authorize-rent-payment");
+          const paymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+
+          if (!authorize || !authorize.checked) {
+            alert("Please check 'I authorize this rent payment' before continuing.");
+            return;
+          }
+
+          if (!paymentType) {
+            alert("Please choose one-time payment or monthly autopay.");
+            return;
+          }
+
+          const label = paymentType.value === "recurring" ? "monthly autopay" : "one-time payment";
+          const ok = confirm(`Continue to secure checkout for ${label}?`);
+          if (ok) {
+            alert("Next step: redirect this button to Stripe Checkout from app.py. No card or bank details are saved here.");
+          }
+        });
+      }
+
+      if (historyBtn && historyPanel) {
+        historyBtn.addEventListener("click", function () {
+          historyPanel.hidden = false;
+        });
+      }
+
+      if (closeHistoryBtn && historyPanel) {
+        closeHistoryBtn.addEventListener("click", function () {
+          historyPanel.hidden = true;
         });
       }
     })();
