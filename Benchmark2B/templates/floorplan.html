@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/floorplans.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   
   
   <style>
@@ -60,54 +61,28 @@
       <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
     </div>
     <div class="all-floorplans">
-      <div class="floorplan-card">
-        <img class="rectangle-4" src="{{ url_for('static', filename='images/PRrectangle-40.png') }}" />
-        <div class="_4-b-4-b">4B/4B</div>
-        <div class="_4-bed-4-bath-1-189-sq-ft">4 Bed / 4 Bath - 1,189 sq. ft</div>
-        <div class="_974-month">$974/Month</div>
-        <a href="{{ url_for('static', filename='images/PRrectangle-40.png') }}" target="_blank" rel="noopener" class="simple-button">
+      {% set card_classes = ["floorplan-card", "floorplan-card2", "floorplan-card3", "floorplan-card4"] %}
+      {% set image_files = ["PRrectangle-40.png", "PRrectangle-41.png", "PRrectangle-42.png", "PRrectangle-43.png"] %}
+      {% set view_button_classes = ["simple-button", "simple-button", "simple-button3", "simple-button"] %}
+      {% set apply_button_classes = ["simple-button2", "simple-button2", "simple-button4", "simple-button2"] %}
+      {% set name_classes = ["_4-b-4-b", "_4-b-2-b", "_2-b-2-b-s", "_2-b-2-b-d"] %}
+      {% set summary_classes = ["_4-bed-4-bath-1-189-sq-ft", "_4-bed-2-bath-1-493-sq-ft", "_2-bed-2-bath-785-sq-ft", "_2-bed-2-bath-991-sq-ft"] %}
+      {% set rent_classes = ["_974-month", "_888-month", "_1-082-month", "_1-118-month"] %}
+      {% for plan in floorplans[:4] %}
+      <div class="{{ card_classes[loop.index0] }}">
+        {% set image_file = image_files[loop.index0] %}
+        <img class="rectangle-4" src="{{ url_for('static', filename='images/' ~ image_file) }}" />
+        <div class="{{ name_classes[loop.index0] }}">{{ plan.name }}</div>
+        <div class="{{ summary_classes[loop.index0] }}">{{ plan.summary }}</div>
+        <div class="{{ rent_classes[loop.index0] }}">{{ plan.rent_display }}/Month</div>
+        <a href="{{ url_for('static', filename='images/' ~ image_file) }}" target="_blank" rel="noopener" class="{{ view_button_classes[loop.index0] }}">
           <div class="view">View</div>
         </a>
-        <a href="{{ url_for('apply') }}" class="simple-button2">
+        <a href="{{ url_for('apply') }}" class="{{ apply_button_classes[loop.index0] }}">
           <div class="apply2">Apply</div>
         </a>
       </div>
-      <div class="floorplan-card2">
-        <img class="rectangle-4" src="{{ url_for('static', filename='images/PRrectangle-41.png') }}" />
-        <div class="_4-b-2-b">4B/2B</div>
-        <div class="_4-bed-2-bath-1-493-sq-ft">4 Bed / 2 Bath - 1,493 sq. ft</div>
-        <div class="_888-month">$888/Month</div>
-        <a href="{{ url_for('static', filename='images/PRrectangle-41.png') }}" target="_blank" rel="noopener" class="simple-button">
-          <div class="view">View</div>
-        </a>
-        <a href="{{ url_for('apply') }}" class="simple-button2">
-          <div class="apply2">Apply</div>
-        </a>
-      </div>
-      <div class="floorplan-card3">
-        <img class="rectangle-4" src="{{ url_for('static', filename='images/PRrectangle-42.png') }}" />
-        <div class="_2-b-2-b-s">2B/2B S</div>
-        <div class="_2-bed-2-bath-785-sq-ft">2 Bed / 2 Bath - 785 sq. ft</div>
-        <div class="_1-082-month">$1,082/Month</div>
-        <a href="{{ url_for('static', filename='images/PRrectangle-42.png') }}" target="_blank" rel="noopener" class="simple-button3">
-          <div class="view">View</div>
-        </a>
-        <a href="{{ url_for('apply') }}" class="simple-button4">
-          <div class="apply2">Apply</div>
-        </a>
-      </div>
-      <div class="floorplan-card4">
-        <img class="rectangle-4" src="{{ url_for('static', filename='images/PRrectangle-43.png') }}" />
-        <div class="_2-b-2-b-d">2B/2B D</div>
-        <div class="_2-bed-2-bath-991-sq-ft">2 Bed / 2 Bath - 991 sq. ft</div>
-        <div class="_1-118-month">$1,118/Month</div>
-        <a href="{{ url_for('static', filename='images/PRrectangle-43.png') }}" target="_blank" rel="noopener" class="simple-button">
-          <div class="view">View</div>
-        </a>
-        <a href="{{ url_for('apply') }}" class="simple-button2">
-          <div class="apply2">Apply</div>
-        </a>
-      </div>
+      {% endfor %}
     </div>
   </div>
 </body>
