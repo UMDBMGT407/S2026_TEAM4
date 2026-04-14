@@ -71,7 +71,7 @@
     <div class="renewal">Renewal</div>
     <div class="rectangle-16"></div>
     <div class="simple-button2">
-      <button class="cancel" type="button" id="clear-notes-button">Clear Notes</button>
+      <a class="cancel" href="{{ url_for('res_dash2') }}">Back to Dashboard</a>
     </div>
     <div class="simple-button3">
       <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
@@ -220,8 +220,6 @@
     (function () {
       const requestBtn = document.getElementById("request-renewal-button");
       const downloadLeaseBtn = document.getElementById("download-lease-pdf-button");
-      const clearNotesBtn = document.getElementById("clear-notes-button");
-      const notesBox = document.getElementById("options-notes-textbox");
       const docButtons = document.querySelectorAll(".doc-action-button");
 
       function downloadTextFile(filename, content) {
@@ -240,12 +238,6 @@
         requestBtn.addEventListener("click", () => {
           const ok = confirm("Confirm renewal request?");
           if (ok) alert("Renewal request sent");
-        });
-      }
-
-      if (clearNotesBtn && notesBox) {
-        clearNotesBtn.addEventListener("click", () => {
-          notesBox.value = "";
         });
       }
 
