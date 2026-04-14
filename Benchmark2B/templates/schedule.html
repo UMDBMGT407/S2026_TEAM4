@@ -20,30 +20,32 @@
       <div class="header-left">
         <img src="{{ url_for('static', filename='images/logo0.png') }}" class="logo" alt="Courtyards logo">
       </div>
+
       <div class="header-center">
         <h1>Schedule</h1>
       </div>
 
       <div class="header-right">
         <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
-              <div class="container mt-4">
-    <!-- Header with Logout -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="container mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+          </div>
         </div>
       </div>
-      </div>
     </header>
+
     <aside class="sidebar">
-  <nav class="sidebar-nav">
-    <a id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
-    {% if show_payments_link %}
-    <a id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
-    {% endif %}
-    <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
-    <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
-  </nav>
-</aside>
+      <nav class="sidebar-nav">
+        <a id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
+        {% if show_payments_link %}
+        <a id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
+        {% endif %}
+        <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
+        <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
+      </nav>
+    </aside>
+
     <main class="main-content">
       <section class="summary-row">
         <div class="summary-card">
@@ -51,33 +53,38 @@
           <h3>6</h3>
           <span>March 2026</span>
         </div>
+
         <div class="summary-card">
           <p>Work Orders Today</p>
           <h3>5</h3>
           <span>assigned orders</span>
         </div>
+
         <div class="summary-card">
           <p>Open Shifts This Week</p>
           <h3>14</h3>
           <span>upcoming schedule</span>
         </div>
       </section>
+
       <section class="filters-card">
         <h2>Filters</h2>
         <div class="filters-row">
           <select id="staffFilter">
-            <option value="all">Staff</option>
+            <option value="all">Full Schedule</option>
             <option value="Chris Hall">Chris Hall</option>
             <option value="Daniel White">Daniel White</option>
             <option value="Olivia Green">Olivia Green</option>
             <option value="James Carter">James Carter</option>
             <option value="Nina Patel">Nina Patel</option>
           </select>
+
           <input id="unitFilter" type="text" placeholder="Search Unit">
           <input id="woFilter" type="text" placeholder="Search WO#">
           <button id="applyBtn" type="button">Apply</button>
         </div>
       </section>
+
       <section class="schedule-layout">
         <div class="schedule-left">
           <div class="content-card">
@@ -86,12 +93,15 @@
               <h2 id="calendarTitle">March 2026 Staff Schedule</h2>
               <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
             </div>
+
             <div class="month-grid" id="monthGrid"></div>
           </div>
         </div>
+
         <div class="schedule-right">
           <div class="content-card">
             <h2>Work Orders For Today</h2>
+
             <div id="assignmentList" class="assignment-list">
               <div class="assignment-item" data-staff="Chris Hall" data-unit="101A" data-wo="WO601">
                 <p><strong>WO601</strong> | Unit 101A</p>
@@ -99,24 +109,28 @@
                 <p>Assigned To: Chris Hall</p>
                 <p>Time Received: 8:15 AM</p>
               </div>
+
               <div class="assignment-item" data-staff="Olivia Green" data-unit="435B" data-wo="WO602">
                 <p><strong>WO602</strong> | Unit 435B</p>
                 <p>Issue: Outlet Not Working</p>
                 <p>Assigned To: Olivia Green</p>
                 <p>Time Received: 8:45 AM</p>
               </div>
+
               <div class="assignment-item" data-staff="Daniel White" data-unit="214C" data-wo="WO603">
                 <p><strong>WO603</strong> | Unit 214C</p>
                 <p>Issue: AC Not Cooling</p>
                 <p>Assigned To: Daniel White</p>
                 <p>Time Received: 9:30 AM</p>
               </div>
+
               <div class="assignment-item" data-staff="James Carter" data-unit="118D" data-wo="WO604">
                 <p><strong>WO604</strong> | Unit 118D</p>
                 <p>Issue: No Hot Water</p>
                 <p>Assigned To: James Carter</p>
                 <p>Time Received: 10:10 AM</p>
               </div>
+
               <div class="assignment-item" data-staff="Nina Patel" data-unit="320A" data-wo="WO605">
                 <p><strong>WO605</strong> | Unit 320A</p>
                 <p>Issue: Window Lock</p>
@@ -125,10 +139,12 @@
               </div>
             </div>
           </div>
+
           <div class="content-card">
             <h2>Notes</h2>
-            <textarea id="scheduleNotes" rows="6" placeholder="Add notes about today’s staff schedule or work orders..."></textarea>
+            <textarea id="scheduleNotes" rows="6" placeholder="Add notes about today's staff schedule or work orders..."></textarea>
           </div>
+
           <div class="content-card">
             <div class="schedule-actions">
               <a href="{{ url_for(back_endpoint) }}" class="back-btn" id="backLink">Back to Dashboard</a>
@@ -139,6 +155,7 @@
       </section>
     </main>
   </div>
+
   <script>
     const monthGrid = document.getElementById("monthGrid");
     const calendarTitle = document.getElementById("calendarTitle");
@@ -149,8 +166,10 @@
     const woFilter = document.getElementById("woFilter");
     const applyBtn = document.getElementById("applyBtn");
     const assignmentItems = document.querySelectorAll(".assignment-item");
+
     let currentMonth = 2;
     let currentYear = 2026;
+
     const shifts = [
       { date: "2026-03-02", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
       { date: "2026-03-03", staff: "Olivia Green", shift: "8:00 AM - 5:00 PM", className: "staff-olivia" },
@@ -185,36 +204,56 @@
       { date: "2026-04-03", staff: "Chris Hall", shift: "8:00 AM - 5:00 PM", className: "staff-chris" },
       { date: "2026-04-08", staff: "Nina Patel", shift: "10:00 AM - 7:00 PM", className: "staff-nina" }
     ];
+
     function renderCalendar(month, year) {
       const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
       ];
+
       const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const selectedStaff = staffFilter.value.toLowerCase().trim();
+
       calendarTitle.textContent = `${monthNames[month]} ${year} Staff Schedule`;
       monthGrid.innerHTML = "";
+
       dayNames.forEach((day) => {
         const head = document.createElement("div");
         head.className = "month-head";
         head.textContent = day;
         monthGrid.appendChild(head);
       });
+
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
+
       for (let i = 0; i < firstDay; i++) {
         const blank = document.createElement("div");
         blank.className = "month-cell empty-cell";
         monthGrid.appendChild(blank);
       }
+
       for (let day = 1; day <= daysInMonth; day++) {
         const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
         const cell = document.createElement("div");
         cell.className = "month-cell";
+
         const dateLabel = document.createElement("div");
         dateLabel.className = "month-date";
         dateLabel.textContent = day;
         cell.appendChild(dateLabel);
-        const dayShifts = shifts.filter((item) => item.date === dateString);
+
+        const dayShifts = shifts.filter((item) => {
+          const sameDate = item.date === dateString;
+          const sameStaff =
+            selectedStaff === "all" ||
+            selectedStaff === "" ||
+            item.staff.toLowerCase() === selectedStaff;
+
+          return sameDate && sameStaff;
+        });
+
         dayShifts.forEach((item) => {
           const task = document.createElement("div");
           task.className = `calendar-task ${item.className}`;
@@ -224,50 +263,69 @@
           `;
           cell.appendChild(task);
         });
+
         monthGrid.appendChild(cell);
       }
     }
+
     function applyFilters() {
       const staffValue = staffFilter.value.toLowerCase().trim();
       const unitValue = unitFilter.value.toLowerCase().trim();
       const woValue = woFilter.value.toLowerCase().trim();
+
       assignmentItems.forEach((item) => {
         const itemStaff = item.getAttribute("data-staff").toLowerCase();
         const itemUnit = item.getAttribute("data-unit").toLowerCase();
         const itemWO = item.getAttribute("data-wo").toLowerCase();
+
         const matchesStaff =
           staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+
         const matchesUnit =
           unitValue === "" || itemUnit.includes(unitValue);
+
         const matchesWO =
           woValue === "" || itemWO.includes(woValue);
+
         item.style.display = matchesStaff && matchesUnit && matchesWO ? "" : "none";
       });
+
+      renderCalendar(currentMonth, currentYear);
     }
+
     prevMonthBtn.addEventListener("click", () => {
       currentMonth--;
+
       if (currentMonth < 0) {
         currentMonth = 11;
         currentYear--;
       }
+
       renderCalendar(currentMonth, currentYear);
     });
+
     nextMonthBtn.addEventListener("click", () => {
       currentMonth++;
+
       if (currentMonth > 11) {
         currentMonth = 0;
         currentYear++;
       }
+
       renderCalendar(currentMonth, currentYear);
     });
+
     applyBtn.addEventListener("click", applyFilters);
     staffFilter.addEventListener("change", applyFilters);
     unitFilter.addEventListener("input", applyFilters);
     woFilter.addEventListener("input", applyFilters);
+
     document.getElementById("printBtn").addEventListener("click", () => {
       window.print();
     });
+
     renderCalendar(currentMonth, currentYear);
   </script>
 </body>
 </html>
+
