@@ -1,0 +1,157 @@
+/* Shared visual polish overrides for all Benchmark2B pages. */
+html,
+body {
+  min-height: 100vh;
+}
+
+body.login-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.58)),
+    url("../images/background0.png") center center / cover no-repeat fixed !important;
+}
+
+.login-page .login-shell {
+  min-height: 100vh;
+}
+
+.admin-page,
+.workorders-page,
+.pr-01-unit-search-inquiry-process-1-1,
+.pr-02-lease-application-form-process-1-2,
+.pr-03-deposit-payment-process-1-4,
+.pr-04-application-status-process-1-3-decision-updated-records,
+.cr-01-resident-dashboard,
+.cr-02-maintenance-request,
+.cr-03-pay-rent,
+.cr-04-my-lease {
+  min-height: 100vh !important;
+}
+
+.background {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+  object-fit: cover !important;
+}
+
+.top-header .header-left {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-width: 220px;
+  height: 100%;
+  padding-left: 8px;
+}
+
+.top-header .header-left a {
+  display: flex !important;
+  align-items: center !important;
+  height: 100%;
+}
+
+.top-header .logo {
+  width: 190px !important;
+  height: auto !important;
+  max-height: 82px !important;
+  object-fit: contain !important;
+  position: static !important;
+  display: block !important;
+  flex: 0 0 auto;
+}
+
+.login-logo .logo-main {
+  width: 190px;
+  max-height: 82px;
+  object-fit: contain;
+}
+
+.top-header .container,
+.top-header .container-fluid {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.top-header .mt-4,
+.top-header .mb-4 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.top-header .d-flex {
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+.top-header .role-indicator,
+.top-header .logout-btn,
+.top-header a[href$="/logout"],
+.top-header .btn-outline-danger.btn-sm {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 118px !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 999px !important;
+  background: #6b6b6b !important;
+  color: #ffffff !important;
+  font-family: "Montserrat", sans-serif !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+.top-header .role-indicator .user-role {
+  color: #ffffff !important;
+  font-family: "Montserrat", sans-serif !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+.top-header .logout-btn:hover,
+.top-header a[href$="/logout"]:hover,
+.top-header .btn-outline-danger.btn-sm:hover {
+  background: #5f5f5f !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .top-header .header-left {
+    min-width: 160px;
+    padding-left: 6px;
+  }
+
+  .top-header .logo {
+    width: 154px !important;
+    max-height: 68px !important;
+  }
+
+  .login-logo .logo-main {
+    width: 154px;
+    max-height: 68px;
+  }
+
+  .top-header .role-indicator,
+  .top-header .logout-btn,
+  .top-header a[href$="/logout"],
+  .top-header .btn-outline-danger.btn-sm {
+    min-width: 96px !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .top-header .role-indicator .user-role {
+    font-size: 0.82rem !important;
+  }
+}
