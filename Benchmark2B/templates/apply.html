@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/apply.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   
   
   <style>
@@ -94,10 +95,9 @@
               <div class="mb-3">
               <select class="form-control" id="floor-plan" name="floor_plan" aria-label="Preferred Floor plan/Unit">
                 <option value="">Select floor plan…</option>
-                <option value="4B/4B">4B/4B</option>
-                <option value="4B/2B">4B/2B</option>
-                <option value="2B/2B S">2B/2B S</option>
-                <option value="2B/2B D">2B/2B D</option>
+                {% for floorplan in floorplans %}
+                <option value="{{ floorplan.name }}">{{ floorplan.name }} - {{ floorplan.rent_display }}/Month</option>
+                {% endfor %}
               </select>
               </div>
             </form>
