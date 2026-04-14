@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/status.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   
   
   <style>
@@ -65,9 +66,9 @@
         <div class="rectangle-5"></div>
         <div class="rectangle-6"></div>
         <div class="application-id">Application code: {{ application_code or "—" }}</div>
-        <div class="application-submitted">Application Submitted</div>
-        <div class="deposit-paid">Deposit Paid</div>
-        <div class="under-review">Under Review</div>
+        <div class="application-submitted">Submitted: {{ application.submitted_at if application else "—" }}</div>
+        <div class="deposit-paid">Floor plan: {{ application.floorplan_name if application else "—" }}</div>
+        <div class="under-review">Move-in: {{ application.desired_move_in if application else "—" }}</div>
         <div class="decision">Decision</div>
         <div
           class="status-message-card your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details"
@@ -75,14 +76,19 @@
           <ul
             class="status-message-list your-application-is-being-reviewed-by-administration-staff-you-will-receive-an-update-when-a-decision-has-been-made-if-approved-you-will-be-prompted-to-view-sign-lease-if-denied-you-may-contact-office-for-more-details-span"
           >
-            <li>Your application is being reviewed by Administration Staff.</li>
+            {% if application %}
+            <li>Your current application status is {{ application.status }}.</li>
+            <li>Deposit deadline: {{ application.due_date or "—" }}.</li>
+            <li>Preferred floor plan: {{ application.floorplan_name }}.</li>
             <li>You will receive an update when a decision has been made.</li>
-            <li>If approved: you will receive an email confirmation with next steps.</li>
-            <li>If denied: you may contact office for more details.</li>
+            {% else %}
+            <li>No application was found for this login.</li>
+            <li>Please submit an application from the Apply page.</li>
+            {% endif %}
           </ul>
         </div>
         <div class="status-details-messages">Status Details / Messages</div>
-        <div class="status-under-review">Status: UNDER REVIEW</div>
+        <div class="status-under-review">Status: {{ application.status|upper if application else "NO APPLICATION FOUND" }}</div>
         <div class="progress-timeline">Progress Timeline</div>
         <div class="line-1"></div>
         <div class="ellipse-2"></div>
