@@ -14,14 +14,15 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
+-- Binary logging controls are omitted so this file imports without elevated server privileges.
+CREATE DATABASE IF NOT EXISTS `407_courtyards`;
+USE `407_courtyards`;
 
 --
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '090b0c06-28b4-11f1-8031-88fc58c2c697:1-80';
+-- GTID_PURGED is intentionally omitted so the dump imports cleanly on student laptops.
 
 --
 -- Table structure for table `applications`
@@ -156,7 +157,7 @@ CREATE TABLE `maintenance_requests` (
   KEY `fk_requests_lease` (`lease_id`),
   CONSTRAINT `fk_requests_lease` FOREIGN KEY (`lease_id`) REFERENCES `leases` (`id`),
   CONSTRAINT `fk_requests_user` FOREIGN KEY (`resident_user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,6 +167,7 @@ CREATE TABLE `maintenance_requests` (
 LOCK TABLES `maintenance_requests` WRITE;
 /*!40000 ALTER TABLE `maintenance_requests` DISABLE KEYS */;
 INSERT INTO `maintenance_requests` VALUES (1,'MR501',2,1,'Plumbing','Leaking sink','Resident reported steady water leaking from the kitchen sink pipe under the cabinet.','High','Open','2026-03-11 08:15:00','plumbing-photo.jpg'),(2,'MR502',2,1,'HVAC','Broken AC','Air conditioning unit is running but not cooling the apartment properly.','High','In Progress','2026-03-10 09:10:00','ac-unit-ticket.pdf'),(3,'MR503',2,1,'Electrical','Light fixture out','Bedroom ceiling light fixture is not turning on even after bulb replacement.','Low','Assigned','2026-03-09 14:35:00','electrical-note.docx');
+INSERT INTO `maintenance_requests` VALUES (4,'MR504',2,1,'Appliance','Dishwasher not draining','Resident reported standing water in the dishwasher after the cycle ends.','Medium','Assigned','2026-03-12 10:05:00','dishwasher-note.jpg'),(5,'MR505',2,1,'Pest Control','Ants near patio door','Resident reported ants entering near the patio door after rain.','Low','Assigned','2026-03-12 12:20:00','pest-note.jpg');
 /*!40000 ALTER TABLE `maintenance_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +225,7 @@ CREATE TABLE `staff_schedule` (
   PRIMARY KEY (`id`),
   KEY `fk_staff_schedule_user` (`staff_user_id`),
   CONSTRAINT `fk_staff_schedule_user` FOREIGN KEY (`staff_user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,6 +235,7 @@ CREATE TABLE `staff_schedule` (
 LOCK TABLES `staff_schedule` WRITE;
 /*!40000 ALTER TABLE `staff_schedule` DISABLE KEYS */;
 INSERT INTO `staff_schedule` VALUES (1,3,'2026-03-14','08:00:00','17:00:00','Cover Buildings 100 and 200.'),(2,3,'2026-03-15','08:00:00','17:00:00','Handle scheduled work orders.'),(3,3,'2026-03-16','09:00:00','18:00:00','Follow-up repairs and new assignments.');
+INSERT INTO `staff_schedule` VALUES (4,6,'2026-03-14','10:00:00','18:00:00','Assist with afternoon work orders.'),(5,11,'2026-03-14','08:00:00','16:00:00','Appliance and unit inspections.'),(6,12,'2026-03-14','09:00:00','17:00:00','Pest-control and exterior requests.'),(7,11,'2026-03-17','08:00:00','16:00:00','Follow-up dishwasher repair.'),(8,12,'2026-03-18','09:00:00','17:00:00','Building 100 pest-control block.'),(9,6,'2026-03-19','10:00:00','18:00:00','General maintenance backup.');
 /*!40000 ALTER TABLE `staff_schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -281,7 +284,7 @@ CREATE TABLE `users` (
   `role` enum('resident','admin','staff','prospect') DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -291,6 +294,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES (1,'Admin1','admin1@umd.edu','scrypt:32768:8:1$4nAi86mEzIGtrRHj$74bb26a9020de36579155370c9a9eee4953e56eb59fccb75aa9755a758e804a3598a52c6ce67db34250849fa60f80e8cbc6d6b7a0beb60cc6e1e34cdcbd969d4','admin'),(2,'Resident1','resident1@umd.edu','scrypt:32768:8:1$U2XzVOzxdUaIOl9j$5f3dc6a2cc29f1a82d4d03e7109fd51833a8a80090a7339d14370a0f1acb60047888c9c7ecd42d82e8359aca4fec33c8817869f0f8096c8ab8c5325aeffdad61','resident'),(3,'Staff1','staff1@umd.edu','scrypt:32768:8:1$TXOwFe5N00ygkQxq$e455c323077ba577624d34b8c611e925ef8df70d2ef3396c351aad7e2cc051c1ae08686f8640581717a46b9b67e1d1c11ed1dc7b7391efab6f4d3f0e5e682b20','staff'),(4,'Admin2','admin2@umd.edu','scrypt:32768:8:1$4PWfXsiBiXZx8yIp$f20fb16ef05a8179d33f784d1991b4802c10ebdc3a4c1f636fc60ddd0e786449acc21c9d3e03731ddee6e8beeb06e9c3aa2e9ecd5423b4df9b1849df33a05d4b','admin'),(5,'Prospect1','prospect1@umd.edu','scrypt:32768:8:1$kIBtPQFFm4wyvKtw$da604e2dc7b6f0c8cea35f17e80f81265a5261056ddded0372aaae4546ecb2e8d6585d37cce8958698c6d676e471113b536955e2450fe61a560f2e0c9244d8e5','resident'),(6,'Staff2','staff2@umd.edu','scrypt:32768:8:1$YzUivJnOhVddsM4d$532a7603bdd3c8f3f1a9886cddaa6ac7865b05a87130b50dd6575a5d00e0273a7ed30b1f9e6764d0dd189da520f40f5d817daf5d4c12b783e089fb478a1500d1','staff'),(8,'Test One','test11@umd.edu','scrypt:32768:8:1$5C7qyzK8MpdWIWfz$0209f6f5b71d10043f58de748f7268405802d9dd9594c72d3785ecf3533d5431acf5f1c1cfb2894492f547de8dc9642d9898751c458d5fefdc976ca743b118d8','prospect'),(9,'Test Two','test12@umd.edu','scrypt:32768:8:1$DNR52po2WQGnErkW$9d094ef01b56bb05cbb696d907255a32d4fac4b4c0fae46d33d86beaa7674c909156d5de9ba805d2d9da4b252bfc7cd30bd6988169da5ab7824a0373e2ee587a','prospect'),(10,'Test Three','test13@umd.edu','scrypt:32768:8:1$WBnOpDkaeuX89YQR$c987f1c75c7c4a2ce14dc3f2001e8c20c79ece90638f910092b2eabde226ae544e468df724058f3f230041059895c476830c9315b9df8cde846a5267825850eb','prospect');
+INSERT INTO `users` VALUES (11,'Alex Rivera','alex.rivera@umd.edu','scrypt:32768:8:1$TXOwFe5N00ygkQxq$e455c323077ba577624d34b8c611e925ef8df70d2ef3396c351aad7e2cc051c1ae08686f8640581717a46b9b67e1d1c11ed1dc7b7391efab6f4d3f0e5e682b20','staff'),(12,'Taylor Nguyen','taylor.nguyen@umd.edu','scrypt:32768:8:1$TXOwFe5N00ygkQxq$e455c323077ba577624d34b8c611e925ef8df70d2ef3396c351aad7e2cc051c1ae08686f8640581717a46b9b67e1d1c11ed1dc7b7391efab6f4d3f0e5e682b20','staff');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,7 +321,7 @@ CREATE TABLE `work_orders` (
   KEY `fk_work_orders_staff` (`assigned_staff_id`),
   CONSTRAINT `fk_work_orders_request` FOREIGN KEY (`request_id`) REFERENCES `maintenance_requests` (`id`),
   CONSTRAINT `fk_work_orders_staff` FOREIGN KEY (`assigned_staff_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,9 +331,10 @@ CREATE TABLE `work_orders` (
 LOCK TABLES `work_orders` WRITE;
 /*!40000 ALTER TABLE `work_orders` DISABLE KEYS */;
 INSERT INTO `work_orders` VALUES (1,'WO501',1,3,'2026-03-14','8:00 AM - 10:00 AM','Open','Assigned to morning plumbing block.',NULL),(2,'WO502',2,3,'2026-03-14','10:00 AM - 12:00 PM','In Progress','Needs HVAC follow-up after initial inspection.',NULL),(3,'WO503',3,3,'2026-03-15','1:00 PM - 3:00 PM','Assigned','Bring replacement fixture and tester.',NULL);
+INSERT INTO `work_orders` VALUES (4,'WO504',4,11,'2026-03-17','9:00 AM - 11:00 AM','Assigned','Alex will inspect dishwasher drain line.',NULL),(5,'WO505',5,12,'2026-03-18','1:00 PM - 3:00 PM','Assigned','Taylor will inspect patio seal and treat entry point.',NULL);
 /*!40000 ALTER TABLE `work_orders` ENABLE KEYS */;
 UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+-- Binary logging restore omitted; see note near top of file.
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
