@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 </head>
 <body>
   <div class="admin-page">
@@ -47,12 +48,13 @@
             <option value="Paid">Paid</option>
             <option value="Pending">Pending</option>
             <option value="Failed">Failed</option>
+            <option value="Resolved">Resolved</option>
           </select>
           <select id="buildingFilter">
             <option value="all">Building</option>
-            <option value="Building 100">Building 100</option>
-            <option value="Building 200">Building 200</option>
-            <option value="Building 400">Building 400</option>
+            {% for building in building_options %}
+            <option value="{{ building }}">{{ building }}</option>
+            {% endfor %}
           </select>
           <select id="dateFilter">
             <option value="all">Date Range</option>
@@ -66,17 +68,17 @@
       <section class="summary-row">
         <div class="summary-card">
           <p>Total Collected (7D)</p>
-          <h3>$2,550</h3>
+          <h3>{{ payments_summary.total_collected }}</h3>
           <span>Details</span>
         </div>
         <div class="summary-card">
           <p>Overdue Accounts</p>
-          <h3>1</h3>
+          <h3>{{ payments_summary.overdue_accounts }}</h3>
           <span>Details</span>
         </div>
         <div class="summary-card">
           <p>Failed Payment</p>
-          <h3>1</h3>
+          <h3>{{ payments_summary.failed_payments }}</h3>
           <span>Details</span>
         </div>
       </section>
@@ -95,27 +97,19 @@
                 </tr>
               </thead>
               <tbody id="paymentsTable">
-                <tr data-status="Pending" data-building="Building 100" data-payment="P1001">
-                  <td>P1001</td>
-                  <td>Ava Johnson</td>
-                  <td>101A</td>
-                  <td>$1250</td>
-                  <td>Pending</td>
+                {% for payment in payments %}
+                <tr data-status="{{ payment.status }}" data-building="{{ payment.building }}" data-payment="{{ payment.payment_code }}">
+                  <td>{{ payment.payment_code }}</td>
+                  <td>{{ payment.resident }}</td>
+                  <td>{{ payment.unit }}</td>
+                  <td>{{ payment.amount }}</td>
+                  <td>{{ payment.status }}</td>
                 </tr>
-                <tr data-status="Paid" data-building="Building 200" data-payment="P1002">
-                  <td>P1002</td>
-                  <td>Noah Smith</td>
-                  <td>235B</td>
-                  <td>$1300</td>
-                  <td>Paid</td>
+                {% else %}
+                <tr>
+                  <td colspan="5">No payments found in the database.</td>
                 </tr>
-                <tr data-status="Failed" data-building="Building 400" data-payment="P1003">
-                  <td>P1003</td>
-                  <td>Mia Brown</td>
-                  <td>402C</td>
-                  <td>$1180</td>
-                  <td>Failed</td>
-                </tr>
+                {% endfor %}
               </tbody>
             </table>
             <div class="table-nav">
@@ -128,22 +122,26 @@
           <div class="content-card">
             <h2>Payment Details</h2>
             <div id="paymentDetails">
-              <p><strong>Payment ID:</strong> P1001</p>
-              <p><strong>Status:</strong> Pending</p>
-              <p><strong>Resident:</strong> Ava Johnson</p>
-              <p><strong>Phone:</strong> 240-555-1022</p>
-              <p><strong>Lease ID:</strong> L2045</p>
-              <p><strong>Building:</strong> Building 100</p>
-              <p><strong>Unit:</strong> 101A</p>
-              <p><strong>Amount:</strong> $1250</p>
-              <p><strong>Method:</strong> Card</p>
-              <p><strong>Date:</strong> 03/10/2026</p>
-              <p><strong>Confirmation #:</strong> CNF88214</p>
+              {% if first_payment %}
+              <p><strong>Payment ID:</strong> {{ first_payment.payment_code }}</p>
+              <p><strong>Status:</strong> {{ first_payment.status }}</p>
+              <p><strong>Resident:</strong> {{ first_payment.resident }}</p>
+              <p><strong>Phone:</strong> {{ first_payment.phone }}</p>
+              <p><strong>Lease ID:</strong> {{ first_payment.leaseId }}</p>
+              <p><strong>Building:</strong> {{ first_payment.building }}</p>
+              <p><strong>Unit:</strong> {{ first_payment.unit }}</p>
+              <p><strong>Amount:</strong> {{ first_payment.amount }}</p>
+              <p><strong>Method:</strong> {{ first_payment.method }}</p>
+              <p><strong>Date:</strong> {{ first_payment.date }}</p>
+              <p><strong>Confirmation #:</strong> {{ first_payment.confirmation }}</p>
+              {% else %}
+              <p>No payment selected.</p>
+              {% endif %}
             </div>
           </div>
           <div class="content-card">
             <h2>Notes / Flags</h2>
-            <textarea id="notesBox" rows="6" placeholder="Add notes about this payment...">Resident contacted office about delayed processing.</textarea>
+            <textarea id="notesBox" rows="6" placeholder="Add notes about this payment...">{{ first_payment.notes if first_payment else "" }}</textarea>
           </div>
           <div class="content-card">
             <h2>Actions</h2>
@@ -171,49 +169,19 @@
     const paymentDetails = document.getElementById("paymentDetails");
     const notesBox = document.getElementById("notesBox");
     const actionMessage = document.getElementById("actionMessage");
-    const paymentData = {
-      P1001: {
-        status: "Pending",
-        resident: "Ava Johnson",
-        phone: "240-555-1022",
-        leaseId: "L2045",
-        building: "Building 100",
-        unit: "101A",
-        amount: "$1250",
-        method: "Card",
-        date: "03/10/2026",
-        confirmation: "CNF88214",
-        notes: "Resident contacted office about delayed processing."
-      },
-      P1002: {
-        status: "Paid",
-        resident: "Noah Smith",
-        phone: "301-555-2104",
-        leaseId: "L2046",
-        building: "Building 200",
-        unit: "235B",
-        amount: "$1300",
-        method: "Bank Transfer",
-        date: "03/09/2026",
-        confirmation: "CNF88215",
-        notes: "Payment completed successfully and receipt was sent."
-      },
-      P1003: {
-        status: "Failed",
-        resident: "Mia Brown",
-        phone: "443-555-3308",
-        leaseId: "L2047",
-        building: "Building 400",
-        unit: "402C",
-        amount: "$1180",
-        method: "Card",
-        date: "03/08/2026",
-        confirmation: "CNF88216",
-        notes: "Card declined. Resident needs to update payment method."
-      }
-    };
+    const paymentData = {{ payments_by_code | tojson }};
+    const statusUrlTemplate = {{ url_for('update_payment_status', payment_code='__CODE__') | tojson }};
+    let selectedPaymentId = {{ first_payment.payment_code | tojson if first_payment else "null" }};
+
     function loadPaymentDetails(paymentId) {
       const payment = paymentData[paymentId];
+      if (!payment) {
+        selectedPaymentId = null;
+        paymentDetails.innerHTML = "<p>No payment selected.</p>";
+        notesBox.value = "";
+        return;
+      }
+      selectedPaymentId = paymentId;
       paymentDetails.innerHTML = `
         <p><strong>Payment ID:</strong> ${paymentId}</p>
         <p><strong>Status:</strong> ${payment.status}</p>
@@ -227,7 +195,7 @@
         <p><strong>Date:</strong> ${payment.date}</p>
         <p><strong>Confirmation #:</strong> ${payment.confirmation}</p>
       `;
-      notesBox.value = payment.notes;
+      notesBox.value = payment.notes || "";
     }
     function filterPayments() {
       const searchValue = searchInput.value.toLowerCase().trim();
@@ -258,11 +226,44 @@
     document.getElementById("receiptBtn").addEventListener("click", () => {
       actionMessage.textContent = "Receipt sent.";
     });
+    function updatePaymentStatus(newStatus) {
+      if (!selectedPaymentId || !paymentData[selectedPaymentId]) {
+        actionMessage.textContent = "Choose a payment first.";
+        return;
+      }
+
+      fetch(statusUrlTemplate.replace("__CODE__", encodeURIComponent(selectedPaymentId)), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ status: newStatus, notes: notesBox.value }),
+      })
+        .then((res) => res.json().then((data) => ({ res, data })))
+        .then(({ res, data }) => {
+          if (!res.ok) {
+            actionMessage.textContent = data.error || "Could not update payment.";
+            return;
+          }
+          paymentData[selectedPaymentId].status = newStatus;
+          paymentData[selectedPaymentId].notes = notesBox.value;
+          const row = document.querySelector(`[data-payment="${selectedPaymentId}"]`);
+          if (row) {
+            row.dataset.status = newStatus;
+            row.cells[4].textContent = newStatus;
+          }
+          loadPaymentDetails(selectedPaymentId);
+          filterPayments();
+          actionMessage.textContent = data.message || "Payment updated.";
+        })
+        .catch(() => {
+          actionMessage.textContent = "Could not update payment.";
+        });
+    }
     document.getElementById("retryBtn").addEventListener("click", () => {
-      actionMessage.textContent = "Payment retry started.";
+      updatePaymentStatus("Pending");
     });
     document.getElementById("resolveBtn").addEventListener("click", () => {
-      actionMessage.textContent = "Payment marked as resolved.";
+      updatePaymentStatus("Resolved");
     });
   </script>
 </body>
