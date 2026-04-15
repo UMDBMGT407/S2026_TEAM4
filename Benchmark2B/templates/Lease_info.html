@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Lease_info.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   
   
   <style>
@@ -71,7 +72,7 @@
     <div class="renewal">Renewal</div>
     <div class="rectangle-16"></div>
     <div class="simple-button2">
-      <a class="cancel" href="{{ url_for('res_dash2') }}">Back to Dashboard</a>
+      <button class="cancel" type="button" id="clear-notes-button">Clear Notes</button>
     </div>
     <div class="simple-button3">
       <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
@@ -81,27 +82,27 @@
     <div class="lease-summary-details">
       <div class="lease-summary-item">
         <span class="lease-summary-label">Lease ID:</span>
-        <span class="lease-summary-value">L-28451</span>
+        <span class="lease-summary-value">{{ lease.lease_code if lease else "No active lease" }}</span>
       </div>
       <div class="lease-summary-item">
         <span class="lease-summary-label">Unit:</span>
-        <span class="lease-summary-value">Bldg 3 / Unit 214</span>
+        <span class="lease-summary-value">{{ lease.building ~ " / Unit " ~ lease.unit_number if lease else "—" }}</span>
       </div>
       <div class="lease-summary-item">
         <span class="lease-summary-label">Floor Plan:</span>
-        <span class="lease-summary-value">Aspen 2BR / 2BA</span>
+        <span class="lease-summary-value">{{ lease.floorplan_name if lease else "—" }}</span>
       </div>
       <div class="lease-summary-item">
         <span class="lease-summary-label">Lease Term:</span>
-        <span class="lease-summary-value">06/01/25 - 05/31/26</span>
+        <span class="lease-summary-value">{{ lease.start_date_display ~ " - " ~ lease.end_date_display if lease else "—" }}</span>
       </div>
       <div class="lease-summary-item">
         <span class="lease-summary-label">Residents:</span>
-        <span class="lease-summary-value">Taylor Brooks, Jordan Lee</span>
+        <span class="lease-summary-value">{{ current_user.name }}</span>
       </div>
       <div class="lease-summary-item">
         <span class="lease-summary-label">Monthly Rent:</span>
-        <span class="lease-summary-value">$1,650.00</span>
+        <span class="lease-summary-value">{{ lease.monthly_rent_display if lease else "—" }}</span>
       </div>
     </div>
     <div class="documents-notices">Documents &amp; Notices</div>
@@ -220,6 +221,8 @@
     (function () {
       const requestBtn = document.getElementById("request-renewal-button");
       const downloadLeaseBtn = document.getElementById("download-lease-pdf-button");
+      const clearNotesBtn = document.getElementById("clear-notes-button");
+      const notesBox = document.getElementById("options-notes-textbox");
       const docButtons = document.querySelectorAll(".doc-action-button");
 
       function downloadTextFile(filename, content) {
@@ -238,6 +241,12 @@
         requestBtn.addEventListener("click", () => {
           const ok = confirm("Confirm renewal request?");
           if (ok) alert("Renewal request sent");
+        });
+      }
+
+      if (clearNotesBtn && notesBox) {
+        clearNotesBtn.addEventListener("click", () => {
+          notesBox.value = "";
         });
       }
 
