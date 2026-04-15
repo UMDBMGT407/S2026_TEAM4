@@ -1347,9 +1347,8 @@ def res_dash2():
 
 @app.route("/status")
 @login_required
+@role_required("Prospect")
 def status_page():
-    if canonical_role(current_user.role) != "prospect":
-        return redirect(url_for("home"))
     application = _latest_application_for_email(current_user.email)
     return render_template(
         "status.html",
