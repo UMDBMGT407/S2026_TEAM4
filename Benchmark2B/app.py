@@ -616,16 +616,20 @@ def logout():
 @login_required
 def home():
     role = canonical_role(current_user.role)
+
     if role == "admin":
-        return render_template("Admindash.html")
+        return render_template("Admindash.html", **_admin_dashboard_context())
+
     if role == "resident":
         return render_template(
             "Res_Dash2.html", **_resident_dashboard_context(current_user.id)
         )
+
     if role == "staff":
         return render_template(
             "maintenance.html", **_maintenance_dashboard_context(current_user.id)
         )
+
     if role == "prospect":
         application = _latest_application_for_email(current_user.email)
         return render_template(
@@ -633,8 +637,8 @@ def home():
             application=application,
             application_code=application["application_code"] if application else None,
         )
-    abort(403)
 
+    abort(403)
 
 @app.route("/users", methods=["GET", "POST"])
 @login_required
