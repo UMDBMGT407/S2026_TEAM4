@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +16,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 </head>
 <body>
-  <div class="admin-page">
+  <div class="admin-page {{ 'admin-schedule-view' if is_admin_view else 'staff-schedule-view' }}">
     <header class="top-header">
       <div class="header-left">
         <img src="{{ url_for('static', filename='images/logo0.png') }}" class="logo" alt="Courtyards logo">
@@ -49,19 +48,19 @@
     <main class="main-content">
       <section class="summary-row">
         <div class="summary-card">
-          <p>Staff Scheduled Today</p>
-          <h3>{{ schedule_summary.staff_scheduled }}</h3>
-          <span>March 2026</span>
+          <p>{{ "Staff Scheduled Today" if is_admin_view else "My Scheduled Work Orders" }}</p>
+          <h3>{{ schedule_summary.staff_scheduled if is_admin_view else schedule_summary.work_orders }}</h3>
+          <span>{{ "March 2026" if is_admin_view else "Staff1 assignments" }}</span>
         </div>
         <div class="summary-card">
-          <p>Work Orders Today</p>
+          <p>{{ "Work Orders Today" if is_admin_view else "Open Work Orders" }}</p>
           <h3>{{ schedule_summary.work_orders }}</h3>
-          <span>assigned orders</span>
+          <span>{{ "assigned orders" if is_admin_view else "assigned to Staff1" }}</span>
         </div>
         <div class="summary-card">
-          <p>Open Shifts This Week</p>
+          <p>{{ "Open Shifts This Week" if is_admin_view else "Active Work Orders" }}</p>
           <h3>{{ schedule_summary.open_shifts }}</h3>
-          <span>upcoming schedule</span>
+          <span>{{ "upcoming schedule" if is_admin_view else "work-order calendar" }}</span>
         </div>
       </section>
       <section class="filters-card">
@@ -95,19 +94,19 @@
         </div>
         <div class="schedule-right">
           <div class="content-card">
-            <h2>{{ "Work Orders For Today" if is_admin_view else "Selected Schedule Details" }}</h2>
+            <h2>{{ "Calendar Details" if is_admin_view else "Selected Schedule Details" }}</h2>
             <div id="selectedEventDetails" class="selected-event-details">
-              <h3>Calendar Details</h3>
-              <p>Click a shift or work order on the calendar to view the time and details.</p>
+              <h3>{{ "Calendar Details" if is_admin_view else "Work Order Details" }}</h3>
+              <p>{{ "Click a shift or work order on the calendar to view the time and details." if is_admin_view else "Click a work order on the calendar to view the time and details." }}</p>
             </div>
-            {% if is_admin_view %}
+            <h3 class="assignment-list-title">{{ "All Scheduled Work Orders" if is_admin_view else "My Scheduled Work Orders" }}</h3>
             <div id="assignmentList" class="assignment-list">
               {% for order in schedule_work_orders %}
               <button class="assignment-item" type="button" data-staff="{{ order.assigned_staff_name }}" data-unit="{{ order.unit }}" data-wo="{{ order.id }}" data-date="{{ order.scheduled_date_iso }}">
                 <p><strong>{{ order.id }}</strong> | Unit {{ order.unit }}</p>
                 <p>Issue: {{ order.issue }}</p>
                 {% if is_admin_view %}
-                <p>Assigned To: {{ order.assigned_staff_name }}</p>
+                <p class="assignment-staff-line">Staff: {{ order.assigned_staff_name }}</p>
                 {% endif %}
                 <p>Scheduled: {{ order.due }} {{ order.time_window or "" }}</p>
               </button>
@@ -117,7 +116,6 @@
               </div>
               {% endfor %}
             </div>
-            {% endif %}
           </div>
           <div class="content-card">
             <h2>Notes</h2>
@@ -158,6 +156,9 @@
       }[char]));
     }
     function eventMatchesFilters(item) {
+      if (isAdminView && item.type === "shift") {
+        return true;
+      }
       const staffValue = staffFilter.value.toLowerCase().trim();
       const unitValue = unitFilter.value.toLowerCase().trim();
       const woValue = woFilter.value.toLowerCase().trim();
@@ -174,9 +175,17 @@
     }
     function showEventDetails(item) {
       if (!selectedEventDetails || !item) return;
+      const staffLine = isAdminView && item.staff ? `<p><strong>Staff:</strong> ${escapeHtml(item.staff)}</p>` : "";
+      const workOrderFields = item.type === "work_order" ? `
+        ${item.resident ? `<p><strong>Resident:</strong> ${escapeHtml(item.resident)}</p>` : ""}
+        ${item.phone ? `<p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p>` : ""}
+      ` : "";
       selectedEventDetails.innerHTML = `
         <h3>${escapeHtml(item.type === "work_order" ? item.title : "Scheduled Shift")}</h3>
+        <p><strong>Type:</strong> ${escapeHtml(item.type === "work_order" ? "Work Order" : "Staff Shift")}</p>
         <p><strong>Time:</strong> ${escapeHtml(item.shift || item.time_window || "Scheduled")}</p>
+        ${staffLine}
+        ${workOrderFields}
         ${item.unit ? `<p><strong>Unit:</strong> ${escapeHtml(item.unit)}</p>` : ""}
         ${item.issue ? `<p><strong>Details:</strong> ${escapeHtml(item.issue)}</p>` : ""}
         ${item.description ? `<p><strong>Description:</strong> ${escapeHtml(item.description)}</p>` : ""}
@@ -214,15 +223,23 @@
         cell.appendChild(dateLabel);
         const dayEvents = calendarEvents.filter((item) => {
           const matchesDate = item.date === dateString;
+          if (isAdminView && item.type === "shift" && (item.staff || "").toLowerCase().replace(/\s+/g, "") === "staff1") {
+            return false;
+          }
           return matchesDate && eventMatchesFilters(item);
         });
         dayEvents.forEach((item) => {
           const task = document.createElement("button");
           task.type = "button";
           task.className = `calendar-task ${item.className} ${item.type === "work_order" ? "calendar-work-order" : "calendar-shift"}`;
-          const label = item.type === "work_order"
-            ? `${item.title} | Unit ${item.unit || "--"}`
-            : "Shift";
+          let label;
+          if (item.type === "work_order") {
+            label = isAdminView
+              ? `${item.title} | ${item.staff || "Staff"} | Unit ${item.unit || "--"}`
+              : `${item.title} | Unit ${item.unit || "--"}`;
+          } else {
+            label = isAdminView ? `${item.staff || "Staff"} Shift` : "Shift";
+          }
           task.innerHTML = `
             <strong>${escapeHtml(label)}</strong>
             <span>${escapeHtml(item.shift || item.time_window || "Scheduled")}</span>
@@ -271,22 +288,4 @@
         currentYear++;
       }
       renderCalendar(currentMonth, currentYear);
-    });
-    applyBtn.addEventListener("click", applyFilters);
-    staffFilter.addEventListener("change", applyFilters);
-    unitFilter.addEventListener("input", applyFilters);
-    woFilter.addEventListener("input", applyFilters);
-    assignmentItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        const wo = item.getAttribute("data-wo");
-        const matched = calendarEvents.find((event) => event.wo === wo);
-        showEventDetails(matched);
-      });
-    });
-    document.getElementById("printBtn").addEventListener("click", () => {
-      window.print();
-    });
-    renderCalendar(currentMonth, currentYear);
-  </script>
-</body>
-</html>
+
