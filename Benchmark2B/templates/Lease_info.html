@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,6 +79,11 @@
       <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
         Download Lease PDF
       </button>
+    </div>
+    <div class="lease-payment-actions">
+      <a class="lease-payment-action" href="{{ url_for('payment_history') }}">Payment History</a>
+      <a class="lease-payment-action" href="{{ url_for('payment_api_secure_checkout') }}?mode=one_time">One-Time Payment</a>
+      <a class="lease-payment-action" href="{{ url_for('payment_api_secure_checkout') }}?mode=recurring">Set Up Recurring Payment</a>
     </div>
     <div class="lease-summary-details">
       <div class="lease-summary-item">
