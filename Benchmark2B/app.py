@@ -22,12 +22,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 
 app = Flask(__name__)
-app.secret_key = "  "  # Replace with a secure secret in production.
+app.secret_key = "skiddy00 "  # Replace with a secure secret in production.
 # MySQL configuration
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "127.0.0.1")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", "3306"))
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", " ")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "skiddy00")
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "407_courtyards")
 mysql = MySQL(app)
 
@@ -485,12 +485,80 @@ def _work_order_summary(rows):
     }
 
 
+def _admin_dashboard_context():
+    applications = db_all(
+        "SELECT a.application_code, a.applicant_name, a.applicant_email, "
+        "a.applicant_phone, a.desired_move_in, a.status, a.submitted_at, "
+        "fp.name AS floorplan_name "
+        "FROM applications a "
+        "JOIN floorplans fp ON a.floorplan_id = fp.id "
+        "ORDER BY a.submitted_at DESC, a.id DESC "
+        "LIMIT 6"
+    )
+    dashboard_applications = []
+    for row in applications:
+        dashboard_applications.append(
+            {
+                "id": row.get("application_code"),
+                "name": row.get("applicant_name"),
+                "email": row.get("applicant_email"),
+                "phone": row.get("applicant_phone"),
+                "floorPlan": row.get("floorplan_name"),
+                "moveIn": date_display(row.get("desired_move_in")),
+                "date": date_display(row.get("submitted_at")),
+                "status": row.get("status"),
+            }
+        )
+
+    work_orders = _work_order_rows(limit=6)
+    dashboard_work_orders = [
+        {
+            "id": row.get("id"),
+            "unit": row.get("unit"),
+            "priority": row.get("priority"),
+            "status": row.get("status"),
+        }
+        for row in work_orders
+    ]
+    payments = _payment_rows()
+    dashboard_summary = {
+        "scheduled_today": sum(
+            1 for row in work_orders if row.get("scheduled_date_iso") == date.today().isoformat()
+        ),
+        "new_applications": sum(1 for row in applications if row.get("status") == "Pending"),
+        "overdue_payments": sum(
+            1 for row in payments if row.get("status") in {"Pending", "Failed"}
+        ),
+        "open_work_orders": sum(
+            1 for row in work_orders if row.get("status") in {"Open", "Assigned", "In Progress"}
+        ),
+    }
+    quick_summaries = [
+        f"{dashboard_summary['new_applications']} pending applications need review.",
+        f"{dashboard_summary['open_work_orders']} work orders are currently open.",
+        f"{dashboard_summary['overdue_payments']} payments need admin follow-up.",
+    ]
+    return {
+        "dashboard_summary": dashboard_summary,
+        "dashboard_applications": dashboard_applications,
+        "dashboard_work_orders": dashboard_work_orders,
+        "quick_summaries": quick_summaries,
+    }
+
+
 def _schedule_context():
+    params = ()
+    where = ""
+    if canonical_role(current_user.role) == "staff":
+        where = "WHERE ss.staff_user_id = %s "
+        params = (current_user.id,)
     shifts = db_all(
         "SELECT ss.shift_date, ss.start_time, ss.end_time, ss.assignment_note, u.name AS staff_name "
         "FROM staff_schedule ss "
         "JOIN users u ON ss.staff_user_id = u.id "
-        "ORDER BY ss.shift_date, ss.start_time"
+        f"{where}"
+        "ORDER BY ss.shift_date, ss.start_time",
+        params,
     )
     shift_rows = []
     for shift in shifts:
@@ -505,9 +573,43 @@ def _schedule_context():
                 "note": shift.get("assignment_note") or "",
             }
         )
-    work_orders = _work_order_rows()
+    staff_id = current_user.id if canonical_role(current_user.role) == "staff" else None
+    work_orders = _work_order_rows(staff_id=staff_id)
+    schedule_events = [
+        {
+            "date": shift["date"],
+            "staff": shift["staff"],
+            "shift": shift["shift"],
+            "className": shift["className"],
+            "type": "shift",
+            "title": "Staff Shift",
+            "description": shift.get("note") or "",
+        }
+        for shift in shift_rows
+    ]
+    for order in work_orders:
+        staff = order.get("assigned_staff_name") or "Staff"
+        slug = "".join(ch.lower() for ch in staff if ch.isalnum()) or "staff"
+        schedule_events.append(
+            {
+                "date": order.get("scheduled_date_iso"),
+                "staff": staff,
+                "shift": order.get("time_window") or "Scheduled",
+                "className": f"staff-{slug}",
+                "type": "work_order",
+                "title": order.get("id"),
+                "wo": order.get("id"),
+                "unit": order.get("unit"),
+                "issue": order.get("issue"),
+                "description": order.get("description"),
+                "status": order.get("status"),
+                "resident": order.get("resident"),
+                "phone": order.get("phone"),
+            }
+        )
     return {
         "schedule_shifts": shift_rows,
+        "schedule_events": schedule_events,
         "schedule_work_orders": work_orders,
         "staff_options": sorted({shift["staff"] for shift in shift_rows}),
         "schedule_summary": {
