@@ -359,6 +359,7 @@ def _resident_maintenance_requests(user_id, limit=None):
 def _resident_dashboard_context(user_id):
     lease = _resident_lease(user_id)
     payments = _resident_payments(user_id, limit=5)
+    payment_history = _resident_payments(user_id)
     requests = _resident_maintenance_requests(user_id, limit=4)
     unpaid_total = sum(
         payment["amount_value"]
@@ -372,6 +373,8 @@ def _resident_dashboard_context(user_id):
     )
     return {
         "lease": lease,
+        "payments": payments,
+        "payment_history": payment_history,
         "balance_due": money(balance_due),
         "monthly_rent": money(monthly_rent),
         "utility_charges": money(95),
