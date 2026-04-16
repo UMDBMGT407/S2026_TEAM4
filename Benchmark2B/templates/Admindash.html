@@ -53,28 +53,28 @@
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
                 <h2>Scheduled Today</h2>
-                <p class="metric" id="scheduledTodayValue">6</p>
+                <p class="metric" id="scheduledTodayValue">{{ dashboard_summary.scheduled_today }}</p>
                 <a class="card-link" href="{{ url_for('schedule') }}">View Schedule</a>
               </div>
             </div>
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
                 <h2>New Applications</h2>
-                <p class="metric" id="newApplicationsValue">7</p>
-                <a class="card-link" href="#applications-section">Review Queue</a>
+                <p class="metric" id="newApplicationsValue">{{ dashboard_summary.new_applications }}</p>
+                <button class="card-link action-button" id="reviewQueueBtn" type="button">Review Queue</button>
               </div>
             </div>
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
                 <h2>Overdue Payments</h2>
-                <p class="metric" id="overduePaymentsValue">5</p>
+                <p class="metric" id="overduePaymentsValue">{{ dashboard_summary.overdue_payments }}</p>
                 <a class="card-link" href="{{ url_for('payments') }}">View Accounts</a>
               </div>
             </div>
             <div class="col-xl-3 col-sm-6">
               <div class="summary-card">
                 <h2>Open Work Orders</h2>
-                <p class="metric" id="openWorkOrdersValue">3</p>
+                <p class="metric" id="openWorkOrdersValue">{{ dashboard_summary.open_work_orders }}</p>
                 <a class="card-link" href="{{ url_for('work_order') }}">View Work Orders</a>
               </div>
             </div>
@@ -101,7 +101,11 @@
                   </table>
                 </div>
                 <div class="panel-footer-btn-wrap">
-                  <a class="panel-footer-btn" href="#applications-section">Review Applications</a>
+                  <button class="panel-footer-btn action-button" id="reviewApplicationsBtn" type="button">Review Applications</button>
+                </div>
+                <div class="application-detail-card" id="applicationDetailCard" hidden>
+                  <h3>Application Details</h3>
+                  <p>Select an application to review applicant details.</p>
                 </div>
               </div>
             </div>
@@ -212,23 +216,9 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-    const applications = [
-      {id:"A1024", name:"Jada Thompson", date:"03/10/26", status:"Pending"},
-      {id:"A1025", name:"Marcus Lee", date:"03/10/26", status:"Approved"},
-      {id:"A1026", name:"Ava Williams", date:"03/11/26", status:"Deposit Paid"}
-    ];
-
-    const workOrders = [
-      {id:"WO501", unit:"101A", priority:"High", status:"Open"},
-      {id:"WO502", unit:"101A", priority:"High", status:"In Progress"},
-      {id:"WO503", unit:"101A", priority:"Low", status:"Assigned"}
-    ];
-
-    const quickSummaries = [
-      "Lease renewals due soon: 12",
-      "Average maintenance turnaround: 2.3 days",
-      "Payment activity in the last 7 days: 34 transactions"
-    ];
+    const applications = {{ dashboard_applications | tojson }};
+    const workOrders = {{ dashboard_work_orders | tojson }};
+    const quickSummaries = {{ quick_summaries | tojson }};
 
     const usersApiUrl = "{{ url_for('users') }}";
 
@@ -252,14 +242,46 @@
       applications.forEach((app) => {
         table.append(`
           <tr>
-            <td>${app.id}</td>
-            <td>${app.name}</td>
-            <td>${app.date}</td>
-            <td>${app.status}</td>
-            <td><a class="action-link" href="#applications-section">View</a></td>
+            <td>${escapeHtml(app.id)}</td>
+            <td>${escapeHtml(app.name)}</td>
+            <td>${escapeHtml(app.date)}</td>
+            <td>${escapeHtml(app.status)}</td>
+            <td><button class="action-link action-button view-application-btn" type="button" data-app-id="${escapeHtml(app.id)}">View</button></td>
           </tr>
         `);
       });
+    }
+
+    function showApplicationDetails(appId) {
+      const app = applications.find((item) => item.id === appId);
+      if (!app) return;
+      $("#applicationDetailCard")
+        .prop("hidden", false)
+        .html(`
+          <h3>${escapeHtml(app.id)} | ${escapeHtml(app.status)}</h3>
+          <p><strong>Name:</strong> ${escapeHtml(app.name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
+          <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
+          <p><strong>Floor Plan:</strong> ${escapeHtml(app.floorPlan)}</p>
+          <p><strong>Move-In:</strong> ${escapeHtml(app.moveIn)}</p>
+          <p><strong>Submitted:</strong> ${escapeHtml(app.date)}</p>
+        `);
+    }
+
+    function reviewFirstApplication() {
+      if (!applications.length) {
+        $("#applicationDetailCard")
+          .prop("hidden", false)
+          .html(`
+            <h3>Application Details</h3>
+            <p>No applications are ready to review.</p>
+          `);
+      } else {
+        showApplicationDetails(applications[0].id);
+      }
+      document
+        .getElementById("applications-section")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function loadWorkOrders() {
@@ -269,10 +291,10 @@
       workOrders.forEach((order) => {
         table.append(`
           <tr>
-            <td>${order.id}</td>
-            <td>${order.unit}</td>
-            <td>${order.priority}</td>
-            <td>${order.status}</td>
+            <td>${escapeHtml(order.id)}</td>
+            <td>${escapeHtml(order.unit)}</td>
+            <td>${escapeHtml(order.priority)}</td>
+            <td>${escapeHtml(order.status)}</td>
             <td><a class="action-link" href="{{ url_for('work_order') }}">View</a></td>
           </tr>
         `);
@@ -284,7 +306,7 @@
       list.empty();
 
       quickSummaries.forEach((item) => {
-        list.append(`<li>${item}</li>`);
+        list.append(`<li>${escapeHtml(item)}</li>`);
       });
     }
 
@@ -381,6 +403,12 @@
           showFeedback(message, "error");
         });
     });
+
+    $("#applicationsTableBody").on("click", ".view-application-btn", function () {
+      showApplicationDetails($(this).data("appId"));
+    });
+
+    $("#reviewApplicationsBtn, #reviewQueueBtn").on("click", reviewFirstApplication);
 
     loadApplications();
     loadWorkOrders();
