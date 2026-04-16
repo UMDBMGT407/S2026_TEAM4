@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Pay_rent.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
-  
-  
+
   <style>
    a,
    button,
@@ -25,10 +24,9 @@
        border: none;
        text-decoration: none;
        background: none;
-   
        -webkit-font-smoothing: antialiased;
    }
-   
+
    menu, ol, ul {
        list-style-type: none;
        margin: 0;
@@ -40,6 +38,7 @@
 <body>
   <div class="cr-03-pay-rent">
     <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+
     <header class="top-header">
       <div class="header-left">
         <a href="{{ url_for('res_dash2') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
@@ -49,164 +48,208 @@
       </div>
       <div class="header-right">
         <button class="profile-btn" type="button" aria-label="Profile"></button>
-        <div class="role-indicator"><span class="user-role">Resident</span></div>
         <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+        <div class="role-indicator"><span class="user-role">Resident</span></div>
       </div>
     </header>
+
     <div class="sidebar"></div>
+
     <div class="nav-buttons">
       <a href="{{ url_for('res_dash2') }}" class="dashboard">Dashboard</a>
       <a href="{{ url_for('pay_rent') }}" class="pay-rent">Pay Rent</a>
       <a href="{{ url_for('maint_req') }}" class="maintenance">Maintenance</a>
       <a href="{{ url_for('lease_info') }}" class="my-lease">My Lease</a>
     </div>
-    <div class="rectangle-2"></div>
-    <div class="simple-button">
-      <button class="submit-payment-button" type="button" id="submit-payment-button">
-        Submit Payment
-      </button>
-    </div>
-    <div class="account-summary">Account Summary</div>
-    <div class="rectangle-5"></div>
-    <div class="expiration-routing-last-4">Expiration / Routing + Last 4</div>
-    <div class="card-number-account-number">Card Number / Account Number</div>
-    <div class="billing-zip">Billing Zip</div>
-    <div class="payment-method-card-bank">Payment Method (card/Bank)</div>
-    <div class="account-to-pay">Account to Pay</div>
-    <div class="billing-address">Billing Address</div>
-    
-    <input
-      class="payment-method-card-bank-input"
-      type="text"
-      id="payment-method-card-bank"
-      name="payment-method-card-bank"
-      placeholder="Card or Bank"
-      autocomplete="cc-type"
-    />
-    <input
-      class="account-to-pay-input"
-      type="text"
-      id="account-to-pay"
-      name="account-to-pay"
-      placeholder="Checking / Savings"
-      autocomplete="off"
-    />
-    <input
-      class="card-number-account-number-input"
-      type="text"
-      id="card-number-account-number"
-      name="card-number-account-number"
-      placeholder="Card number or account number"
-      autocomplete="cc-number"
-      inputmode="numeric"
-    />
-    <input
-      class="expiration-routing-last-4-input"
-      type="text"
-      id="expiration-routing-last-4"
-      name="expiration-routing-last-4"
-      placeholder="MM/YY or routing + last 4"
-      autocomplete="cc-exp"
-    />
-    <input
-      class="billing-zip-input"
-      type="text"
-      id="billing-zip"
-      name="billing-zip"
-      placeholder="ZIP code"
-      autocomplete="postal-code"
-      inputmode="numeric"
-    />
-    <input
-      class="billing-address-input"
-      type="text"
-      id="billing-address"
-      name="billing-address"
-      placeholder="Street address"
-      autocomplete="street-address"
-    />
-    <div class="simple-button2">
-      <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
-    </div>
-    <div class="simple-button3">
-      <button class="view-payment-history-button" type="button" id="view-payment-history-button">
-        View Payment History
-      </button>
-    </div>
-    <div class="balance-due-due-date">
-      <div class="summary-item">
-        <span class="summary-label">Current Balance:</span>
-        <span class="summary-value">{{ balance_due }}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Monthly Rent:</span>
-        <span class="summary-value">{{ monthly_rent }}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Utility Charges:</span>
-        <span class="summary-value">{{ utility_charges }}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Parking Fee:</span>
-        <span class="summary-value">{{ parking_fee }}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Last Payment:</span>
-        <span class="summary-value">{{ last_payment_date }}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Due Date:</span>
-        <span class="summary-value">{{ next_due_date }}</span>
-      </div>
-    </div>
-    <input class="authorize-checkbox" type="checkbox" id="authorize-rent-payment" name="authorize-rent-payment" />
-    <div class="i-authorize-this-rent-payment">
-      I authorize this rent payment
-    </div>
+
+    <main class="pay-rent-content">
+      <section class="pay-rent-summary-card" aria-labelledby="account-summary-heading">
+        <div>
+          <h2 id="account-summary-heading">Account Summary</h2>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Current Balance:</span>
+              <span class="summary-value">{{ balance_due }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Monthly Rent:</span>
+              <span class="summary-value">{{ monthly_rent }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Utility Charges:</span>
+              <span class="summary-value">{{ utility_charges }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Parking Fee:</span>
+              <span class="summary-value">{{ parking_fee }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Last Payment:</span>
+              <span class="summary-value">{{ last_payment_date }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Due Date:</span>
+              <span class="summary-value">{{ next_due_date }}</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="view-payment-history-button" type="button" id="view-payment-history-button">
+          View Payment History
+        </button>
+      </section>
+
+      <section class="secure-checkout" aria-labelledby="checkout-heading">
+        <div class="checkout-header">
+          <div>
+            <p class="checkout-kicker">Secure Checkout</p>
+            <h2 id="checkout-heading">Choose Payment Type</h2>
+          </div>
+        </div>
+
+        <div class="payment-type-options" role="radiogroup" aria-label="Payment type">
+          <label class="payment-type-option active" id="one-time-option">
+            <input type="radio" name="rent-payment-type" value="one_time" checked>
+            <span>One-Time Payment</span>
+            <small>Pay the current balance today.</small>
+          </label>
+          <label class="payment-type-option" id="recurring-option">
+            <input type="radio" name="rent-payment-type" value="recurring">
+            <span>Set Up Recurring Payment</span>
+            <small>Automatically pay rent each month.</small>
+          </label>
+        </div>
+
+        <div class="checkout-fields">
+          <label for="payment-amount">
+            <span>Amount</span>
+            <input id="payment-amount" type="text" value="{{ balance_due }}" readonly>
+          </label>
+          <label for="payment-method-card-bank">
+            <span>Payment Method</span>
+            <select id="payment-method-card-bank">
+              <option value="Bank Transfer">Bank account through secure checkout</option>
+              <option value="Card">Card through secure checkout</option>
+            </select>
+          </label>
+          <label for="monthly-payment-day">
+            <span>Monthly Payment Day</span>
+            <select id="monthly-payment-day">
+              <option value="1">1st of each month</option>
+              <option value="5">5th of each month</option>
+              <option value="10">10th of each month</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="checkout-authorization" for="authorize-rent-payment">
+          <input class="authorize-checkbox" type="checkbox" id="authorize-rent-payment" name="authorize-rent-payment" />
+          <span>I authorize this payment setup</span>
+        </label>
+
+        <div class="checkout-actions">
+          <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
+          <button class="submit-payment-button" type="button" id="submit-payment-button">
+            Submit Payment
+          </button>
+        </div>
+      </section>
+
+      <section class="payment-history-panel" id="payment-history-panel" hidden>
+        <div class="history-panel-header">
+          <h2>Payment History</h2>
+          <button class="close-history-button" type="button" id="close-history-button">Close</button>
+        </div>
+        <div class="payment-history-table">
+          <div class="payment-history-head">
+            <span>Date</span>
+            <span>Payment #</span>
+            <span>Amount</span>
+            <span>Status</span>
+          </div>
+          {% for payment in payment_history %}
+          <div class="payment-history-row">
+            <span>{{ payment.payment_date_display }}</span>
+            <span>{{ payment.payment_code }}</span>
+            <span>{{ payment.amount }}</span>
+            <span>{{ payment.status }}</span>
+          </div>
+          {% else %}
+          <div class="payment-history-row">
+            <span>--</span>
+            <span>No payments</span>
+            <span>--</span>
+            <span>--</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
   </div>
-  
+
   <script>
     const PAY_RENT_SUBMIT_URL = {{ url_for('pay_rent_submit') | tojson }};
     (function () {
       const cancelBtn = document.getElementById("cancel-button");
-      if (!cancelBtn) return;
+      const submitBtn = document.getElementById("submit-payment-button");
+      const historyBtn = document.getElementById("view-payment-history-button");
+      const historyPanel = document.getElementById("payment-history-panel");
+      const closeHistoryBtn = document.getElementById("close-history-button");
+      const paymentTypeRadios = document.querySelectorAll('input[name="rent-payment-type"]');
 
-      const inputIds = [
-        "payment-method-card-bank",
-        "account-to-pay",
-        "card-number-account-number",
-        "expiration-routing-last-4",
-        "billing-zip",
-        "billing-address",
-      ];
-
-      cancelBtn.addEventListener("click", function () {
-        inputIds.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el && "value" in el) el.value = "";
+      function updatePaymentTypeCards() {
+        paymentTypeRadios.forEach((radio) => {
+          radio.closest(".payment-type-option").classList.toggle("active", radio.checked);
         });
+      }
 
-        const authorize = document.getElementById("authorize-rent-payment");
-        if (authorize) authorize.checked = false;
+      paymentTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", updatePaymentTypeCards);
       });
 
-      const submitBtn = document.getElementById("submit-payment-button");
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", function () {
+          const authorize = document.getElementById("authorize-rent-payment");
+          const oneTime = document.querySelector('input[name="rent-payment-type"][value="one_time"]');
+          if (authorize) authorize.checked = false;
+          if (oneTime) oneTime.checked = true;
+          updatePaymentTypeCards();
+        });
+      }
+
+      if (historyBtn && historyPanel) {
+        historyBtn.addEventListener("click", function () {
+          historyPanel.hidden = false;
+        });
+      }
+
+      if (closeHistoryBtn && historyPanel) {
+        closeHistoryBtn.addEventListener("click", function () {
+          historyPanel.hidden = true;
+        });
+      }
+
       if (submitBtn) {
         submitBtn.addEventListener("click", function () {
           const authorize = document.getElementById("authorize-rent-payment");
+          const method = document.getElementById("payment-method-card-bank");
+          const paymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+
           if (!authorize || !authorize.checked) {
-            alert("Please authorize this rent payment first.");
+            alert("Please authorize this payment setup first.");
             return;
           }
-          const ok = confirm("Confirm payment submission?");
+
+          const label = paymentType && paymentType.value === "recurring" ? "recurring payment" : "one-time payment";
+          const ok = confirm(`Confirm ${label} submission?`);
           if (!ok) return;
 
           const fd = new FormData();
-          fd.append("method", document.getElementById("payment-method-card-bank").value);
-          fd.append("account_to_pay", document.getElementById("account-to-pay").value);
-          fd.append("last4", document.getElementById("expiration-routing-last-4").value);
-          fd.append("billing_zip", document.getElementById("billing-zip").value);
-          fd.append("billing_address", document.getElementById("billing-address").value);
+          fd.append("method", method ? method.value : "Bank Transfer");
+          fd.append("account_to_pay", label);
+          fd.append("last4", "0000");
+          fd.append("billing_zip", "00000");
+          fd.append("billing_address", "Secure checkout");
 
           fetch(PAY_RENT_SUBMIT_URL, {
             method: "POST",
@@ -220,6 +263,7 @@
                 return;
               }
               alert(`Payment submitted. Payment #: ${data.payment_code}. Confirmation #: ${data.confirmation}.`);
+              window.location.reload();
             })
             .catch(() => {
               alert("Could not submit payment.");
@@ -228,7 +272,5 @@
       }
     })();
   </script>
-
-
 </body>
 </html>
