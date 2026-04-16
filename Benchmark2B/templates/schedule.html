@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,10 +68,14 @@
         <h2>Filters</h2>
         <div class="filters-row">
           <select id="staffFilter">
+            {% if is_admin_view %}
             <option value="all">Staff</option>
             {% for staff in staff_options %}
             <option value="{{ staff }}">{{ staff }}</option>
             {% endfor %}
+            {% else %}
+            <option value="all">My Schedule</option>
+            {% endif %}
           </select>
           <input id="unitFilter" type="text" placeholder="Search Unit">
           <input id="woFilter" type="text" placeholder="Search WO#">
@@ -82,7 +87,7 @@
           <div class="content-card">
             <div class="calendar-toolbar">
               <button id="prevMonthBtn" type="button" class="calendar-nav-btn">Previous</button>
-              <h2 id="calendarTitle">March 2026 Staff Schedule</h2>
+              <h2 id="calendarTitle">March 2026 {{ "Staff Schedule" if is_admin_view else "My Schedule" }}</h2>
               <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
             </div>
             <div class="month-grid" id="monthGrid"></div>
@@ -90,21 +95,29 @@
         </div>
         <div class="schedule-right">
           <div class="content-card">
-            <h2>Work Orders For Today</h2>
+            <h2>{{ "Work Orders For Today" if is_admin_view else "Selected Schedule Details" }}</h2>
+            <div id="selectedEventDetails" class="selected-event-details">
+              <h3>Calendar Details</h3>
+              <p>Click a shift or work order on the calendar to view the time and details.</p>
+            </div>
+            {% if is_admin_view %}
             <div id="assignmentList" class="assignment-list">
               {% for order in schedule_work_orders %}
-              <div class="assignment-item" data-staff="{{ order.assigned_staff_name }}" data-unit="{{ order.unit }}" data-wo="{{ order.id }}">
+              <button class="assignment-item" type="button" data-staff="{{ order.assigned_staff_name }}" data-unit="{{ order.unit }}" data-wo="{{ order.id }}" data-date="{{ order.scheduled_date_iso }}">
                 <p><strong>{{ order.id }}</strong> | Unit {{ order.unit }}</p>
                 <p>Issue: {{ order.issue }}</p>
+                {% if is_admin_view %}
                 <p>Assigned To: {{ order.assigned_staff_name }}</p>
+                {% endif %}
                 <p>Scheduled: {{ order.due }} {{ order.time_window or "" }}</p>
-              </div>
+              </button>
               {% else %}
               <div class="assignment-item" data-staff="" data-unit="" data-wo="">
                 <p>No scheduled work orders found.</p>
               </div>
               {% endfor %}
             </div>
+            {% endif %}
           </div>
           <div class="content-card">
             <h2>Notes</h2>
@@ -130,16 +143,53 @@
     const woFilter = document.getElementById("woFilter");
     const applyBtn = document.getElementById("applyBtn");
     const assignmentItems = document.querySelectorAll(".assignment-item");
+    const selectedEventDetails = document.getElementById("selectedEventDetails");
+    const isAdminView = {{ is_admin_view | tojson }};
     let currentMonth = 2;
     let currentYear = 2026;
-    const shifts = {{ schedule_shifts | tojson }};
+    const calendarEvents = {{ schedule_events | tojson }};
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[char]));
+    }
+    function eventMatchesFilters(item) {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      const itemStaff = (item.staff || "").toLowerCase();
+      const itemUnit = (item.unit || "").toLowerCase();
+      const itemWO = (item.wo || "").toLowerCase();
+      const matchesStaff =
+        staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+      const matchesUnit =
+        unitValue === "" || itemUnit.includes(unitValue);
+      const matchesWO =
+        woValue === "" || itemWO.includes(woValue);
+      return matchesStaff && matchesUnit && matchesWO;
+    }
+    function showEventDetails(item) {
+      if (!selectedEventDetails || !item) return;
+      selectedEventDetails.innerHTML = `
+        <h3>${escapeHtml(item.type === "work_order" ? item.title : "Scheduled Shift")}</h3>
+        <p><strong>Time:</strong> ${escapeHtml(item.shift || item.time_window || "Scheduled")}</p>
+        ${item.unit ? `<p><strong>Unit:</strong> ${escapeHtml(item.unit)}</p>` : ""}
+        ${item.issue ? `<p><strong>Details:</strong> ${escapeHtml(item.issue)}</p>` : ""}
+        ${item.description ? `<p><strong>Description:</strong> ${escapeHtml(item.description)}</p>` : ""}
+        ${item.status ? `<p><strong>Status:</strong> ${escapeHtml(item.status)}</p>` : ""}
+      `;
+    }
     function renderCalendar(month, year) {
       const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
       ];
       const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      calendarTitle.textContent = `${monthNames[month]} ${year} Staff Schedule`;
+      calendarTitle.textContent = `${monthNames[month]} ${year} ${isAdminView ? "Staff Schedule" : "My Schedule"}`;
       monthGrid.innerHTML = "";
       dayNames.forEach((day) => {
         const head = document.createElement("div");
@@ -162,22 +212,26 @@
         dateLabel.className = "month-date";
         dateLabel.textContent = day;
         cell.appendChild(dateLabel);
-        const selectedStaff = staffFilter.value.toLowerCase().trim();
-        const dayShifts = shifts.filter((item) => {
+        const dayEvents = calendarEvents.filter((item) => {
           const matchesDate = item.date === dateString;
-          const matchesStaff =
-            selectedStaff === "all" ||
-            selectedStaff === "" ||
-            item.staff.toLowerCase().includes(selectedStaff);
-          return matchesDate && matchesStaff;
+          return matchesDate && eventMatchesFilters(item);
         });
-        dayShifts.forEach((item) => {
-          const task = document.createElement("div");
-          task.className = `calendar-task ${item.className}`;
+        dayEvents.forEach((item) => {
+          const task = document.createElement("button");
+          task.type = "button";
+          task.className = `calendar-task ${item.className} ${item.type === "work_order" ? "calendar-work-order" : "calendar-shift"}`;
+          const label = item.type === "work_order"
+            ? `${item.title} | Unit ${item.unit || "--"}`
+            : "Shift";
           task.innerHTML = `
-            <strong>${item.staff}</strong>
-            ${item.shift}
+            <strong>${escapeHtml(label)}</strong>
+            <span>${escapeHtml(item.shift || item.time_window || "Scheduled")}</span>
           `;
+          task.addEventListener("click", () => {
+            document.querySelectorAll(".calendar-task.selected").forEach((el) => el.classList.remove("selected"));
+            task.classList.add("selected");
+            showEventDetails(item);
+          });
           cell.appendChild(task);
         });
         monthGrid.appendChild(cell);
@@ -188,6 +242,7 @@
       const unitValue = unitFilter.value.toLowerCase().trim();
       const woValue = woFilter.value.toLowerCase().trim();
       assignmentItems.forEach((item) => {
+        if (!item.getAttribute("data-wo")) return;
         const itemStaff = item.getAttribute("data-staff").toLowerCase();
         const itemUnit = item.getAttribute("data-unit").toLowerCase();
         const itemWO = item.getAttribute("data-wo").toLowerCase();
@@ -221,6 +276,13 @@
     staffFilter.addEventListener("change", applyFilters);
     unitFilter.addEventListener("input", applyFilters);
     woFilter.addEventListener("input", applyFilters);
+    assignmentItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const wo = item.getAttribute("data-wo");
+        const matched = calendarEvents.find((event) => event.wo === wo);
+        showEventDetails(matched);
+      });
+    });
     document.getElementById("printBtn").addEventListener("click", () => {
       window.print();
     });
