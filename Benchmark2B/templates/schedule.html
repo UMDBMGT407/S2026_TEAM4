@@ -99,23 +99,6 @@
               <h3>{{ "Calendar Details" if is_admin_view else "Work Order Details" }}</h3>
               <p>{{ "Click a shift or work order on the calendar to view the time and details." if is_admin_view else "Click a work order on the calendar to view the time and details." }}</p>
             </div>
-            <h3 class="assignment-list-title">{{ "All Scheduled Work Orders" if is_admin_view else "My Scheduled Work Orders" }}</h3>
-            <div id="assignmentList" class="assignment-list">
-              {% for order in schedule_work_orders %}
-              <button class="assignment-item" type="button" data-staff="{{ order.assigned_staff_name }}" data-unit="{{ order.unit }}" data-wo="{{ order.id }}" data-date="{{ order.scheduled_date_iso }}">
-                <p><strong>{{ order.id }}</strong> | Unit {{ order.unit }}</p>
-                <p>Issue: {{ order.issue }}</p>
-                {% if is_admin_view %}
-                <p class="assignment-staff-line">Staff: {{ order.assigned_staff_name }}</p>
-                {% endif %}
-                <p>Scheduled: {{ order.due }} {{ order.time_window or "" }}</p>
-              </button>
-              {% else %}
-              <div class="assignment-item" data-staff="" data-unit="" data-wo="">
-                <p>No scheduled work orders found.</p>
-              </div>
-              {% endfor %}
-            </div>
           </div>
           <div class="content-card">
             <h2>Notes</h2>
@@ -156,9 +139,6 @@
       }[char]));
     }
     function eventMatchesFilters(item) {
-      if (isAdminView && item.type === "shift") {
-        return true;
-      }
       const staffValue = staffFilter.value.toLowerCase().trim();
       const unitValue = unitFilter.value.toLowerCase().trim();
       const woValue = woFilter.value.toLowerCase().trim();
@@ -181,8 +161,8 @@
         ${item.phone ? `<p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p>` : ""}
       ` : "";
       selectedEventDetails.innerHTML = `
-        <h3>${escapeHtml(item.type === "work_order" ? item.title : "Scheduled Shift")}</h3>
-        <p><strong>Type:</strong> ${escapeHtml(item.type === "work_order" ? "Work Order" : "Staff Shift")}</p>
+        <h3>${escapeHtml(item.type === "work_order" ? item.title : item.staff || item.title)}</h3>
+        <p><strong>Type:</strong> ${escapeHtml(item.type === "work_order" ? "Work Order" : "Staff Schedule")}</p>
         <p><strong>Time:</strong> ${escapeHtml(item.shift || item.time_window || "Scheduled")}</p>
         ${staffLine}
         ${workOrderFields}
@@ -223,9 +203,6 @@
         cell.appendChild(dateLabel);
         const dayEvents = calendarEvents.filter((item) => {
           const matchesDate = item.date === dateString;
-          if (isAdminView && item.type === "shift" && (item.staff || "").toLowerCase().replace(/\s+/g, "") === "staff1") {
-            return false;
-          }
           return matchesDate && eventMatchesFilters(item);
         });
         dayEvents.forEach((item) => {
@@ -235,10 +212,10 @@
           let label;
           if (item.type === "work_order") {
             label = isAdminView
-              ? `${item.title} | ${item.staff || "Staff"} | Unit ${item.unit || "--"}`
+              ? `${item.title} | Work Order`
               : `${item.title} | Unit ${item.unit || "--"}`;
           } else {
-            label = isAdminView ? `${item.staff || "Staff"} Shift` : "Shift";
+            label = item.staff || item.title || "Staff";
           }
           task.innerHTML = `
             <strong>${escapeHtml(label)}</strong>
@@ -288,4 +265,16 @@
         currentYear++;
       }
       renderCalendar(currentMonth, currentYear);
+    });
+    applyBtn.addEventListener("click", applyFilters);
+    staffFilter.addEventListener("change", applyFilters);
+    unitFilter.addEventListener("input", applyFilters);
+    woFilter.addEventListener("input", applyFilters);
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
+    renderCalendar(currentMonth, currentYear);
+  </script>
+</body>
+</html>
 
