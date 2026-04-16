@@ -1,0 +1,91 @@
+Benchmark 2B Page Actions Summary
+
+This project is a Flask application connected to the 407_courtyards MySQL database. The app.py file contains the routes for the pages and each page demonstrates at least one database-driven action.
+
+/login
+Page: templates/index.html
+Action: READ users table to authenticate a user with email and password.
+
+/
+Page: Role-based dashboard redirect
+Action: READ the logged-in user's role and send the user to the correct dashboard.
+
+/users
+Page: templates/Admindash.html
+Action: READ users table, INSERT new users, and DELETE users when allowed.
+
+/payments
+Page: templates/payments.html
+Action: READ payments, leases, residents, and units for the admin payment table.
+
+/payments/<payment_code>/status
+Page: templates/payments.html
+Action: UPDATE payments table to save a new payment status and notes.
+
+/work_order
+Page: templates/work_order.html
+Action: READ work_orders, maintenance_requests, users, leases, and units for admin/staff work order views.
+
+/work_order/update
+Page: templates/work_order.html and templates/maintenance.html
+Action: UPDATE work_orders table and matching maintenance_requests status.
+
+/schedule
+Page: templates/schedule.html
+Action: READ staff_schedule and work_orders to show staff shifts and assigned work orders.
+
+/apply
+Page: templates/apply.html
+Action: READ floorplans table to populate the floor plan choices.
+
+/apply/submit
+Page: templates/apply.html
+Action: INSERT a new applications record and INSERT a new prospect user account.
+
+/deposit
+Page: templates/deposit.html
+Action: READ the prospect's latest application and deposit details.
+
+/deposit/pay
+Page: templates/deposit.html
+Action: UPDATE applications table to mark the deposit as paid.
+
+/floorplan
+Page: templates/floorplan.html
+Action: READ floorplans table to display available floor plans.
+
+/lease_info
+Page: templates/Lease_info.html
+Action: READ leases, units, and floorplans for the resident's active lease.
+
+/maint_req
+Page: templates/Maint_Req.html
+Action: READ recent maintenance_requests for the logged-in resident.
+
+/maintenance/request
+Page: templates/Maint_Req.html
+Action: INSERT a new maintenance_requests record.
+
+/maintenance
+Page: templates/maintenance.html
+Action: READ assigned work_orders for the logged-in staff member.
+
+/pay_rent
+Page: templates/Pay_rent.html
+Action: READ the resident's lease, balance, and payment history.
+
+/pay_rent/submit
+Page: templates/Pay_rent.html
+Action: INSERT a new payments record for rent payment submission.
+
+/res_dash2
+Page: templates/Res_Dash2.html
+Action: READ resident balance, active lease, payments, and maintenance request summary.
+
+/status
+Page: templates/status.html
+Action: READ the prospect's application status from applications table.
+
+/logout
+Page: All logged-in views
+Action: Ends the current Flask login session.
