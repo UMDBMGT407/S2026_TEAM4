@@ -1,0 +1,976 @@
+@import url("figma-header-admin.css");
+@import url("figma-fullbleed.css");
+
+.cr-03-pay-rent,
+.cr-03-pay-rent * {
+  box-sizing: border-box;
+}
+.cr-03-pay-rent {
+  background: #ffffff;
+  min-height: 1280px;
+  position: relative;
+  overflow-x: hidden;
+}
+.background {
+  opacity: 0.7;
+  width: 1440px;
+  height: 1025px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 1440/1025;
+}
+.header {
+  background: #b3b3b3;
+  opacity: 0.85;
+  width: 1440px;
+  height: 93px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.action-items {
+  width: 430px;
+  height: 66px;
+  position: absolute;
+  left: 930px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.image-1 {
+  width: 109px;
+  height: 66px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
+  object-fit: cover;
+  aspect-ratio: 109/66;
+}
+.Logout {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
+}
+.role-indicator {
+  background: #757575;
+  border-radius: 999px;
+  min-width: 140px;
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+.logo {
+  width: 205px;
+  height: 105px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 205/105;
+}
+.Pay-Rent {
+   color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 426px;
+  top: 20px;
+  width: 501px;
+  height: 66px;
+}
+.sidebar {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 244px;
+  height: calc(100% - 93px);
+  min-height: 931px;
+  position: absolute;
+  left: 0px;
+  top: 93px;
+}
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 261px;
+  position: absolute;
+  left: 26px;
+  top: 240px;
+}
+.nav-buttons a {
+  font-size: 22px;
+  line-height: 1.2;
+}
+.dashboard {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.pay-rent {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.maintenance {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.my-lease {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.rectangle-1 {
+  border-radius: 0px;
+  opacity: 0.5;
+  width: 140px;
+  height: 46px;
+  position: absolute;
+  left: 14px;
+  top: 305px;
+  overflow: visible;
+}
+.rectangle-2 {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 1074px;
+  height: 171px;
+  position: absolute;
+  left: 297px;
+  top: 140px;
+}
+.simple-button {
+  background: #e9e9e9;
+  padding: 0px 20px 0px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 310px;
+  height: 60px;
+  position: absolute;
+  left: 1061px;
+  top: 887px;
+}
+.submit-payment-button {
+  color: #000000;
+  text-align: center;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.15;
+  position: relative;
+  cursor: pointer;
+}
+
+.submit-payment-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.account-summary {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 339px;
+  top: 162px;
+}
+.rectangle-5 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  width: 1074px;
+  height: 420px;
+  position: absolute;
+  left: 297px;
+  top: 341px;
+}
+
+.secure-checkout {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  width: 990px;
+  min-height: 330px;
+  padding: 24px 30px 26px;
+  position: absolute;
+  left: 327px;
+  top: 367px;
+}
+
+.checkout-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.checkout-kicker {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.checkout-header h2 {
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.payment-type-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.payment-type-option {
+  background: rgba(255, 255, 255, 0.78);
+  border: 2px solid rgba(0, 0, 0, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  gap: 5px;
+  min-height: 84px;
+  padding: 14px 16px 14px 44px;
+  position: relative;
+}
+
+.payment-type-option.active {
+  border-color: #4f6655;
+  box-shadow: 0 0 0 3px rgba(79, 102, 85, 0.16);
+}
+
+.payment-type-option input {
+  height: 18px;
+  left: 16px;
+  position: absolute;
+  top: 17px;
+  width: 18px;
+  accent-color: #4f6655;
+}
+
+.payment-type-option span {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.payment-type-option small {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.checkout-fields {
+  display: grid;
+  grid-template-columns: 0.75fr 1.1fr 0.8fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.checkout-fields label {
+  display: grid;
+  gap: 7px;
+}
+
+.checkout-fields span {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.checkout-fields input,
+.checkout-fields select {
+  background: #f4f4f4;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 15px;
+  height: 42px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.checkout-fields input:focus,
+.checkout-fields select:focus {
+  border-color: #4f6655;
+  box-shadow: 0 0 0 3px rgba(79, 102, 85, 0.18);
+  outline: none;
+}
+
+.checkout-authorization {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-top: 22px;
+}
+.expiration-routing-last-4 {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 844px;
+  top: 421px;
+}
+.card-number-account-number {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 327px;
+  top: 421px;
+}
+
+/* Payment form text inputs */
+.payment-method-card-bank-input,
+.account-to-pay-input,
+.card-number-account-number-input,
+.expiration-routing-last-4-input,
+.billing-zip-input,
+.billing-address-input {
+  background: #d9d9d9;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  padding: 0px 14px;
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+.payment-method-card-bank-input:focus,
+.account-to-pay-input:focus,
+.card-number-account-number-input:focus,
+.expiration-routing-last-4-input:focus,
+.billing-zip-input:focus,
+.billing-address-input:focus {
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+.payment-method-card-bank-input {
+  left: 327px;
+  top: 375px;
+}
+.account-to-pay-input {
+  left: 844px;
+  top: 375px;
+}
+.card-number-account-number-input {
+  left: 327px;
+  top: 448px;
+}
+.expiration-routing-last-4-input {
+  left: 844px;
+  top: 448px;
+}
+.billing-zip-input {
+  left: 327px;
+  top: 524px;
+}
+.billing-address-input {
+  left: 844px;
+  top: 524px;
+}
+.billing-zip {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 327px;
+  top: 497px;
+}
+.payment-method-card-bank {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 327px;
+  top: 347px;
+}
+.account-to-pay {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 844px;
+  top: 348px;
+}
+.billing-address {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 844px;
+  top: 497px;
+}
+.simple-button2 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 262px;
+  height: 60px;
+  position: absolute;
+  left: 297px;
+  top: 887px;
+}
+.cancel-button {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+}
+
+.cancel-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.simple-button3 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 310px;
+  height: 40px;
+  position: absolute;
+  left: 1025px;
+  top: 245px;
+}
+.view-payment-history-button {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+}
+
+.view-payment-history-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.balance-due-due-date {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 28px;
+  width: 620px;
+  position: absolute;
+  left: 339px;
+  top: 205px;
+}
+.summary-item {
+  white-space: nowrap;
+}
+.summary-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-weight: 600;
+}
+.summary-value {
+  margin-left: 6px;
+}
+.authorize-checkbox {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  position: static;
+  accent-color: #757575;
+  cursor: pointer;
+}
+
+.authorize-checkbox:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.checkout-authorization span {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.i-authorize-this-rent-payment {
+  display: none;
+}
+
+.payment-history-panel {
+  background: rgba(245, 245, 245, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.16);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  position: absolute;
+  left: 850px;
+  top: 300px;
+  width: 485px;
+  max-height: 365px;
+  overflow-y: auto;
+  padding: 18px 20px 22px;
+  z-index: 5;
+}
+
+.payment-history-panel[hidden] {
+  display: none;
+}
+
+.payment-history-panel.is-visible {
+  display: block;
+}
+
+.payment-history-panel h2 {
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.payment-history-table {
+  display: grid;
+  gap: 8px;
+}
+
+.payment-history-head,
+.payment-history-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1fr 0.9fr 0.85fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.payment-history-head {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.payment-history-row {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 15px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+}
+
+.cr-03-pay-rent {
+  background: transparent;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: 93px;
+  position: relative;
+}
+
+.cr-03-pay-rent .background {
+  height: calc(100% - 93px);
+  left: 0;
+  min-height: 760px;
+  object-fit: cover;
+  opacity: 0.55;
+  position: absolute;
+  top: 93px;
+  width: 100%;
+}
+
+.cr-03-pay-rent .top-header {
+  z-index: 3;
+}
+
+.pay-rent-content {
+  margin: 0 40px 0 280px;
+  max-width: none;
+  padding: 48px 28px 80px;
+  position: relative;
+  z-index: 1;
+  width: auto;
+}
+
+.pay-rent-summary-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.68);
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  margin: 0 auto 46px;
+  min-height: 170px;
+  padding: 28px 44px;
+  width: 100%;
+}
+
+.pay-rent-summary-card h2 {
+  color: #000000;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.summary-grid {
+  column-gap: 70px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  row-gap: 10px;
+}
+
+.pay-rent-summary-card .summary-item {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.pay-rent-summary-card .summary-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-weight: 600;
+}
+
+.pay-rent-summary-card .summary-value {
+  margin-left: 7px;
+}
+
+.pay-rent-summary-card .view-payment-history-button {
+  background: rgba(255, 255, 255, 0.64);
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  min-width: 310px;
+  padding: 17px 28px;
+  text-align: center;
+}
+
+.pay-rent-summary-card .view-payment-history-button:hover {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.cr-03-pay-rent .secure-checkout {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  margin: 0 auto;
+  min-height: 340px;
+  padding: 26px 34px 28px;
+  position: relative;
+  top: auto;
+  left: auto;
+  width: min(100%, 1060px);
+}
+
+.checkout-header {
+  margin-bottom: 20px;
+}
+
+.checkout-kicker {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.checkout-header h2 {
+  color: #000000;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+.payment-type-options {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 20px;
+}
+
+.payment-type-option {
+  background: rgba(255, 255, 255, 0.78);
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  border-radius: 7px;
+  cursor: pointer;
+  display: grid;
+  gap: 7px;
+  min-height: 88px;
+  padding: 16px 18px 16px 52px;
+  position: relative;
+}
+
+.payment-type-option.active {
+  border-color: #456553;
+  box-shadow: 0 0 0 3px rgba(69, 101, 83, 0.16);
+}
+
+.payment-type-option input {
+  accent-color: #456553;
+  height: 19px;
+  left: 19px;
+  position: absolute;
+  top: 20px;
+  width: 19px;
+}
+
+.payment-type-option span {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.payment-type-option small {
+  color: #000000;
+  font-size: 15px;
+}
+
+.checkout-fields {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 0.75fr 1.1fr 0.8fr;
+  margin-bottom: 24px;
+}
+
+.checkout-fields label {
+  display: grid;
+  gap: 8px;
+}
+
+.checkout-fields span {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.checkout-fields input,
+.checkout-fields select {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  height: 45px;
+  padding: 0 13px;
+  width: 100%;
+}
+
+.checkout-authorization {
+  align-items: center;
+  display: flex;
+  gap: 13px;
+  margin-top: 8px;
+}
+
+.checkout-authorization .authorize-checkbox {
+  accent-color: #456553;
+  height: 24px;
+  position: static;
+  width: 24px;
+}
+
+.checkout-authorization span {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 20px;
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.checkout-actions .cancel-button,
+.checkout-actions .submit-payment-button,
+.history-panel-header .close-history-button {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 6px;
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  padding: 12px 18px;
+}
+
+.checkout-actions .submit-payment-button {
+  background: #4f6655;
+  color: #ffffff;
+}
+
+.payment-history-panel {
+  background: rgba(245, 245, 245, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.16);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  left: auto;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 18px 20px 22px;
+  position: absolute;
+  right: 28px;
+  top: 165px;
+  width: 500px;
+  z-index: 5;
+}
+
+.history-panel-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.history-panel-header h2 {
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .cr-03-pay-rent .sidebar {
+    display: none;
+  }
+
+  .cr-03-pay-rent .nav-buttons {
+    background: rgba(255, 255, 255, 0.78);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    left: 16px;
+    padding: 14px;
+    right: 16px;
+    top: 108px;
+    width: auto;
+    z-index: 2;
+  }
+
+  .cr-03-pay-rent .nav-buttons a {
+    font-size: 18px;
+    width: auto;
+  }
+
+  .pay-rent-content {
+    margin: 96px 0 0;
+    padding: 28px 16px 60px;
+  }
+
+  .pay-rent-summary-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .summary-grid,
+  .payment-type-options,
+  .checkout-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .pay-rent-summary-card .view-payment-history-button {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .payment-history-panel {
+    left: 16px;
+    right: 16px;
+    top: 220px;
+    width: auto;
+  }
+}

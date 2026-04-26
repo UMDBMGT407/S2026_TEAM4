@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/floorplans.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>The Courtyards | Floor Plans</title>
+</head>
+<body>
+  <div class="pr-01-unit-search-inquiry-process-1-1">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('floorplan') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Floor Plans</h1>
+      </div>
+      <div class="header-right">
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator"><span class="user-role">Prospective Resident</span></div>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+    <div class="sidebar"></div>
+    <div class="left-side-options">
+      <a href="{{ url_for('floorplan') }}" class="floor-plans2">Floor plans</a>
+      <a href="{{ url_for('apply') }}" class="apply">Apply</a>
+      <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
+    </div>
+    <div class="all-floorplans">
+      {% set card_classes = ["floorplan-card", "floorplan-card2", "floorplan-card3", "floorplan-card4"] %}
+      {% set image_files = ["PRrectangle-40.png", "PRrectangle-41.png", "PRrectangle-42.png", "PRrectangle-43.png"] %}
+      {% set view_button_classes = ["simple-button", "simple-button", "simple-button3", "simple-button"] %}
+      {% set apply_button_classes = ["simple-button2", "simple-button2", "simple-button4", "simple-button2"] %}
+      {% set name_classes = ["_4-b-4-b", "_4-b-2-b", "_2-b-2-b-s", "_2-b-2-b-d"] %}
+      {% set summary_classes = ["_4-bed-4-bath-1-189-sq-ft", "_4-bed-2-bath-1-493-sq-ft", "_2-bed-2-bath-785-sq-ft", "_2-bed-2-bath-991-sq-ft"] %}
+      {% set rent_classes = ["_974-month", "_888-month", "_1-082-month", "_1-118-month"] %}
+      {% for plan in floorplans[:4] %}
+      <div class="{{ card_classes[loop.index0] }}">
+        {% set image_file = image_files[loop.index0] %}
+        <img class="rectangle-4" src="{{ url_for('static', filename='images/' ~ image_file) }}" />
+        <div class="{{ name_classes[loop.index0] }}">{{ plan.name }}</div>
+        <div class="{{ summary_classes[loop.index0] }}">{{ plan.summary }}</div>
+        <div class="{{ rent_classes[loop.index0] }}">{{ plan.rent_display }}/Month</div>
+        <a href="{{ url_for('static', filename='images/' ~ image_file) }}" target="_blank" rel="noopener" class="{{ view_button_classes[loop.index0] }}">
+          <div class="view">View</div>
+        </a>
+        <a href="{{ url_for('apply') }}" class="{{ apply_button_classes[loop.index0] }}">
+          <div class="apply2">Apply</div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

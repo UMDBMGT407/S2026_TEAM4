@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/Lease_info.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+       -webkit-font-smoothing: antialiased;
+   }
+
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+  </style>
+  <title>The Courtyards | My Lease</title>
+</head>
+<body>
+  <div class="cr-04-my-lease">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('res_dash2') }}">
+          <img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" />
+        </a>
+      </div>
+      <div class="header-center">
+        <h1>My Lease</h1>
+      </div>
+      <div class="header-right">
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+
+    <div class="sidebar"></div>
+
+    <div class="nav-buttons">
+      <a href="{{ url_for('res_dash2') }}" class="dashboard">Dashboard</a>
+      <a href="{{ url_for('pay_rent') }}" class="pay-rent">Pay Rent</a>
+      <a href="{{ url_for('maint_req') }}" class="maintenance">Maintenance</a>
+      <a href="{{ url_for('lease_info') }}" class="my-lease2">My Lease</a>
+    </div>
+
+    <div class="rectangle-2"></div>
+    <div class="lease-summary">Lease Summary</div>
+
+    <div class="lease-summary-details">
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Lease ID:</span>
+        <span class="lease-summary-value">{{ lease.lease_code if lease else "No active lease" }}</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Unit:</span>
+        <span class="lease-summary-value">{{ lease.building ~ " / Unit " ~ lease.unit_number if lease else "—" }}</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Floor Plan:</span>
+        <span class="lease-summary-value">{{ lease.floorplan_name if lease else "—" }}</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Lease Term:</span>
+        <span class="lease-summary-value">{{ lease.start_date_display ~ " - " ~ lease.end_date_display if lease else "—" }}</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Resident:</span>
+        <span class="lease-summary-value">{{ current_user.name }}</span>
+      </div>
+      <div class="lease-summary-item">
+        <span class="lease-summary-label">Monthly Rent:</span>
+        <span class="lease-summary-value">{{ lease.monthly_rent_display if lease else "—" }}</span>
+      </div>
+    </div>
+
+    <div class="rectangle-5"></div>
+    <div class="renewal">Renewal</div>
+    <div class="simple-button">
+      <button class="request-renewal-button" type="button" id="request-renewal-button">
+        Request Renewal
+      </button>
+    </div>
+    <div class="simple-button3">
+      <button class="download-lease-pdf-button" type="button" id="download-lease-pdf-button">
+        Download Lease PDF
+      </button>
+    </div>
+
+    <div class="renewal-details">
+      <div class="renewal-item">
+        <span class="renewal-label">Status:</span>
+        <span class="renewal-value">Eligible to Renew</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Deadline:</span>
+        <span class="renewal-value">04/10/2026</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Proposed Term:</span>
+        <span class="renewal-value">12 Months</span>
+      </div>
+      <div class="renewal-item">
+        <span class="renewal-label">Proposed Rent:</span>
+        <span class="renewal-value">$1,695.00 / month</span>
+      </div>
+    </div>
+
+    <div class="options-notes">Options / Notes</div>
+    <textarea
+      class="options-notes-textbox"
+      id="options-notes-textbox"
+      name="options-notes"
+      aria-label="Options / Notes"
+      rows="3"
+      placeholder="Add notes about lease questions, renewal preferences, or follow-up items."
+    ></textarea>
+
+    <div class="rectangle-16"></div>
+    <div class="documents-notices">Documents &amp; Notices</div>
+
+    <div class="frame-8 document-table-header">
+      <span>Document Name</span>
+      <span>Date</span>
+      <span>Type</span>
+      <span>Actions</span>
+    </div>
+    <div class="frame-9 document-row">
+      <span class="document-cell document-title">2026 Renewal Offer</span>
+      <span class="document-cell">03/01/2026</span>
+      <span class="document-cell">Renewal</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="2026 Renewal Offer"
+          data-doc-content="12-month renewal offer at $1,695.00 per month beginning June 1, 2026."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="2026 Renewal Offer"
+          data-doc-filename="2026-renewal-offer.txt"
+          data-doc-content="The Courtyards\n2026 Renewal Offer\nOffered term: 12 months\nMonthly rent: $1,695.00\nEffective date: 06/01/2026"
+        >
+          Download
+        </button>
+      </div>
+    </div>
+    <div class="frame-10 document-row">
+      <span class="document-cell document-title">Parking Addendum</span>
+      <span class="document-cell">02/01/2026</span>
+      <span class="document-cell">Addendum</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="Parking Addendum"
+          data-doc-content="Assigned parking space B-14 remains attached to the lease through the current term."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="Parking Addendum"
+          data-doc-filename="parking-addendum.txt"
+          data-doc-content="The Courtyards\nParking Addendum\nAssigned space: B-14\nMonthly parking fee: $40.00\nResident must display a valid permit."
+        >
+          Download
+        </button>
+      </div>
+    </div>
+    <div class="frame-11 document-row">
+      <span class="document-cell document-title">Water Shutoff Notice</span>
+      <span class="document-cell">03/07/2026</span>
+      <span class="document-cell">Notice</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="Water Shutoff Notice"
+          data-doc-content="Water service will be interrupted on March 18 from 10:00 AM to 2:00 PM for building-wide maintenance."
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="Water Shutoff Notice"
+          data-doc-filename="water-shutoff-notice.txt"
+          data-doc-content="The Courtyards\nWater Shutoff Notice\nDate: 03/18/2026\nTime: 10:00 AM - 2:00 PM\nReason: Building plumbing maintenance."
+        >
+          Download
+        </button>
+      </div>
+    </div>
+
+    <div class="simple-button2">
+      <a class="cancel" href="{{ url_for('res_dash2') }}" id="back-dashboard-button">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const requestBtn = document.getElementById("request-renewal-button");
+      const downloadLeaseBtn = document.getElementById("download-lease-pdf-button");
+      const docButtons = document.querySelectorAll(".doc-action-button");
+
+      function downloadTextFile(filename, content) {
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      if (requestBtn) {
+        requestBtn.addEventListener("click", () => {
+          const ok = confirm("Confirm renewal request?");
+          if (ok) alert("Renewal request sent");
+        });
+      }
+
+      if (downloadLeaseBtn) {
+        downloadLeaseBtn.addEventListener("click", () => {
+          alert("Use Save as PDF in the print dialog to export this sample lease page.");
+          window.print();
+        });
+      }
+
+      docButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.action;
+          const title = button.dataset.docTitle || "Document";
+          const content = button.dataset.docContent || "";
+
+          if (action === "view") {
+            alert(title + "\n\n" + content);
+            return;
+          }
+
+          if (action === "download") {
+            const filename = button.dataset.docFilename || "document.txt";
+            downloadTextFile(filename, content);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

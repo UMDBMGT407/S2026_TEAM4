@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/deposit.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+
+
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+
+       -webkit-font-smoothing: antialiased;
+   }
+
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+
+   .frame-5.deposit-page-main {
+     align-items: center;
+   }
+   .deposit-content-centered {
+     align-items: center;
+     text-align: center;
+     width: 100%;
+     padding-top: 8px;
+     min-height: 480px;
+     justify-content: center;
+     gap: 28px;
+   }
+   .deposit-content-centered .simple-button {
+     position: static;
+     left: auto;
+     top: auto;
+     width: auto;
+     align-self: center;
+   }
+   .deposit-content-centered .application-id-deposit-amount-due-date {
+     position: static;
+     left: auto;
+     top: auto;
+   }
+   .deposit-content-centered .api-settings {
+     width: 100%;
+     max-width: 420px;
+   }
+   .deposit-content-centered #paypal-button-container {
+     display: flex;
+     flex-wrap: wrap;
+     justify-content: center;
+   }
+   .deposit-content-centered h6 {
+     font-family: "Montserrat-SemiBold", sans-serif;
+     font-size: 1.1rem;
+   }
+   .deposit-content-centered .small {
+     font-size: 0.9rem;
+   }
+   .mb-1 { margin-bottom: 0.25rem; }
+   .mt-2 { margin-top: 0.5rem; }
+   .font-weight-bold { font-weight: 700; }
+   .text-success { color: #1a7f37; }
+   .text-danger { color: #b42318; }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="pr-03-deposit-payment-process-1-4">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('floorplan') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Deposit</h1>
+      </div>
+      <div class="header-right">
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator"><span class="user-role">Prospective Resident</span></div>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+    <div class="sidebar"></div>
+    <div class="nav-buttons">
+      <a href="{{ url_for('floorplan') }}" class="floor-plans">Floor plans</a>
+      <a href="{{ url_for('apply') }}" class="apply">Apply</a>
+      <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
+    </div>
+    <div class="frame-5 deposit-page-main">
+      <div class="frame-3 deposit-content-centered">
+        <div class="simple-button">
+          <a href="{{ url_for('status_page') }}" class="view-application">View Application</a>
+        </div>
+        <div class="application-id-deposit-amount-due-date">
+          Application ID: {{ application_code or "—" }}
+          <br />
+          Status: {{ application.status if application else "No application found" }}
+          <br />
+          Deposit Amount: ${{ deposit_amount }}
+          <br />
+          Due Date: {{ due_date_display or "—" }}
+        </div>
+        <!-- PayPal Panel -->
+        <div class="api-settings" id="paypalPanel">
+          <h6 class="mb-1 font-weight-bold">💳 Pay Deposit</h6>
+          <div id="paypal-button-container"></div>
+          <p id="paypal-status" class="small mt-2"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+  // Fetch PayPal Client ID from the server, then load the SDK and render the button
+  $.getJSON("/paypal/config", function(cfg) {
+    const script = document.createElement("script");
+    script.src = "https://www.paypal.com/sdk/js?client-id=" + cfg.client_id + "&currency=USD";
+    script.onload = function() {
+      paypal.Buttons({
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: "4.99" } }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function() {
+            $.ajax({
+              url: "/paypal/verify",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({ orderID: data.orderID }),
+              success: function(res) {
+                $("#paypal-status").html(
+                  '<span class="text-success">✅ ' + res.message + '</span>'
+                );
+              }
+            });
+          });
+        },
+        onError: function(err) {
+          $("#paypal-status").html('<span class="text-danger">❌ Payment failed. Please try again.</span>');
+        }
+      }).render("#paypal-button-container");
+    };
+    document.body.appendChild(script);
+  });
+</script>
+</body>
+</html>

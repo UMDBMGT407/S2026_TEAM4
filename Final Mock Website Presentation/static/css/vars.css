@@ -1,0 +1,8 @@
+:root {
+  --app-font-family: "Montserrat", sans-serif;
+  --color-text: #000000;
+  --color-background: #ffffff;
+  --color-surface: rgba(217, 217, 217, 0.82);
+  --color-surface-strong: rgba(179, 179, 179, 0.9);
+  --color-pill: #6b6b6b;
+}

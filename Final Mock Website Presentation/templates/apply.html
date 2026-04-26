@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/apply.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="pr-02-lease-application-form-process-1-2">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('floorplan') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Application</h1>
+      </div>
+      <div class="header-right">
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator"><span class="user-role">Prospective Resident</span></div>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+    <div class="sidebar"></div>
+    <div class="nav-btns">
+      <div class="nav-buttons">
+        <a href="{{ url_for('floorplan') }}" class="floor-plans">Floor plans</a>
+        <a href="{{ url_for('apply') }}" class="apply">Apply</a>
+        <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
+      </div>
+    </div>
+    <div class="page">
+      <div class="frame-2">
+        <div class="rectangle-5"></div>
+        <div class="form-content">
+          <div class="move-in-date">Move-In-Date</div>
+          <div class="preferred-floor-plan-unit">Preferred Floor plan/Unit</div>
+          <label class="password-label" for="application-password">Password</label>
+          <div class="rectangle-password">
+            <form>
+              <div class="mb-3 password-field-wrap">
+                <input type="password" class="form-control form-control-password" id="application-password" name="application_password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="password-toggle" aria-pressed="false" aria-label="Show password">Show</button>
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-9">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-10"></div>
+          <input type="file" id="upload-id-file" class="upload-id-file" accept="image/*,application/pdf" hidden />
+          <button type="button" class="upload-id-button" id="upload-id-button">Upload ID</button>
+          <div class="rectangle-16"></div>
+          <input type="file" id="upload-doc-file" name="supporting_docs" class="upload-doc-file" accept="image/*,application/pdf,.doc,.docx,.txt" multiple hidden />
+          <button type="button" class="upload-doc-button" id="upload-doc-button">Upload Documents</button>
+          <div class="rectangle-11"></div>
+          <div class="rectangle-8">
+            <form>
+              <div class="mb-3">
+              <select class="form-control" id="floor-plan" name="floor_plan" aria-label="Preferred Floor plan/Unit">
+                <option value="">Select floor plan…</option>
+                {% for floorplan in floorplans %}
+                <option value="{{ floorplan.name }}">{{ floorplan.name }} - {{ floorplan.rent_display }}/Month</option>
+                {% endfor %}
+              </select>
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-7">
+            <form>
+              <div class="mb-3">
+              <input type="email" class="form-control" id="email" name="email" autocomplete="email">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-first-name">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-last-name">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-12">
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control" id="student-id" name="student_id">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-13">
+            <form>
+              <div class="mb-3">
+              <input type="tel" class="form-control" id="phone-number" name="phone" autocomplete="tel">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-14">
+            <form>
+              <div class="mb-3">
+              <input type="date" class="form-control" id="move-in-date" name="move_in_date">
+              </div>
+            </form>
+          </div>
+          <div class="rectangle-15">
+            <form>
+              <div class="mb-3">
+              <input type="tel" class="form-control" id="emergency-contact-phone" name="emergency_contact_phone" autocomplete="tel">
+              </div>
+            </form>
+          </div>
+          <div class="notes-optional">Notes (optional)
+            <form>
+              <div class="mb-3">
+              <input type="text" class="form-control1" id="notes" name="notes" placeholder="Any additional information you'd like to provide">
+              </div>
+            </form>
+          </div>
+          <div class="uploads">Uploads</div>
+          <div class="upload-id-placeholder">Upload ID</div>
+          <div class="upload-supporting-documents">Upload Supporting Documents</div>
+          <div class="emergency-contact-name">Emergency Contact Name</div>
+          <label class="first-name-label" for="first-name">First Name</label>
+          <label class="last-name-label" for="last-name">Last Name</label>
+          <div class="email">Email</div>
+          <div class="student-id">Student ID</div>
+          <div class="phone-number">Phone Number</div>
+          <div class="emergency-contact-phone">Emergency Contact Phone</div>
+        </div>
+      </div>
+      <div class="bottom-btns">
+        <div class="simple-button">
+          <a href="{{ url_for('deposit') }}" class="submit-application" id="submit-application">Submit Application</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    var APPLY_SUBMIT_URL = {{ url_for('apply_submit') | tojson }};
+    (function () {
+      function wireUpload(buttonId, inputId, labelPrefix) {
+        var btn = document.getElementById(buttonId);
+        var input = document.getElementById(inputId);
+        if (!btn || !input) return;
+
+        btn.addEventListener('click', function () {
+          input.click();
+        });
+
+        input.addEventListener('change', function () {
+          var files = input.files ? Array.from(input.files) : [];
+          if (files.length === 0) return;
+          if (files.length === 1) btn.textContent = labelPrefix + files[0].name;
+          else btn.textContent = labelPrefix + files.length + ' files selected';
+        });
+      }
+
+      wireUpload('upload-id-button', 'upload-id-file', 'ID: ');
+      wireUpload('upload-doc-button', 'upload-doc-file', 'Docs: ');
+
+      var pwInput = document.getElementById('application-password');
+      var pwToggle = document.getElementById('password-toggle');
+      if (pwInput && pwToggle) {
+        pwToggle.addEventListener('click', function () {
+          var show = pwInput.type === 'password';
+          pwInput.type = show ? 'text' : 'password';
+          pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+          pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+          pwToggle.textContent = show ? 'Hide' : 'Show';
+        });
+      }
+
+      var submitLink = document.getElementById('submit-application');
+      if (submitLink) {
+        submitLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          var missing = [];
+
+          function needText(id, label) {
+            var el = document.getElementById(id);
+            if (!el || !String(el.value || '').trim()) missing.push(label);
+          }
+
+          needText('first-name', 'First Name');
+          needText('last-name', 'Last Name');
+          needText('email', 'Email');
+          var emailEl = document.getElementById('email');
+          if (emailEl && String(emailEl.value || '').trim() && typeof emailEl.checkValidity === 'function' && !emailEl.checkValidity()) {
+            missing.push('Email (valid address required)');
+          }
+          needText('application-password', 'Password');
+          needText('student-id', 'Student ID');
+          needText('phone-number', 'Phone Number');
+          var floorPlan = document.getElementById('floor-plan');
+          if (!floorPlan || !String(floorPlan.value || '').trim()) {
+            missing.push('Preferred Floor plan/Unit');
+          }
+          needText('move-in-date', 'Move-In Date');
+          needText('emergency-contact-name', 'Emergency Contact Name');
+          needText('emergency-contact-phone', 'Emergency Contact Phone');
+
+          var idUpload = document.getElementById('upload-id-file');
+          if (!idUpload || !idUpload.files || idUpload.files.length === 0) {
+            missing.push('Upload ID');
+          }
+
+          if (missing.length > 0) {
+            alert(
+              'Please complete all required fields before submitting:\n\n• ' +
+                missing.join('\n• ')
+            );
+            return false;
+          }
+
+          var fd = new FormData();
+          fd.append('first_name', document.getElementById('first-name').value.trim());
+          fd.append('last_name', document.getElementById('last-name').value.trim());
+          fd.append('email', document.getElementById('email').value.trim());
+          fd.append('password', document.getElementById('application-password').value);
+          fd.append('student_id', document.getElementById('student-id').value.trim());
+          fd.append('phone', document.getElementById('phone-number').value.trim());
+          fd.append('floor_plan', document.getElementById('floor-plan').value);
+          fd.append('move_in_date', document.getElementById('move-in-date').value);
+          fd.append('emergency_contact_name', document.getElementById('emergency-contact-name').value.trim());
+          fd.append('emergency_contact_phone', document.getElementById('emergency-contact-phone').value.trim());
+          var notesEl = document.getElementById('notes');
+          fd.append('notes', notesEl ? String(notesEl.value || '').trim() : '');
+          fd.append('id_upload', idUpload.files[0]);
+          var docsInput = document.getElementById('upload-doc-file');
+          if (docsInput && docsInput.files && docsInput.files.length) {
+            for (var di = 0; di < docsInput.files.length; di++) {
+              fd.append('supporting_docs', docsInput.files[di]);
+            }
+          }
+
+          submitLink.style.pointerEvents = 'none';
+          fetch(APPLY_SUBMIT_URL, {
+            method: 'POST',
+            body: fd,
+            credentials: 'same-origin',
+          })
+            .then(function (res) {
+              return res.json().then(function (data) {
+                return { res: res, data: data };
+              });
+            })
+            .then(function (out) {
+              submitLink.style.pointerEvents = '';
+              if (!out.res.ok) {
+                alert(out.data.error || 'Could not submit application. Please try again.');
+                return;
+              }
+              if (out.data.redirect) {
+                window.location.href = out.data.redirect;
+              }
+            })
+            .catch(function () {
+              submitLink.style.pointerEvents = '';
+              alert('Could not submit application. Please check your connection and try again.');
+            });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

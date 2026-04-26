@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars3.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style3.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+</head>
+<body>
+  <div class="admin-page {{ 'admin-schedule-view' if is_admin_view else 'staff-schedule-view' }}">
+    <header class="top-header">
+      <div class="header-left">
+        <img src="{{ url_for('static', filename='images/logo0.png') }}" class="logo" alt="Courtyards logo">
+      </div>
+      <div class="header-center">
+        <h1>Schedule</h1>
+      </div>
+
+      <div class="header-right">
+        <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
+              <div class="container mt-4">
+    <!-- Header with Logout -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+        </div>
+      </div>
+      </div>
+    </header>
+    <aside class="sidebar">
+  <nav class="sidebar-nav">
+    <a id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
+    {% if show_payments_link %}
+    <a id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
+    {% endif %}
+    <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
+    <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
+  </nav>
+</aside>
+    <main class="main-content">
+      <section class="summary-row">
+        <div class="summary-card">
+          <p>{{ "Staff Scheduled Today" if is_admin_view else "My Scheduled Work Orders" }}</p>
+          <h3>{{ schedule_summary.staff_scheduled if is_admin_view else schedule_summary.work_orders }}</h3>
+          <span>{{ "March 2026" if is_admin_view else "Staff1 assignments" }}</span>
+        </div>
+        <div class="summary-card">
+          <p>{{ "Work Orders Today" if is_admin_view else "Open Work Orders" }}</p>
+          <h3>{{ schedule_summary.work_orders }}</h3>
+          <span>{{ "assigned orders" if is_admin_view else "assigned to Staff1" }}</span>
+        </div>
+        <div class="summary-card">
+          <p>{{ "Open Shifts This Week" if is_admin_view else "Active Work Orders" }}</p>
+          <h3>{{ schedule_summary.open_shifts }}</h3>
+          <span>{{ "upcoming schedule" if is_admin_view else "work-order calendar" }}</span>
+        </div>
+      </section>
+      <section class="filters-card">
+        <h2>Filters</h2>
+        <div class="filters-row">
+          <select id="staffFilter">
+            {% if is_admin_view %}
+            <option value="all">Staff</option>
+            {% for staff in staff_options %}
+            <option value="{{ staff }}">{{ staff }}</option>
+            {% endfor %}
+            {% else %}
+            <option value="all">My Schedule</option>
+            {% endif %}
+          </select>
+          <input id="unitFilter" type="text" placeholder="Search Unit">
+          <input id="woFilter" type="text" placeholder="Search WO#">
+          <button id="applyBtn" type="button">Apply</button>
+        </div>
+      </section>
+      <section class="schedule-layout">
+        <div class="schedule-left">
+          <div class="content-card">
+            <div class="calendar-toolbar">
+              <button id="prevMonthBtn" type="button" class="calendar-nav-btn">Previous</button>
+              <h2 id="calendarTitle">March 2026 {{ "Staff Schedule" if is_admin_view else "My Schedule" }}</h2>
+              <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
+            </div>
+            <div class="month-grid" id="monthGrid"></div>
+          </div>
+        </div>
+        <div class="schedule-right">
+          <div class="content-card">
+            <h2>{{ "Calendar Details" if is_admin_view else "Selected Schedule Details" }}</h2>
+            <div id="selectedEventDetails" class="selected-event-details">
+              <h3>{{ "Calendar Details" if is_admin_view else "Work Order Details" }}</h3>
+              <p>{{ "Click a shift or work order on the calendar to view the time and details." if is_admin_view else "Click a work order on the calendar to view the time and details." }}</p>
+            </div>
+          </div>
+          <div class="content-card">
+            <h2>Notes</h2>
+            <textarea id="scheduleNotes" rows="6" placeholder="Add notes about today’s staff schedule or work orders..."></textarea>
+          </div>
+          <div class="content-card">
+            <div class="schedule-actions">
+              <a href="{{ url_for(back_endpoint) }}" class="back-btn" id="backLink">Back to Dashboard</a>
+              <button id="printBtn" type="button" class="print-btn">Print Schedule</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const monthGrid = document.getElementById("monthGrid");
+    const calendarTitle = document.getElementById("calendarTitle");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const staffFilter = document.getElementById("staffFilter");
+    const unitFilter = document.getElementById("unitFilter");
+    const woFilter = document.getElementById("woFilter");
+    const applyBtn = document.getElementById("applyBtn");
+    const assignmentItems = document.querySelectorAll(".assignment-item");
+    const selectedEventDetails = document.getElementById("selectedEventDetails");
+    const isAdminView = {{ is_admin_view | tojson }};
+    let currentMonth = 2;
+    let currentYear = 2026;
+    const calendarEvents = {{ schedule_events | tojson }};
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[char]));
+    }
+    function eventMatchesFilters(item) {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      const itemStaff = (item.staff || "").toLowerCase();
+      const itemUnit = (item.unit || "").toLowerCase();
+      const itemWO = (item.wo || "").toLowerCase();
+      const matchesStaff =
+        staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+      const matchesUnit =
+        unitValue === "" || itemUnit.includes(unitValue);
+      const matchesWO =
+        woValue === "" || itemWO.includes(woValue);
+      return matchesStaff && matchesUnit && matchesWO;
+    }
+    function showEventDetails(item) {
+      if (!selectedEventDetails || !item) return;
+      const staffLine = isAdminView && item.staff ? `<p><strong>Staff:</strong> ${escapeHtml(item.staff)}</p>` : "";
+      const workOrderFields = item.type === "work_order" ? `
+        ${item.resident ? `<p><strong>Resident:</strong> ${escapeHtml(item.resident)}</p>` : ""}
+        ${item.phone ? `<p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p>` : ""}
+      ` : "";
+      selectedEventDetails.innerHTML = `
+        <h3>${escapeHtml(item.type === "work_order" ? item.title : item.staff || item.title)}</h3>
+        <p><strong>Type:</strong> ${escapeHtml(item.type === "work_order" ? "Work Order" : "Staff Schedule")}</p>
+        <p><strong>Time:</strong> ${escapeHtml(item.shift || item.time_window || "Scheduled")}</p>
+        ${staffLine}
+        ${workOrderFields}
+        ${item.unit ? `<p><strong>Unit:</strong> ${escapeHtml(item.unit)}</p>` : ""}
+        ${item.issue ? `<p><strong>Details:</strong> ${escapeHtml(item.issue)}</p>` : ""}
+        ${item.description ? `<p><strong>Description:</strong> ${escapeHtml(item.description)}</p>` : ""}
+        ${item.status ? `<p><strong>Status:</strong> ${escapeHtml(item.status)}</p>` : ""}
+      `;
+    }
+    function renderCalendar(month, year) {
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      calendarTitle.textContent = `${monthNames[month]} ${year} ${isAdminView ? "Staff Schedule" : "My Schedule"}`;
+      monthGrid.innerHTML = "";
+      dayNames.forEach((day) => {
+        const head = document.createElement("div");
+        head.className = "month-head";
+        head.textContent = day;
+        monthGrid.appendChild(head);
+      });
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.className = "month-cell empty-cell";
+        monthGrid.appendChild(blank);
+      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const cell = document.createElement("div");
+        cell.className = "month-cell";
+        const dateLabel = document.createElement("div");
+        dateLabel.className = "month-date";
+        dateLabel.textContent = day;
+        cell.appendChild(dateLabel);
+        const dayEvents = calendarEvents.filter((item) => {
+          const matchesDate = item.date === dateString;
+          return matchesDate && eventMatchesFilters(item);
+        });
+        dayEvents.forEach((item) => {
+          const task = document.createElement("button");
+          task.type = "button";
+          task.className = `calendar-task ${item.className} ${item.type === "work_order" ? "calendar-work-order" : "calendar-shift"}`;
+          let label;
+          if (item.type === "work_order") {
+            label = isAdminView
+              ? `${item.title} | Work Order`
+              : `${item.title} | Unit ${item.unit || "--"}`;
+          } else {
+            label = item.staff || item.title || "Staff";
+          }
+          task.innerHTML = `
+            <strong>${escapeHtml(label)}</strong>
+            <span>${escapeHtml(item.shift || item.time_window || "Scheduled")}</span>
+          `;
+          task.addEventListener("click", () => {
+            document.querySelectorAll(".calendar-task.selected").forEach((el) => el.classList.remove("selected"));
+            task.classList.add("selected");
+            showEventDetails(item);
+          });
+          cell.appendChild(task);
+        });
+        monthGrid.appendChild(cell);
+      }
+    }
+    function applyFilters() {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      assignmentItems.forEach((item) => {
+        if (!item.getAttribute("data-wo")) return;
+        const itemStaff = item.getAttribute("data-staff").toLowerCase();
+        const itemUnit = item.getAttribute("data-unit").toLowerCase();
+        const itemWO = item.getAttribute("data-wo").toLowerCase();
+        const matchesStaff =
+          staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+        const matchesUnit =
+          unitValue === "" || itemUnit.includes(unitValue);
+        const matchesWO =
+          woValue === "" || itemWO.includes(woValue);
+        item.style.display = matchesStaff && matchesUnit && matchesWO ? "" : "none";
+      });
+      renderCalendar(currentMonth, currentYear);
+    }
+    prevMonthBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    nextMonthBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    applyBtn.addEventListener("click", applyFilters);
+    staffFilter.addEventListener("change", applyFilters);
+    unitFilter.addEventListener("input", applyFilters);
+    woFilter.addEventListener("input", applyFilters);
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
+    renderCalendar(currentMonth, currentYear);
+  </script>
+</body>
+</html>
+
