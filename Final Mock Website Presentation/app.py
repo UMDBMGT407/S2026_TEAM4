@@ -248,6 +248,7 @@ def _deposit_page_context(email):
     return {
         "application_code": application_code,
         "deposit_amount": deposit_amount,
+        "deposit_amount_value": f"{deposit_amount:.2f}",
         "due_date_display": due_date_display,
     }
 
@@ -382,7 +383,9 @@ def _resident_dashboard_context(user_id):
         "payments": payments,
         "payment_history": payment_history,
         "balance_due": money(balance_due),
+        "balance_due_value": f"{float(balance_due):.2f}",
         "monthly_rent": money(monthly_rent),
+        "monthly_rent_value": f"{float(monthly_rent):.2f}",
         "utility_charges": money(95),
         "parking_fee": money(40),
         "last_payment_date": last_payment["payment_date_display"] if last_payment else "--",
@@ -1040,8 +1043,12 @@ def _apply_validation_errors(form, files):
         errors.append("Password")
     if not student_id:
         errors.append("Student ID")
+    elif not student_id.isdigit() or len(student_id) != 9:
+        errors.append("Student ID must be 9 digits")
     if not phone:
         errors.append("Phone Number")
+    elif not phone.isdigit() or len(phone) != 10:
+        errors.append("Phone Number must be 10 digits")
     if not floor_plan:
         errors.append("Preferred Floor plan/Unit")
     if not move_in:
@@ -1050,6 +1057,8 @@ def _apply_validation_errors(form, files):
         errors.append("Emergency Contact Name")
     if not emergency_phone:
         errors.append("Emergency Contact Phone")
+    elif not emergency_phone.isdigit() or len(emergency_phone) != 10:
+        errors.append("Emergency Contact Phone must be 10 digits")
 
     id_upload = files.get("id_upload")
     if not id_upload or not (id_upload.filename or "").strip():
@@ -1487,13 +1496,22 @@ def pay_rent_submit():
     if not lease:
         return jsonify({"error": "No active lease was found for this resident."}), 400
 
-    method_raw = (request.form.get("method") or "").strip().lower()
-    method = "Bank Transfer" if "bank" in method_raw else "Card"
-    account_to_pay = (request.form.get("account_to_pay") or "").strip()
-    last4 = (request.form.get("last4") or "").strip()[-4:]
-    billing_zip = (request.form.get("billing_zip") or "").strip()
-    if not method_raw or not account_to_pay or not last4 or not billing_zip:
-        return jsonify({"error": "Please complete the payment form before submitting."}), 400
+    payload = request.get_json(silent=True) or {}
+    paypal_order_id = (payload.get("paypal_order_id") or "").strip()
+    if paypal_order_id:
+        method = "Card"
+        payment_status = "Paid"
+        payment_notes = f"Submitted online through PayPal order {paypal_order_id}."
+    else:
+        method_raw = (request.form.get("method") or "").strip().lower()
+        method = "Bank Transfer" if "bank" in method_raw else "Card"
+        account_to_pay = (request.form.get("account_to_pay") or "").strip()
+        last4 = (request.form.get("last4") or "").strip()[-4:]
+        billing_zip = (request.form.get("billing_zip") or "").strip()
+        if not method_raw or not account_to_pay or not last4 or not billing_zip:
+            return jsonify({"error": "Please complete the payment form before submitting."}), 400
+        payment_status = "Pending"
+        payment_notes = f"Submitted online for {account_to_pay}; ending {last4}."
 
     cur = mysql.connection.cursor()
     payment_code = unique_code(cur, "payments", "payment_code", "P", 4)
@@ -1502,16 +1520,17 @@ def pay_rent_submit():
         "INSERT INTO payments "
         "(payment_code, lease_id, resident_user_id, amount, method, status, "
         "payment_date, confirmation_number, notes) "
-        "VALUES (%s, %s, %s, %s, %s, 'Pending', %s, %s, %s)",
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
         (
             payment_code,
             lease["id"],
             current_user.id,
             lease["monthly_rent"],
             method,
+            payment_status,
             date.today(),
             confirmation,
-            f"Submitted online for {account_to_pay}; ending {last4}.",
+            payment_notes,
         ),
     )
     mysql.connection.commit()
@@ -1550,6 +1569,7 @@ def status_page():
 
 @app.route("/paypal/config", methods=["GET"])
 @login_required
+@role_required("Prospect", "Resident")
 def paypal_config():
     """Return the PayPal Client ID to the frontend.
     The key stays in .env and is never hardcoded in HTML."""
@@ -1557,6 +1577,7 @@ def paypal_config():
 
 @app.route("/paypal/verify", methods=["POST"])
 @login_required
+@role_required("Prospect", "Resident")
 def paypal_verify():
     """Called after a PayPal payment completes.
     The frontend sends the order ID; we confirm it was paid."""
@@ -1570,7 +1591,7 @@ def paypal_verify():
     # For this assignment, we trust the client confirmation and log it.
     print(f"✅ PayPal payment confirmed by user {current_user.id}: order {order_id}")
 
-    return jsonify(status="success", message="Payment confirmed! Premium access granted."), 200
+    return jsonify(status="success", message="Payment confirmed."), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))
