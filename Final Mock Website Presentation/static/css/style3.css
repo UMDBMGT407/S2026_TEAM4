@@ -165,6 +165,10 @@ body {
   gap: 10px;
 }
 
+.schedule-management-form {
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+}
+
 .filters-row select,
 .filters-row input {
   height: 38px;
