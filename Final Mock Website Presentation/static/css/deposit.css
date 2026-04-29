@@ -430,3 +430,254 @@
   border: 0px solid #ccc;
   border-radius: 4px;
 }
+
+.pr-03-deposit-payment-process-1-4 {
+  background: transparent;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: 93px;
+  position: relative;
+}
+
+.pr-03-deposit-payment-process-1-4 .background {
+  height: calc(100% - 93px);
+  left: 0;
+  min-height: 760px;
+  object-fit: cover;
+  opacity: 0.55;
+  position: absolute;
+  top: 93px;
+  width: 100%;
+}
+
+.pr-03-deposit-payment-process-1-4 .top-header {
+  z-index: 3;
+}
+
+.deposit-flow-content {
+  margin: 0 40px 0 280px;
+  padding: 48px 28px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.deposit-info-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  margin: 0 auto 46px;
+  min-height: 170px;
+  padding: 28px 44px;
+  width: 100%;
+}
+
+.deposit-info-card h2,
+.deposit-checkout-card h2 {
+  color: #000000;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.deposit-summary-grid {
+  column-gap: 70px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  row-gap: 10px;
+}
+
+.summary-item {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.summary-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-weight: 600;
+}
+
+.summary-value {
+  margin-left: 7px;
+}
+
+.view-application-button {
+  background: rgba(255, 255, 255, 0.78);
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  min-width: 260px;
+  padding: 17px 28px;
+  text-align: center;
+}
+
+.deposit-checkout-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  margin: 0 auto;
+  min-height: 340px;
+  padding: 26px 34px 28px;
+  position: relative;
+  width: min(100%, 1060px);
+}
+
+.checkout-header {
+  margin-bottom: 20px;
+}
+
+.checkout-kicker {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.checkout-fields {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 24px;
+}
+
+.checkout-fields label {
+  display: grid;
+  gap: 8px;
+}
+
+.checkout-fields span {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.checkout-fields input,
+.checkout-fields select {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  height: 45px;
+  padding: 0 13px;
+  width: 100%;
+}
+
+.checkout-authorization {
+  align-items: center;
+  display: flex;
+  gap: 13px;
+  margin-top: 8px;
+}
+
+.checkout-authorization .authorize-checkbox {
+  accent-color: #456553;
+  height: 24px;
+  position: static;
+  width: 24px;
+}
+
+.checkout-authorization span {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 20px;
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.checkout-actions .cancel-button,
+.checkout-actions .submit-deposit-button {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 6px;
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  padding: 12px 18px;
+}
+
+.checkout-actions .submit-deposit-button {
+  background: #4f6655;
+  color: #ffffff;
+}
+
+.checkout-actions .submit-deposit-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.deposit-status-message {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  margin-top: 18px;
+  min-height: 22px;
+}
+
+.text-success {
+  color: #1a7f37;
+}
+
+.text-danger {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .pr-03-deposit-payment-process-1-4 .sidebar {
+    display: none;
+  }
+
+  .pr-03-deposit-payment-process-1-4 .nav-buttons {
+    background: rgba(255, 255, 255, 0.78);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    left: 16px;
+    padding: 14px;
+    right: 16px;
+    top: 108px;
+    width: auto;
+    z-index: 2;
+  }
+
+  .pr-03-deposit-payment-process-1-4 .nav-buttons a {
+    font-size: 18px;
+    width: auto;
+  }
+
+  .deposit-flow-content {
+    margin: 96px 0 0;
+    padding: 28px 16px 60px;
+  }
+
+  .deposit-info-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .deposit-summary-grid,
+  .checkout-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .view-application-button {
+    min-width: 0;
+    width: 100%;
+  }
+}
