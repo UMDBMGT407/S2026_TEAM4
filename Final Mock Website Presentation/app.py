@@ -583,6 +583,16 @@ def _resident_lease_rows():
     )
 
 
+def _uploaded_document_link(label, stored_path):
+    if not stored_path or not str(stored_path).strip():
+        return None
+    clean_path = str(stored_path).strip()
+    if clean_path.startswith("static/"):
+        clean_path = clean_path[len("static/"):]
+    url = url_for("static", filename=clean_path) if clean_path.startswith("images/") else None
+    return {"label": label, "url": url, "path": clean_path}
+
+
 def _next_rent_due_date(today=None):
     today = today or date.today()
     year = today.year + (1 if today.month == 12 else 0)
@@ -593,7 +603,9 @@ def _next_rent_due_date(today=None):
 def _admin_dashboard_context():
     applications = db_all(
         "SELECT a.application_code, a.applicant_name, a.applicant_email, "
-        "a.applicant_phone, a.desired_move_in, a.status, a.submitted_at, "
+        "a.applicant_phone, a.student_id, a.emergency_name, a.emergency_phone, "
+        "a.applicant_notes, a.app_id, a.app_supp_docs, a.notes, "
+        "a.desired_move_in, a.status, a.submitted_at, "
         "fp.name AS floorplan_name "
         "FROM applications a "
         "JOIN floorplans fp ON a.floorplan_id = fp.id "
@@ -601,12 +613,25 @@ def _admin_dashboard_context():
     )
     dashboard_applications = []
     for row in applications:
+        document_links = []
+        id_link = _uploaded_document_link("Uploaded ID", row.get("app_id"))
+        if id_link:
+            document_links.append(id_link)
+        for index, path in enumerate(str(row.get("app_supp_docs") or "").split(";"), start=1):
+            doc_link = _uploaded_document_link(f"Supporting Document {index}", path)
+            if doc_link:
+                document_links.append(doc_link)
         dashboard_applications.append(
             {
                 "id": row.get("application_code"),
                 "name": row.get("applicant_name"),
                 "email": row.get("applicant_email"),
                 "phone": row.get("applicant_phone"),
+                "studentId": row.get("student_id") or "--",
+                "emergencyName": row.get("emergency_name") or "--",
+                "emergencyPhone": row.get("emergency_phone") or "--",
+                "notes": row.get("applicant_notes") or row.get("notes") or "",
+                "documents": document_links,
                 "floorPlan": row.get("floorplan_name"),
                 "moveIn": date_display(row.get("desired_move_in")),
                 "date": date_display(row.get("submitted_at")),
