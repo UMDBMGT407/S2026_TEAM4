@@ -7,9 +7,10 @@
 }
 .cr-02-maintenance-request {
   background: #ffffff;
-  height: 1024px;
+  min-height: 1180px;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .rectangle-5 {
   background: #ffffff;
@@ -537,4 +538,18 @@
   top: 397px;
   width: 480px;
   height: 40px;
+}
+
+.my-requests-panel {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  left: 310px;
+  max-height: 250px;
+  overflow: auto;
+  padding: 16px 18px;
+  position: absolute;
+  top: 860px;
+  width: 1040px;
+  z-index: 2;
 }
