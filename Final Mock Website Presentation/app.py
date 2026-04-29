@@ -1039,8 +1039,12 @@ def _apply_validation_errors(form, files):
         errors.append("Last Name")
     if not email:
         errors.append("Email")
+    elif "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        errors.append("Email must be a valid address")
     if not password:
         errors.append("Password")
+    elif len(password) < 8:
+        errors.append("Password must be at least 8 characters")
     if not student_id:
         errors.append("Student ID")
     elif not student_id.isdigit() or len(student_id) != 9:
@@ -1053,6 +1057,11 @@ def _apply_validation_errors(form, files):
         errors.append("Preferred Floor plan/Unit")
     if not move_in:
         errors.append("Move-In Date")
+    else:
+        try:
+            datetime.strptime(move_in, "%Y-%m-%d")
+        except ValueError:
+            errors.append("Move-In Date must be a valid date")
     if not emergency_name:
         errors.append("Emergency Contact Name")
     if not emergency_phone:
@@ -1325,6 +1334,7 @@ def deposit():
         "deposit.html",
         application_code=ctx["application_code"],
         deposit_amount=ctx["deposit_amount"],
+        deposit_amount_value=ctx["deposit_amount_value"],
         due_date_display=ctx["due_date_display"],
         application=application,
     )
@@ -1495,6 +1505,10 @@ def pay_rent_submit():
     lease = _active_lease_row_for_user(current_user.id)
     if not lease:
         return jsonify({"error": "No active lease was found for this resident."}), 400
+    payment_context = _resident_dashboard_context(current_user.id)
+    payment_amount = Decimal(payment_context.get("balance_due_value") or "0.00")
+    if payment_amount <= 0:
+        payment_amount = Decimal(str(lease["monthly_rent"]))
 
     payload = request.get_json(silent=True) or {}
     paypal_order_id = (payload.get("paypal_order_id") or "").strip()
@@ -1525,7 +1539,7 @@ def pay_rent_submit():
             payment_code,
             lease["id"],
             current_user.id,
-            lease["monthly_rent"],
+            payment_amount,
             method,
             payment_status,
             date.today(),
