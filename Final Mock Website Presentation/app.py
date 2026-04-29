@@ -127,6 +127,20 @@ def iso_date(value):
     return str(value)
 
 
+def time_display(value):
+    if not value:
+        return ""
+    if hasattr(value, "strftime"):
+        return value.strftime("%H:%M")
+    text = str(value)
+    parts = text.split(":")
+    if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
+        return f"{int(parts[0]):02d}:{int(parts[1]):02d}"
+    if len(text) >= 5:
+        return text[:5]
+    return text
+
+
 def serializable_amount(value):
     if isinstance(value, Decimal):
         return float(value)
@@ -386,11 +400,11 @@ def _resident_dashboard_context(user_id):
         "balance_due_value": f"{float(balance_due):.2f}",
         "monthly_rent": money(monthly_rent),
         "monthly_rent_value": f"{float(monthly_rent):.2f}",
-        "utility_charges": money(95),
-        "parking_fee": money(40),
+        "utility_charges": money(0),
+        "parking_fee": money(0),
         "last_payment_date": last_payment["payment_date_display"] if last_payment else "--",
-        "next_due_date": "05/01/2026",
-        "next_due_short": "05/01",
+        "next_due_date": date_display(_next_rent_due_date()),
+        "next_due_short": date_display(_next_rent_due_date(), "%m/%d"),
         "maintenance_requests": requests,
     }
 
@@ -446,8 +460,9 @@ def _work_order_rows(staff_id=None, limit=None):
         where = "WHERE wo.assigned_staff_id = %s "
         params.append(staff_id)
     sql = (
-        "SELECT wo.id AS db_id, wo.work_order_code, wo.scheduled_date, wo.time_window, "
-        "wo.status, wo.notes, mr.request_code, mr.category, mr.issue_title, "
+        "SELECT wo.id AS db_id, wo.work_order_code, wo.assigned_staff_id, "
+        "wo.scheduled_date, wo.time_window, wo.status, wo.notes, "
+        "mr.request_code, mr.category, mr.issue_title, "
         "mr.description, mr.priority, mr.created_at, mr.attachment_name, "
         "u.building, u.unit_number, r.name AS resident_name, r.email AS resident_email, "
         "s.name AS assigned_staff_name "
@@ -479,6 +494,7 @@ def _work_order_rows(staff_id=None, limit=None):
         row["created_at"] = date_display(created_at)
         row["attachment"] = row.get("attachment_name") or "No attachment"
         row["description"] = row.get("description") or ""
+        row["staff"] = row.get("assigned_staff_name") or "Unassigned"
     return rows
 
 
@@ -494,6 +510,31 @@ def _work_order_summary(rows):
     }
 
 
+def _staff_user_rows():
+    return db_all(
+        "SELECT id, name, email FROM users WHERE role = 'staff' ORDER BY name, id"
+    )
+
+
+def _resident_lease_rows():
+    return db_all(
+        "SELECT l.id AS lease_id, l.resident_user_id, r.name AS resident_name, "
+        "r.email AS resident_email, u.building, u.unit_number "
+        "FROM leases l "
+        "JOIN users r ON l.resident_user_id = r.id "
+        "JOIN units u ON l.unit_id = u.id "
+        "WHERE l.status IN ('Active', 'Pending') "
+        "ORDER BY r.name, u.unit_number"
+    )
+
+
+def _next_rent_due_date(today=None):
+    today = today or date.today()
+    year = today.year + (1 if today.month == 12 else 0)
+    month = 1 if today.month == 12 else today.month + 1
+    return date(year, month, 1)
+
+
 def _admin_dashboard_context():
     applications = db_all(
         "SELECT a.application_code, a.applicant_name, a.applicant_email, "
@@ -501,8 +542,7 @@ def _admin_dashboard_context():
         "fp.name AS floorplan_name "
         "FROM applications a "
         "JOIN floorplans fp ON a.floorplan_id = fp.id "
-        "ORDER BY a.submitted_at DESC, a.id DESC "
-        "LIMIT 6"
+        "ORDER BY a.submitted_at DESC, a.id DESC"
     )
     dashboard_applications = []
     for row in applications:
@@ -562,7 +602,8 @@ def _schedule_context():
         where = "WHERE ss.staff_user_id = %s "
         params = (current_user.id,)
     shifts = db_all(
-        "SELECT ss.shift_date, ss.start_time, ss.end_time, ss.assignment_note, u.name AS staff_name "
+        "SELECT ss.id AS schedule_id, ss.staff_user_id, ss.shift_date, "
+        "ss.start_time, ss.end_time, ss.assignment_note, u.name AS staff_name "
         "FROM staff_schedule ss "
         "JOIN users u ON ss.staff_user_id = u.id "
         f"{where}"
@@ -575,9 +616,13 @@ def _schedule_context():
         slug = "".join(ch.lower() for ch in staff if ch.isalnum()) or "staff"
         shift_rows.append(
             {
+                "id": shift.get("schedule_id"),
+                "staff_user_id": shift.get("staff_user_id"),
                 "date": iso_date(shift.get("shift_date")),
                 "staff": staff,
-                "shift": f"{shift.get('start_time')} - {shift.get('end_time')}",
+                "shift": f"{time_display(shift.get('start_time'))} - {time_display(shift.get('end_time'))}",
+                "start_time": time_display(shift.get("start_time")),
+                "end_time": time_display(shift.get("end_time")),
                 "className": f"staff-{slug}",
                 "note": shift.get("assignment_note") or "",
             }
@@ -587,8 +632,12 @@ def _schedule_context():
     schedule_events = [
         {
             "date": shift["date"],
+            "schedule_id": shift["id"],
+            "staff_user_id": shift["staff_user_id"],
             "staff": shift["staff"],
             "shift": shift["shift"],
+            "start_time": shift["start_time"],
+            "end_time": shift["end_time"],
             "className": shift["className"],
             "type": "shift",
             "title": "Staff Shift",
@@ -621,6 +670,7 @@ def _schedule_context():
         "schedule_events": schedule_events,
         "schedule_work_orders": work_orders,
         "staff_options": sorted({shift["staff"] for shift in shift_rows}),
+        "staff_users": _staff_user_rows(),
         "schedule_summary": {
             "staff_scheduled": len({shift["staff"] for shift in shift_rows}),
             "work_orders": len(work_orders),
@@ -693,6 +743,7 @@ def access_denied_exit():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("home"))
+    next_page = (request.values.get("next") or "").strip()
 
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
@@ -708,12 +759,78 @@ def login():
 
         if user_data and check_password_hash(user_data[3], password):
             uid, name, em, pw_hash, role = user_data
-            login_user(User(uid, name, em, pw_hash, canonical_role(role)))
+            role = canonical_role(role)
+            login_user(User(uid, name, em, pw_hash, role))
+            if next_page == "apply" and role == "prospect":
+                return redirect(url_for("apply"))
             return redirect(url_for("home"))
 
-        return render_template("index.html", error="Invalid credentials"), 401
+        return render_template("index.html", error="Invalid credentials", next_page=next_page), 401
 
-    return render_template("index.html")
+    return render_template("index.html", next_page=next_page)
+
+
+@app.route("/prospect/register", methods=["POST"])
+def prospect_register():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
+
+    name = (request.form.get("name") or "").strip()
+    email = (request.form.get("email") or "").strip().lower()
+    password = (request.form.get("password") or "").strip()
+    next_page = (request.form.get("next") or "apply").strip()
+
+    if not name or not email or not password:
+        return (
+            render_template(
+                "index.html",
+                error="Name, email, and password are required to create an account.",
+                next_page=next_page,
+            ),
+            400,
+        )
+    if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        return (
+            render_template(
+                "index.html",
+                error="Please enter a valid email address.",
+                next_page=next_page,
+            ),
+            400,
+        )
+    if len(password) < 8:
+        return (
+            render_template(
+                "index.html",
+                error="Prospective resident passwords must be at least 8 characters.",
+                next_page=next_page,
+            ),
+            400,
+        )
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM users WHERE LOWER(TRIM(email)) = %s", (email,))
+    if cur.fetchone():
+        cur.close()
+        return (
+            render_template(
+                "index.html",
+                error="An account with this email already exists. Please log in.",
+                next_page=next_page,
+            ),
+            409,
+        )
+
+    hashed_password = generate_password_hash(password)
+    cur.execute(
+        "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, 'prospect')",
+        (name, email, hashed_password),
+    )
+    new_user_id = cur.lastrowid
+    mysql.connection.commit()
+    cur.close()
+    login_user(User(new_user_id, name, email, hashed_password, "prospect"))
+    return redirect(url_for("apply" if next_page == "apply" else "home"))
 
 
 @app.route("/logout")
@@ -800,6 +917,56 @@ def users():
     )
 
 
+@app.route("/users/<int:user_id>", methods=["PUT", "PATCH"])
+@login_required
+@role_required("Admin")
+def update_user(user_id):
+    payload = request.get_json(silent=True) or request.form
+    name = (payload.get("name") or "").strip()
+    email = (payload.get("email") or "").strip().lower()
+    role = canonical_role(payload.get("role") or "")
+    password = (payload.get("password") or "").strip()
+
+    if not all([name, email, role]):
+        return jsonify({"error": "Name, email, and role are required."}), 400
+    if role not in ROLE_OPTIONS:
+        return jsonify({"error": "Please choose a valid role."}), 400
+    if password and len(password) < 6:
+        return jsonify({"error": "New password must be at least 6 characters."}), 400
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+    if cur.fetchone() is None:
+        cur.close()
+        return jsonify({"error": "User not found."}), 404
+    cur.execute(
+        "SELECT id FROM users WHERE LOWER(TRIM(email)) = %s AND id <> %s",
+        (email, user_id),
+    )
+    if cur.fetchone():
+        cur.close()
+        return jsonify({"error": "Another user already has that email."}), 409
+
+    if password:
+        cur.execute(
+            "UPDATE users SET name = %s, email = %s, role = %s, password = %s WHERE id = %s",
+            (name, email, role, generate_password_hash(password), user_id),
+        )
+    else:
+        cur.execute(
+            "UPDATE users SET name = %s, email = %s, role = %s WHERE id = %s",
+            (name, email, role, user_id),
+        )
+    mysql.connection.commit()
+    cur.close()
+    return jsonify(
+        {
+            "message": "User updated successfully.",
+            "user": serialize_user((user_id, name, email, role)),
+        }
+    )
+
+
 @app.route("/users/<int:user_id>", methods=["DELETE"])
 @login_required
 @role_required("Admin")
@@ -821,6 +988,37 @@ def delete_user(user_id):
     mysql.connection.commit()
     cur.close()
     return jsonify({"message": "User deleted successfully."})
+
+
+@app.route("/applications/<application_code>/decision", methods=["POST"])
+@login_required
+@role_required("Admin")
+def application_decision(application_code):
+    payload = request.get_json(silent=True) or request.form
+    status = (payload.get("status") or "").strip()
+    notes = (payload.get("notes") or "").strip()
+    allowed_statuses = {"Pending", "Approved", "Denied"}
+    if status not in allowed_statuses:
+        return jsonify({"error": "Please choose Pending, Approved, or Denied."}), 400
+
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT id FROM applications WHERE application_code = %s",
+        (application_code,),
+    )
+    row = cur.fetchone()
+    if not row:
+        cur.close()
+        return jsonify({"error": "Application not found."}), 404
+
+    decision_note = notes or f"Application marked {status} by admin."
+    cur.execute(
+        "UPDATE applications SET status = %s, notes = %s WHERE application_code = %s",
+        (status, decision_note, application_code),
+    )
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({"message": f"Application {status.lower()}.", "status": status})
 
 
 @app.route("/payments")
@@ -863,6 +1061,8 @@ def resident_maintenance_status():
     for row in rows:
         # Prefer work-order status when one exists (it is kept in sync by work_order_update)
         display_status = row.get("wo_status") or row.get("mr_status") or "Open"
+        if display_status == "Closed":
+            display_status = "Completed"
         result.append({
             "request_code": row.get("request_code"),
             "work_order_code": row.get("work_order_code"),
@@ -927,6 +1127,8 @@ def work_order():
             "building_options": sorted(
                 {row["building"] for row in rows if row.get("building")}
             ),
+            "staff_users": _staff_user_rows(),
+            "resident_leases": _resident_lease_rows(),
         }
     )
     return render_template("work_order.html", **context)
@@ -942,6 +1144,7 @@ def work_order_update():
     notes = (payload.get("notes") or "").strip()
     scheduled_date = (payload.get("scheduled_date") or "").strip() or None
     time_window = (payload.get("time_window") or "").strip() or None
+    assigned_staff_id = (payload.get("assigned_staff_id") or "").strip()
     allowed_statuses = {"Open", "Assigned", "In Progress", "Closed"}
 
     if not work_order_code:
@@ -975,6 +1178,16 @@ def work_order_update():
         assignments.append("notes = %s")
         params.append(notes)
     if canonical_role(current_user.role) == "admin":
+        if assigned_staff_id:
+            cur.execute(
+                "SELECT id FROM users WHERE id = %s AND role = 'staff'",
+                (assigned_staff_id,),
+            )
+            if cur.fetchone() is None:
+                cur.close()
+                return jsonify({"error": "Please choose a valid staff member."}), 400
+            assignments.append("assigned_staff_id = %s")
+            params.append(assigned_staff_id)
         if scheduled_date:
             assignments.append("scheduled_date = %s")
             params.append(scheduled_date)
@@ -1004,6 +1217,109 @@ def work_order_update():
     return jsonify({"message": "Work order updated.", "status": status})
 
 
+@app.route("/work_order/create", methods=["POST"])
+@login_required
+@role_required("Admin")
+def work_order_create():
+    payload = request.get_json(silent=True) or request.form
+    lease_id = (payload.get("lease_id") or "").strip()
+    assigned_staff_id = (payload.get("assigned_staff_id") or "").strip()
+    category = (payload.get("category") or "").strip()
+    issue_title = (payload.get("issue_title") or "").strip()
+    description = (payload.get("description") or "").strip()
+    priority = (payload.get("priority") or "").strip()
+    scheduled_date = (payload.get("scheduled_date") or "").strip() or None
+    time_window = (payload.get("time_window") or "").strip() or None
+    notes = (payload.get("notes") or "").strip()
+
+    if not all([lease_id, assigned_staff_id, category, issue_title, description, priority]):
+        return jsonify({"error": "Complete the work order form before submitting."}), 400
+    if priority not in {"Low", "Medium", "High", "Urgent"}:
+        return jsonify({"error": "Please choose a valid priority."}), 400
+
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT resident_user_id FROM leases WHERE id = %s AND status IN ('Active', 'Pending')",
+        (lease_id,),
+    )
+    lease_row = cur.fetchone()
+    if not lease_row:
+        cur.close()
+        return jsonify({"error": "Please choose a valid resident lease."}), 400
+    cur.execute(
+        "SELECT id FROM users WHERE id = %s AND role = 'staff'",
+        (assigned_staff_id,),
+    )
+    if cur.fetchone() is None:
+        cur.close()
+        return jsonify({"error": "Please choose a valid staff member."}), 400
+
+    request_code = unique_code(cur, "maintenance_requests", "request_code", "MR", 3)
+    cur.execute(
+        "INSERT INTO maintenance_requests "
+        "(request_code, resident_user_id, lease_id, category, issue_title, description, "
+        "priority, status, created_at, attachment_name) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, 'Assigned', %s, NULL)",
+        (
+            request_code,
+            lease_row[0],
+            lease_id,
+            category,
+            issue_title,
+            description,
+            priority,
+            datetime.now(),
+        ),
+    )
+    request_id = cur.lastrowid
+    work_order_code = unique_code(cur, "work_orders", "work_order_code", "WO", 3)
+    cur.execute(
+        "INSERT INTO work_orders "
+        "(work_order_code, request_id, assigned_staff_id, scheduled_date, time_window, status, notes) "
+        "VALUES (%s, %s, %s, %s, %s, 'Assigned', %s)",
+        (
+            work_order_code,
+            request_id,
+            assigned_staff_id,
+            scheduled_date,
+            time_window,
+            notes or f"Created manually by admin from request {request_code}.",
+        ),
+    )
+    mysql.connection.commit()
+    cur.close()
+    return jsonify(
+        {
+            "message": "Work order created.",
+            "request_code": request_code,
+            "work_order_code": work_order_code,
+        }
+    ), 201
+
+
+@app.route("/work_order/<work_order_code>", methods=["DELETE"])
+@login_required
+@role_required("Admin")
+def work_order_delete(work_order_code):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT id, request_id FROM work_orders WHERE work_order_code = %s",
+        (work_order_code,),
+    )
+    row = cur.fetchone()
+    if not row:
+        cur.close()
+        return jsonify({"error": "Work order not found."}), 404
+    cur.execute("DELETE FROM work_orders WHERE id = %s", (row[0],))
+    cur.execute(
+        "UPDATE maintenance_requests SET status = 'Open' WHERE id = %s",
+        (row[1],),
+    )
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({"message": "Work order removed."})
+
+
 @app.route("/schedule")
 @login_required
 @role_required("Admin", "Staff")
@@ -1014,8 +1330,79 @@ def schedule():
     return render_template("schedule.html", **context)
 
 
+@app.route("/schedule/shift", methods=["POST", "PUT", "DELETE"])
+@login_required
+@role_required("Admin")
+def schedule_shift():
+    payload = request.get_json(silent=True) or request.form
+    schedule_id = (payload.get("schedule_id") or "").strip()
+
+    cur = mysql.connection.cursor()
+    if request.method == "DELETE":
+        if not schedule_id:
+            cur.close()
+            return jsonify({"error": "Choose a schedule entry to remove."}), 400
+        cur.execute("DELETE FROM staff_schedule WHERE id = %s", (schedule_id,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"message": "Schedule entry removed."})
+
+    staff_user_id = (payload.get("staff_user_id") or "").strip()
+    shift_date = (payload.get("shift_date") or "").strip()
+    start_time = (payload.get("start_time") or "").strip()
+    end_time = (payload.get("end_time") or "").strip()
+    assignment_note = (payload.get("assignment_note") or "").strip()
+
+    if not all([staff_user_id, shift_date, start_time, end_time]):
+        cur.close()
+        return jsonify({"error": "Staff, date, start time, and end time are required."}), 400
+    cur.execute(
+        "SELECT id FROM users WHERE id = %s AND role = 'staff'",
+        (staff_user_id,),
+    )
+    if cur.fetchone() is None:
+        cur.close()
+        return jsonify({"error": "Please choose a valid staff member."}), 400
+
+    if schedule_id:
+        cur.execute(
+            "UPDATE staff_schedule SET staff_user_id = %s, shift_date = %s, "
+            "start_time = %s, end_time = %s, assignment_note = %s WHERE id = %s",
+            (
+                staff_user_id,
+                shift_date,
+                start_time,
+                end_time,
+                assignment_note or None,
+                schedule_id,
+            ),
+        )
+        message = "Schedule entry updated."
+    else:
+        cur.execute(
+            "INSERT INTO staff_schedule "
+            "(staff_user_id, shift_date, start_time, end_time, assignment_note) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (
+                staff_user_id,
+                shift_date,
+                start_time,
+                end_time,
+                assignment_note or None,
+            ),
+        )
+        message = "Schedule entry added."
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({"message": message})
+
+
 @app.route("/apply")
 def apply():
+    if not current_user.is_authenticated:
+        return redirect(url_for("login", next="apply"))
+    if canonical_role(current_user.role) != "prospect":
+        return redirect(url_for("home"))
     return render_template("apply.html", floorplans=_floorplan_rows())
 
 
@@ -1185,6 +1572,20 @@ def apply_submit():
     id_file = request.files.get("id_upload")
 
     cur = mysql.connection.cursor()
+    existing_prospect = (
+        current_user.is_authenticated
+        and canonical_role(current_user.role) == "prospect"
+    )
+    if existing_prospect and email != current_user.email.strip().lower():
+        cur.close()
+        return (
+            jsonify(
+                {
+                    "error": "Use the same email address as your logged-in prospective resident account."
+                }
+            ),
+            400,
+        )
     cur.execute("SELECT id FROM floorplans WHERE name = %s", (floor_plan,))
     fp_row = cur.fetchone()
     if not fp_row:
@@ -1266,11 +1667,18 @@ def apply_submit():
         )
 
     try:
-        cur.execute(
-            "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
-            (applicant_full_name, email, hashed_password, "prospect"),
-        )
-        new_user_id = cur.lastrowid
+        if existing_prospect:
+            new_user_id = current_user.id
+            cur.execute(
+                "UPDATE users SET name = %s, password = %s WHERE id = %s",
+                (applicant_full_name, hashed_password, new_user_id),
+            )
+        else:
+            cur.execute(
+                "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
+                (applicant_full_name, email, hashed_password, "prospect"),
+            )
+            new_user_id = cur.lastrowid
 
         app_values = {
             "application_code": _unique_application_code(cur),
@@ -1292,14 +1700,15 @@ def apply_submit():
         _applications_insert(cur, app_columns, app_values)
         mysql.connection.commit()
 
-        cur.execute(
-            "SELECT id, name, email, password, role FROM users WHERE id = %s",
-            (new_user_id,),
-        )
-        logged_in_row = cur.fetchone()
-        if logged_in_row:
-            uid, name, em, pw_hash, role = logged_in_row
-            login_user(User(uid, name, em, pw_hash, canonical_role(role)))
+        if not existing_prospect:
+            cur.execute(
+                "SELECT id, name, email, password, role FROM users WHERE id = %s",
+                (new_user_id,),
+            )
+            logged_in_row = cur.fetchone()
+            if logged_in_row:
+                uid, name, em, pw_hash, role = logged_in_row
+                login_user(User(uid, name, em, pw_hash, canonical_role(role)))
     except IntegrityError:
         mysql.connection.rollback()
         _cleanup_uploaded_files()
@@ -1330,6 +1739,8 @@ def deposit():
         return redirect(url_for("home"))
     ctx = _deposit_page_context(current_user.email)
     application = _latest_application_for_email(current_user.email)
+    if not application or application.get("status") not in {"Approved", "Deposit Paid"}:
+        return redirect(url_for("status_page"))
     return render_template(
         "deposit.html",
         application_code=ctx["application_code"],
@@ -1346,7 +1757,7 @@ def deposit():
 def deposit_pay():
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT id FROM applications "
+        "SELECT id, status FROM applications "
         "WHERE LOWER(TRIM(applicant_email)) = %s "
         "ORDER BY submitted_at DESC LIMIT 1",
         (current_user.email.strip().lower(),),
@@ -1355,6 +1766,12 @@ def deposit_pay():
     if not row:
         cur.close()
         return jsonify({"error": "Application not found."}), 404
+    if row[1] == "Deposit Paid":
+        cur.close()
+        return jsonify({"message": "Deposit is already marked as paid.", "redirect": url_for("status_page")})
+    if row[1] != "Approved":
+        cur.close()
+        return jsonify({"error": "Your application must be approved before paying the deposit."}), 400
     cur.execute(
         "UPDATE applications SET status = %s, notes = %s WHERE id = %s",
         ("Deposit Paid", "Deposit payment submitted online.", row[0]),
