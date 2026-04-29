@@ -29,6 +29,7 @@
             {% endif %}
 
             <form method="POST" action="{{ url_for('login') }}" class="mx-auto" style="max-width: 420px;">
+              <input type="hidden" name="next" value="{{ next_page or '' }}">
               <div class="form-group mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input id="email" type="email" class="form-control" name="email" required>
@@ -48,6 +49,30 @@
               <a class="guest-link d-inline-block" href="{{ url_for('floorplan') }}">
                 Continue as Guest
               </a>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="mx-auto" style="max-width: 420px;">
+              <h3 class="h5 text-center mb-3">Create Prospective Resident Account</h3>
+              <form method="POST" action="{{ url_for('prospect_register') }}">
+                <input type="hidden" name="next" value="apply">
+                <div class="form-group mb-3">
+                  <label for="registerName" class="form-label">Name</label>
+                  <input id="registerName" type="text" class="form-control" name="name" required>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="registerEmail" class="form-label">Email</label>
+                  <input id="registerEmail" type="email" class="form-control" name="email" required>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="registerPassword" class="form-label">Password</label>
+                  <input id="registerPassword" type="password" class="form-control" name="password" required minlength="8" autocomplete="new-password">
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-dark">Create Account &amp; Apply</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
