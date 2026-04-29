@@ -74,7 +74,7 @@
     <div class="rectangle-15"></div>
     <button class="cancel" type="button" id="cancel-clear">Cancel</button>
     <div class="issue-category">Issue Category</div>
-    <select class="dropdown-issue-category" name="issue-category" aria-label="Issue category">
+    <select class="dropdown-issue-category" name="issue-category" aria-label="Issue category" required>
       <option value="">Select category</option>
       <option value="plumbing">Plumbing</option>
       <option value="electrical">Electrical</option>
@@ -91,7 +91,7 @@
       aria-label="Location (unit/room)"
       placeholder="Enter location"
     />
-    <select class="dropdown-priority" name="priority" aria-label="Priority">
+    <select class="dropdown-priority" name="priority" aria-label="Priority" required>
       <option value="">Select priority</option>
       <option value="low">Low</option>
       <option value="medium">Medium</option>
@@ -114,6 +114,8 @@
       aria-label="Describe the issue"
       placeholder="Type details"
       rows="3"
+      required
+      minlength="5"
     ></textarea>
     <img class="polygon-1" src="{{ url_for('static', filename='images/polygon-10.svg') }}" />
     <img class="polygon-3" src="{{ url_for('static', filename='images/polygon-30.svg') }}" />
@@ -202,6 +204,14 @@
           const accessTime = root.querySelector('[name="access-time"]');
           const description = root.querySelector('[name="issue-description"]');
           const attachment = root.querySelector('[name="upload-photo-file"]');
+          const requiredFields = [category, priority, description].filter(Boolean);
+          for (const field of requiredFields) {
+            if (typeof field.checkValidity === "function" && !field.checkValidity()) {
+              field.reportValidity();
+              field.focus();
+              return;
+            }
+          }
 
           fd.append("category", category ? category.value : "");
           fd.append("location", location ? location.value : "");
