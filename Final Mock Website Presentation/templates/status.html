@@ -80,7 +80,15 @@
             <li>Your current application status is {{ application.status }}.</li>
             <li>Deposit deadline: {{ application.due_date or "—" }}.</li>
             <li>Preferred floor plan: {{ application.floorplan_name }}.</li>
+            {% if application.status == "Approved" %}
+            <li>Your application was approved. Please pay the deposit to confirm your spot.</li>
+            {% elif application.status == "Deposit Paid" %}
+            <li>Your deposit has been confirmed.</li>
+            {% elif application.status == "Denied" %}
+            <li>Your application was denied. Contact the leasing office for more details.</li>
+            {% else %}
             <li>You will receive an update when a decision has been made.</li>
+            {% endif %}
             {% else %}
             <li>No application was found for this login.</li>
             <li>Please submit an application from the Apply page.</li>
@@ -100,9 +108,11 @@
         <div class="simple-button2">
           <a href="{{ url_for('floorplan') }}" class="back-to-floor-plans">Back to Floor Plans</a>
         </div>
-        <div class="simple-button2">
-          <a href="{{ url_for('deposit') }}" class="back-to-floor-plans">Pay Deposit</a>
-        </div>
+        {% if application and application.status == "Approved" %}
+          <div class="simple-button2">
+            <a href="{{ url_for('deposit') }}" class="back-to-floor-plans">Pay Deposit</a>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
