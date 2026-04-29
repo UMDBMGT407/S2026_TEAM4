@@ -331,6 +331,56 @@ def _resident_lease(user_id):
     )
     if not row:
         return None
+    start_date = row.get("start_date")
+    end_date = row.get("end_date")
+    renewal_deadline = end_date - timedelta(days=60) if isinstance(end_date, date) else None
+    lease_term_months = (
+        max(1, (end_date.year - start_date.year) * 12 + end_date.month - start_date.month)
+        if isinstance(start_date, date) and isinstance(end_date, date)
+        else 12
+    )
+    proposed_rent = row.get("monthly_rent") or 0
+    lease_documents = [
+        {
+            "title": "Lease Agreement",
+            "date": date_display(start_date),
+            "type": "Lease",
+            "filename": f"{row.get('lease_code') or 'lease'}-agreement.txt",
+            "content": (
+                f"The Courtyards Lease Agreement\n"
+                f"Lease ID: {row.get('lease_code') or '--'}\n"
+                f"Resident: {current_user.name}\n"
+                f"Unit: {row.get('building') or '--'} / {row.get('unit_number') or '--'}\n"
+                f"Term: {date_display(start_date)} - {date_display(end_date)}\n"
+                f"Monthly rent: {money(row.get('monthly_rent'))}"
+            ),
+        },
+        {
+            "title": "Security Deposit Record",
+            "date": date_display(start_date),
+            "type": "Deposit",
+            "filename": f"{row.get('lease_code') or 'lease'}-deposit.txt",
+            "content": (
+                f"The Courtyards Security Deposit Record\n"
+                f"Lease ID: {row.get('lease_code') or '--'}\n"
+                f"Security deposit: {money(row.get('security_deposit'))}\n"
+                f"Status: {row.get('status') or '--'}"
+            ),
+        },
+        {
+            "title": "Renewal Notice",
+            "date": date_display(renewal_deadline),
+            "type": "Renewal",
+            "filename": f"{row.get('lease_code') or 'lease'}-renewal.txt",
+            "content": (
+                f"The Courtyards Renewal Notice\n"
+                f"Lease ID: {row.get('lease_code') or '--'}\n"
+                f"Renewal deadline: {date_display(renewal_deadline)}\n"
+                f"Proposed term: {lease_term_months} months\n"
+                f"Proposed rent: {money(proposed_rent)}"
+            ),
+        },
+    ]
     return {
         **row,
         "monthly_rent_value": float(row.get("monthly_rent") or 0),
@@ -339,6 +389,11 @@ def _resident_lease(user_id):
         "start_date_display": date_display(row.get("start_date")),
         "end_date_display": date_display(row.get("end_date")),
         "end_date_short": date_display(row.get("end_date"), "%m/%d"),
+        "renewal_status": "Eligible to Renew" if row.get("status") == "Active" else "Not Eligible",
+        "renewal_deadline_display": date_display(renewal_deadline),
+        "proposed_term_display": f"{lease_term_months} Months",
+        "proposed_rent_display": f"{money(proposed_rent)} / month",
+        "documents": lease_documents,
     }
 
 
