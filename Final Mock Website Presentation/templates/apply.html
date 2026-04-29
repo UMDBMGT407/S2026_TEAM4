@@ -105,7 +105,7 @@
           <div class="rectangle-7">
             <form>
               <div class="mb-3">
-              <input type="email" class="form-control" id="email" name="email" autocomplete="email" required>
+              <input type="email" class="form-control" id="email" name="email" autocomplete="email" value="{{ current_user.email if current_user.is_authenticated else '' }}" required>
               </div>
             </form>
           </div>
