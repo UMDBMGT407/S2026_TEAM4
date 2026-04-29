@@ -43,6 +43,9 @@
     {% endif %}
     <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
     <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
+    {% if is_admin_view %}
+    <a href="{{ url_for('home') }}#users-section">Users</a>
+    {% endif %}
   </nav>
 </aside>
     <main class="main-content">
@@ -50,12 +53,12 @@
         <div class="summary-card">
           <p>{{ "Staff Scheduled Today" if is_admin_view else "My Scheduled Work Orders" }}</p>
           <h3>{{ schedule_summary.staff_scheduled if is_admin_view else schedule_summary.work_orders }}</h3>
-          <span>{{ "March 2026" if is_admin_view else "Staff1 assignments" }}</span>
+          <span>{{ "dynamic staff schedule" if is_admin_view else "assigned to you" }}</span>
         </div>
         <div class="summary-card">
           <p>{{ "Work Orders Today" if is_admin_view else "Open Work Orders" }}</p>
           <h3>{{ schedule_summary.work_orders }}</h3>
-          <span>{{ "assigned orders" if is_admin_view else "assigned to Staff1" }}</span>
+          <span>{{ "assigned orders" if is_admin_view else "assigned to you" }}</span>
         </div>
         <div class="summary-card">
           <p>{{ "Open Shifts This Week" if is_admin_view else "Active Work Orders" }}</p>
@@ -81,12 +84,37 @@
           <button id="applyBtn" type="button">Apply</button>
         </div>
       </section>
+      {% if is_admin_view %}
+      <section class="filters-card">
+        <h2>Manage Staff Calendar</h2>
+        <form id="scheduleShiftForm" class="filters-row schedule-management-form">
+          <select id="scheduleEntrySelect">
+            <option value="">New schedule entry</option>
+            {% for shift in schedule_shifts %}
+            <option value="{{ shift.id }}">{{ shift.date }} | {{ shift.staff }} | {{ shift.shift }}</option>
+            {% endfor %}
+          </select>
+          <select id="scheduleStaff" required>
+            <option value="">Staff</option>
+            {% for staff in staff_users %}
+            <option value="{{ staff.id }}">{{ staff.name }}</option>
+            {% endfor %}
+          </select>
+          <input id="scheduleDateInput" type="date" required>
+          <input id="scheduleStartInput" type="time" required>
+          <input id="scheduleEndInput" type="time" required>
+          <input id="scheduleNoteInput" type="text" placeholder="Assignment note">
+          <button id="saveShiftBtn" type="submit">Save</button>
+          <button id="removeShiftBtn" type="button">Remove</button>
+        </form>
+      </section>
+      {% endif %}
       <section class="schedule-layout">
         <div class="schedule-left">
           <div class="content-card">
             <div class="calendar-toolbar">
               <button id="prevMonthBtn" type="button" class="calendar-nav-btn">Previous</button>
-              <h2 id="calendarTitle">March 2026 {{ "Staff Schedule" if is_admin_view else "My Schedule" }}</h2>
+              <h2 id="calendarTitle">{{ "Staff Schedule" if is_admin_view else "My Schedule" }}</h2>
               <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
             </div>
             <div class="month-grid" id="monthGrid"></div>
@@ -126,9 +154,12 @@
     const assignmentItems = document.querySelectorAll(".assignment-item");
     const selectedEventDetails = document.getElementById("selectedEventDetails");
     const isAdminView = {{ is_admin_view | tojson }};
-    let currentMonth = 2;
-    let currentYear = 2026;
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
     const calendarEvents = {{ schedule_events | tojson }};
+    const scheduleShifts = {{ schedule_shifts | tojson }};
+    const scheduleShiftUrl = {{ url_for('schedule_shift') | tojson }};
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, (char) => ({
         "&": "&amp;",
@@ -270,6 +301,86 @@
     staffFilter.addEventListener("change", applyFilters);
     unitFilter.addEventListener("input", applyFilters);
     woFilter.addEventListener("input", applyFilters);
+    const scheduleShiftForm = document.getElementById("scheduleShiftForm");
+    const scheduleEntrySelect = document.getElementById("scheduleEntrySelect");
+    const removeShiftBtn = document.getElementById("removeShiftBtn");
+    const scheduleStaff = document.getElementById("scheduleStaff");
+    const scheduleDateInput = document.getElementById("scheduleDateInput");
+    const scheduleStartInput = document.getElementById("scheduleStartInput");
+    const scheduleEndInput = document.getElementById("scheduleEndInput");
+    const scheduleNoteInput = document.getElementById("scheduleNoteInput");
+    if (scheduleEntrySelect) {
+      scheduleEntrySelect.addEventListener("change", () => {
+        const shift = scheduleShifts.find((item) => String(item.id) === scheduleEntrySelect.value);
+        if (!shift) {
+          if (scheduleShiftForm) scheduleShiftForm.reset();
+          scheduleEntrySelect.value = "";
+          return;
+        }
+        scheduleStaff.value = shift.staff_user_id || "";
+        scheduleDateInput.value = shift.date || "";
+        scheduleStartInput.value = shift.start_time || "";
+        scheduleEndInput.value = shift.end_time || "";
+        scheduleNoteInput.value = shift.note || "";
+      });
+    }
+    if (scheduleShiftForm) {
+      scheduleShiftForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const payload = {
+          schedule_id: scheduleEntrySelect.value,
+          staff_user_id: scheduleStaff.value,
+          shift_date: scheduleDateInput.value,
+          start_time: scheduleStartInput.value,
+          end_time: scheduleEndInput.value,
+          assignment_note: scheduleNoteInput.value.trim(),
+        };
+        fetch(scheduleShiftUrl, {
+          method: payload.schedule_id ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(payload),
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not save schedule entry.");
+              return;
+            }
+            alert(data.message || "Schedule saved.");
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("Could not save schedule entry.");
+          });
+      });
+    }
+    if (removeShiftBtn) {
+      removeShiftBtn.addEventListener("click", () => {
+        if (!scheduleEntrySelect.value) {
+          alert("Choose a schedule entry first.");
+          return;
+        }
+        fetch(scheduleShiftUrl, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ schedule_id: scheduleEntrySelect.value }),
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not remove schedule entry.");
+              return;
+            }
+            alert(data.message || "Schedule entry removed.");
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("Could not remove schedule entry.");
+          });
+      });
+    }
     document.getElementById("printBtn").addEventListener("click", () => {
       window.print();
     });
@@ -277,4 +388,3 @@
   </script>
 </body>
 </html>
-
