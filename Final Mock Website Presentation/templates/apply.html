@@ -71,7 +71,7 @@
           <div class="rectangle-password">
             <form>
               <div class="mb-3 password-field-wrap">
-                <input type="password" class="form-control form-control-password" id="application-password" name="application_password" autocomplete="new-password">
+                <input type="password" class="form-control form-control-password" id="application-password" name="application_password" autocomplete="new-password" required minlength="8">
                 <button type="button" class="password-toggle" id="password-toggle" aria-pressed="false" aria-label="Show password">Show</button>
               </div>
             </form>
@@ -79,12 +79,12 @@
           <div class="rectangle-9">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name">
+              <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name" required>
               </div>
             </form>
           </div>
           <div class="rectangle-10"></div>
-          <input type="file" id="upload-id-file" class="upload-id-file" accept="image/*,application/pdf" hidden />
+          <input type="file" id="upload-id-file" class="upload-id-file" accept="image/*,application/pdf" required hidden />
           <button type="button" class="upload-id-button" id="upload-id-button">Upload ID</button>
           <div class="rectangle-16"></div>
           <input type="file" id="upload-doc-file" name="supporting_docs" class="upload-doc-file" accept="image/*,application/pdf,.doc,.docx,.txt" multiple hidden />
@@ -93,7 +93,7 @@
           <div class="rectangle-8">
             <form>
               <div class="mb-3">
-              <select class="form-control" id="floor-plan" name="floor_plan" aria-label="Preferred Floor plan/Unit">
+              <select class="form-control" id="floor-plan" name="floor_plan" aria-label="Preferred Floor plan/Unit" required>
                 <option value="">Select floor plan…</option>
                 {% for floorplan in floorplans %}
                 <option value="{{ floorplan.name }}">{{ floorplan.name }} - {{ floorplan.rent_display }}/Month</option>
@@ -105,49 +105,49 @@
           <div class="rectangle-7">
             <form>
               <div class="mb-3">
-              <input type="email" class="form-control" id="email" name="email" autocomplete="email">
+              <input type="email" class="form-control" id="email" name="email" autocomplete="email" required>
               </div>
             </form>
           </div>
           <div class="rectangle-first-name">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name">
+              <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name" required>
               </div>
             </form>
           </div>
           <div class="rectangle-last-name">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name">
+              <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name" required>
               </div>
             </form>
           </div>
           <div class="rectangle-12">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="student-id" name="student_id">
+              <input type="text" class="form-control" id="student-id" name="student_id" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" title="Enter a 9-digit student ID" required>
               </div>
             </form>
           </div>
           <div class="rectangle-13">
             <form>
               <div class="mb-3">
-              <input type="tel" class="form-control" id="phone-number" name="phone" autocomplete="tel">
+              <input type="tel" class="form-control" id="phone-number" name="phone" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number" required>
               </div>
             </form>
           </div>
           <div class="rectangle-14">
             <form>
               <div class="mb-3">
-              <input type="date" class="form-control" id="move-in-date" name="move_in_date">
+              <input type="date" class="form-control" id="move-in-date" name="move_in_date" required>
               </div>
             </form>
           </div>
           <div class="rectangle-15">
             <form>
               <div class="mb-3">
-              <input type="tel" class="form-control" id="emergency-contact-phone" name="emergency_contact_phone" autocomplete="tel">
+              <input type="tel" class="form-control" id="emergency-contact-phone" name="emergency_contact_phone" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number" required>
               </div>
             </form>
           </div>
@@ -224,6 +224,13 @@
             if (!el || !String(el.value || '').trim()) missing.push(label);
           }
 
+          function needValid(id, label) {
+            var el = document.getElementById(id);
+            if (el && String(el.value || '').trim() && typeof el.checkValidity === 'function' && !el.checkValidity()) {
+              missing.push(label);
+            }
+          }
+
           needText('first-name', 'First Name');
           needText('last-name', 'Last Name');
           needText('email', 'Email');
@@ -232,8 +239,11 @@
             missing.push('Email (valid address required)');
           }
           needText('application-password', 'Password');
+          needValid('application-password', 'Password (at least 8 characters)');
           needText('student-id', 'Student ID');
+          needValid('student-id', 'Student ID (9 digits)');
           needText('phone-number', 'Phone Number');
+          needValid('phone-number', 'Phone Number (10 digits)');
           var floorPlan = document.getElementById('floor-plan');
           if (!floorPlan || !String(floorPlan.value || '').trim()) {
             missing.push('Preferred Floor plan/Unit');
@@ -241,6 +251,7 @@
           needText('move-in-date', 'Move-In Date');
           needText('emergency-contact-name', 'Emergency Contact Name');
           needText('emergency-contact-phone', 'Emergency Contact Phone');
+          needValid('emergency-contact-phone', 'Emergency Contact Phone (10 digits)');
 
           var idUpload = document.getElementById('upload-id-file');
           if (!idUpload || !idUpload.files || idUpload.files.length === 0) {
