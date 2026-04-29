@@ -106,64 +106,122 @@
       <a href="{{ url_for('apply') }}" class="apply">Apply</a>
       <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
     </div>
-    <div class="frame-5 deposit-page-main">
-      <div class="frame-3 deposit-content-centered">
-        <div class="simple-button">
-          <a href="{{ url_for('status_page') }}" class="view-application">View Application</a>
+    <main class="deposit-flow-content">
+      <section class="deposit-info-card" aria-labelledby="deposit-summary-heading">
+        <div>
+          <h2 id="deposit-summary-heading">Application Summary</h2>
+          <div class="deposit-summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Application ID:</span>
+              <span class="summary-value">{{ application_code or "—" }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Status:</span>
+              <span class="summary-value">{{ application.status if application else "No application found" }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Deposit Amount:</span>
+              <span class="summary-value">${{ deposit_amount }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Due Date:</span>
+              <span class="summary-value">{{ due_date_display or "—" }}</span>
+            </div>
+          </div>
         </div>
-        <div class="application-id-deposit-amount-due-date">
-          Application ID: {{ application_code or "—" }}
-          <br />
-          Status: {{ application.status if application else "No application found" }}
-          <br />
-          Deposit Amount: ${{ deposit_amount }}
-          <br />
-          Due Date: {{ due_date_display or "—" }}
+
+        <a href="{{ url_for('status_page') }}" class="view-application-button">View Application</a>
+      </section>
+
+      <section class="deposit-checkout-card" aria-labelledby="deposit-checkout-heading">
+        <div class="checkout-header">
+          <p class="checkout-kicker">Secure Checkout</p>
+          <h2 id="deposit-checkout-heading">Pay Application Deposit</h2>
         </div>
-        <!-- PayPal Panel -->
-        <div class="api-settings" id="paypalPanel">
-          <h6 class="mb-1 font-weight-bold">💳 Pay Deposit</h6>
-          <div id="paypal-button-container"></div>
-          <p id="paypal-status" class="small mt-2"></p>
+
+        <div class="checkout-fields">
+          <label for="deposit-amount">
+            <span>Amount</span>
+            <input id="deposit-amount" type="text" value="${{ deposit_amount }}" readonly>
+          </label>
+          <label for="deposit-payment-method">
+            <span>Payment Method</span>
+            <select id="deposit-payment-method">
+              <option value="Card">Card through secure checkout</option>
+              <option value="Bank Transfer">Bank account through secure checkout</option>
+            </select>
+          </label>
         </div>
-      </div>
-    </div>
+
+        <label class="checkout-authorization" for="authorize-deposit-payment">
+          <input class="authorize-checkbox" type="checkbox" id="authorize-deposit-payment" />
+          <span>I authorize this deposit payment</span>
+        </label>
+
+        <div class="checkout-actions">
+          <a href="{{ url_for('status_page') }}" class="cancel-button">Cancel</a>
+          <button class="submit-deposit-button" type="button" id="submit-deposit-button">
+            Submit Deposit Payment
+          </button>
+        </div>
+
+        <p id="deposit-status" class="deposit-status-message" aria-live="polite"></p>
+      </section>
+    </main>
   </div>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-  // Fetch PayPal Client ID from the server, then load the SDK and render the button
-  $.getJSON("/paypal/config", function(cfg) {
-    const script = document.createElement("script");
-    script.src = "https://www.paypal.com/sdk/js?client-id=" + cfg.client_id + "&currency=USD";
-    script.onload = function() {
-      paypal.Buttons({
-        createOrder: function(data, actions) {
-          return actions.order.create({
-            purchase_units: [{ amount: { value: "4.99" } }]
-          });
-        },
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function() {
-            $.ajax({
-              url: "/paypal/verify",
-              method: "POST",
-              contentType: "application/json",
-              data: JSON.stringify({ orderID: data.orderID }),
-              success: function(res) {
-                $("#paypal-status").html(
-                  '<span class="text-success">✅ ' + res.message + '</span>'
-                );
-              }
-            });
-          });
-        },
-        onError: function(err) {
-          $("#paypal-status").html('<span class="text-danger">❌ Payment failed. Please try again.</span>');
+  const DEPOSIT_PAY_URL = {{ url_for('deposit_pay') | tojson }};
+
+  (function () {
+    const submitBtn = document.getElementById("submit-deposit-button");
+    const authorize = document.getElementById("authorize-deposit-payment");
+    const status = document.getElementById("deposit-status");
+
+    if (!submitBtn) return;
+
+    submitBtn.addEventListener("click", function () {
+      if (!authorize || !authorize.checked) {
+        if (status) {
+          status.className = "deposit-status-message text-danger";
+          status.textContent = "Please authorize this deposit payment first.";
         }
-      }).render("#paypal-button-container");
-    };
-    document.body.appendChild(script);
-  });
-</script>
+        return;
+      }
+
+      submitBtn.disabled = true;
+      if (status) {
+        status.className = "deposit-status-message";
+        status.textContent = "Recording deposit payment...";
+      }
+
+      fetch(DEPOSIT_PAY_URL, {
+        method: "POST",
+        credentials: "same-origin",
+      })
+        .then((res) => res.json().then((data) => ({ res, data })))
+        .then(({ res, data }) => {
+          if (!res.ok) {
+            throw new Error(data.error || "Could not record this deposit payment.");
+          }
+          if (status) {
+            status.className = "deposit-status-message text-success";
+            status.textContent = data.message || "Deposit payment recorded.";
+          }
+          if (data.redirect) {
+            setTimeout(function () {
+              window.location.href = data.redirect;
+            }, 800);
+          }
+        })
+        .catch((error) => {
+          submitBtn.disabled = false;
+          if (status) {
+            status.className = "deposit-status-message text-danger";
+            status.textContent = error.message;
+          }
+        });
+    });
+  })();
+  </script>
 </body>
 </html>
