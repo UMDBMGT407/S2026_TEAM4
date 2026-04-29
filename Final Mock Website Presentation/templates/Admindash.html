@@ -182,6 +182,7 @@
                             <option value="Admin">Admin</option>
                             <option value="Resident">Resident</option>
                             <option value="Staff">Staff</option>
+                            <option value="Prospect">Prospect</option>
                           </select>
                         </div>
                         <button type="submit" class="btn btn-dark submit-user-btn">Add User</button>
@@ -221,6 +222,7 @@
     const quickSummaries = {{ quick_summaries | tojson }};
 
     const usersApiUrl = "{{ url_for('users') }}";
+    const applicationDecisionUrlTemplate = {{ url_for('application_decision', application_code='__CODE__') | tojson }};
 
     function escapeHtml(value) {
       return $("<div>").text(value || "").html();
@@ -265,6 +267,11 @@
           <p><strong>Floor Plan:</strong> ${escapeHtml(app.floorPlan)}</p>
           <p><strong>Move-In:</strong> ${escapeHtml(app.moveIn)}</p>
           <p><strong>Submitted:</strong> ${escapeHtml(app.date)}</p>
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button class="btn btn-success btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Approved">Approve</button>
+            <button class="btn btn-danger btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Denied">Deny</button>
+            <button class="btn btn-outline-secondary btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Pending">Mark Pending</button>
+          </div>
         `);
     }
 
@@ -327,8 +334,10 @@
       users.forEach((user) => {
         const deleteReason = escapeHtml(user.delete_reason);
         const actionMarkup = user.can_delete
-          ? `<button type="button" class="btn btn-outline-danger btn-sm delete-user-btn" data-user-id="${user.id}" data-user-name="${escapeHtml(user.name)}">Delete</button>`
-          : `<button type="button" class="btn btn-secondary btn-sm" disabled>Protected</button><div class="delete-help-text">${deleteReason}</div>`;
+          ? `<button type="button" class="btn btn-outline-dark btn-sm edit-user-btn" data-user-id="${user.id}">Edit</button>
+             <button type="button" class="btn btn-outline-danger btn-sm delete-user-btn" data-user-id="${user.id}" data-user-name="${escapeHtml(user.name)}">Delete</button>`
+          : `<button type="button" class="btn btn-outline-dark btn-sm edit-user-btn" data-user-id="${user.id}">Edit</button>
+             <button type="button" class="btn btn-secondary btn-sm" disabled>Protected</button><div class="delete-help-text">${deleteReason}</div>`;
 
         table.append(`
           <tr>
@@ -344,9 +353,12 @@
       $("#userCountChip").text(`${users.length} users`);
     }
 
+    let cachedUsers = [];
+
     function loadUsers() {
       $.getJSON(usersApiUrl)
         .done((users) => {
+          cachedUsers = users;
           renderUserTable(users);
         })
         .fail((xhr) => {
@@ -382,6 +394,41 @@
         });
     });
 
+    $("#userTable").on("click", ".edit-user-btn", function () {
+      const userId = Number($(this).data("userId"));
+      const user = cachedUsers.find((item) => Number(item.id) === userId);
+      if (!user) return;
+
+      const name = window.prompt("Update name:", user.name);
+      if (name === null) return;
+      const email = window.prompt("Update email:", user.email);
+      if (email === null) return;
+      const role = window.prompt("Update role: admin, resident, staff, or prospect", user.role);
+      if (role === null) return;
+      const password = window.prompt("New password optional. Leave blank to keep current password:", "");
+      if (password === null) return;
+
+      $.ajax({
+        url: `${usersApiUrl}/${userId}`,
+        method: "PATCH",
+        contentType: "application/json",
+        data: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          role: role.trim(),
+          password: password.trim()
+        })
+      })
+        .done((response) => {
+          showFeedback(response.message, "success");
+          loadUsers();
+        })
+        .fail((xhr) => {
+          const message = xhr.responseJSON?.error || "Unable to update that user.";
+          showFeedback(message, "error");
+        });
+    });
+
     $("#userTable").on("click", ".delete-user-btn", function () {
       const userId = $(this).data("userId");
       const userName = $(this).data("userName");
@@ -406,6 +453,27 @@
 
     $("#applicationsTableBody").on("click", ".view-application-btn", function () {
       showApplicationDetails($(this).data("appId"));
+    });
+
+    $("#applicationDetailCard").on("click", ".application-decision-btn", function () {
+      const appId = $(this).data("appId");
+      const status = $(this).data("status");
+
+      $.ajax({
+        url: applicationDecisionUrlTemplate.replace("__CODE__", encodeURIComponent(appId)),
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ status })
+      })
+        .done((response) => {
+          const app = applications.find((item) => item.id === appId);
+          if (app) app.status = response.status;
+          loadApplications();
+          showApplicationDetails(appId);
+        })
+        .fail((xhr) => {
+          alert(xhr.responseJSON?.error || "Unable to update application.");
+        });
     });
 
     $("#reviewApplicationsBtn, #reviewQueueBtn").on("click", reviewFirstApplication);
