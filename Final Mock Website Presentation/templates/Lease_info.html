@@ -110,19 +110,19 @@
     <div class="renewal-details">
       <div class="renewal-item">
         <span class="renewal-label">Status:</span>
-        <span class="renewal-value">Eligible to Renew</span>
+        <span class="renewal-value">{{ lease.renewal_status if lease else "—" }}</span>
       </div>
       <div class="renewal-item">
         <span class="renewal-label">Deadline:</span>
-        <span class="renewal-value">04/10/2026</span>
+        <span class="renewal-value">{{ lease.renewal_deadline_display if lease else "—" }}</span>
       </div>
       <div class="renewal-item">
         <span class="renewal-label">Proposed Term:</span>
-        <span class="renewal-value">12 Months</span>
+        <span class="renewal-value">{{ lease.proposed_term_display if lease else "—" }}</span>
       </div>
       <div class="renewal-item">
         <span class="renewal-label">Proposed Rent:</span>
-        <span class="renewal-value">$1,695.00 / month</span>
+        <span class="renewal-value">{{ lease.proposed_rent_display if lease else "—" }}</span>
       </div>
     </div>
 
@@ -145,84 +145,41 @@
       <span>Type</span>
       <span>Actions</span>
     </div>
+    {% for document in lease.documents if lease %}
+    <div class="frame-{{ 8 + loop.index }} document-row">
+      <span class="document-cell document-title">{{ document.title }}</span>
+      <span class="document-cell">{{ document.date }}</span>
+      <span class="document-cell">{{ document.type }}</span>
+      <div class="document-actions">
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="view"
+          data-doc-title="{{ document.title }}"
+          data-doc-content="{{ document.content }}"
+        >
+          View
+        </button>
+        <button
+          class="doc-action-button"
+          type="button"
+          data-action="download"
+          data-doc-title="{{ document.title }}"
+          data-doc-filename="{{ document.filename }}"
+          data-doc-content="{{ document.content }}"
+        >
+          Download
+        </button>
+      </div>
+    </div>
+    {% else %}
     <div class="frame-9 document-row">
-      <span class="document-cell document-title">2026 Renewal Offer</span>
-      <span class="document-cell">03/01/2026</span>
-      <span class="document-cell">Renewal</span>
-      <div class="document-actions">
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="view"
-          data-doc-title="2026 Renewal Offer"
-          data-doc-content="12-month renewal offer at $1,695.00 per month beginning June 1, 2026."
-        >
-          View
-        </button>
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="download"
-          data-doc-title="2026 Renewal Offer"
-          data-doc-filename="2026-renewal-offer.txt"
-          data-doc-content="The Courtyards\n2026 Renewal Offer\nOffered term: 12 months\nMonthly rent: $1,695.00\nEffective date: 06/01/2026"
-        >
-          Download
-        </button>
-      </div>
+      <span class="document-cell document-title">No active lease documents</span>
+      <span class="document-cell">—</span>
+      <span class="document-cell">—</span>
+      <span class="document-cell">—</span>
     </div>
-    <div class="frame-10 document-row">
-      <span class="document-cell document-title">Parking Addendum</span>
-      <span class="document-cell">02/01/2026</span>
-      <span class="document-cell">Addendum</span>
-      <div class="document-actions">
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="view"
-          data-doc-title="Parking Addendum"
-          data-doc-content="Assigned parking space B-14 remains attached to the lease through the current term."
-        >
-          View
-        </button>
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="download"
-          data-doc-title="Parking Addendum"
-          data-doc-filename="parking-addendum.txt"
-          data-doc-content="The Courtyards\nParking Addendum\nAssigned space: B-14\nMonthly parking fee: $40.00\nResident must display a valid permit."
-        >
-          Download
-        </button>
-      </div>
-    </div>
-    <div class="frame-11 document-row">
-      <span class="document-cell document-title">Water Shutoff Notice</span>
-      <span class="document-cell">03/07/2026</span>
-      <span class="document-cell">Notice</span>
-      <div class="document-actions">
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="view"
-          data-doc-title="Water Shutoff Notice"
-          data-doc-content="Water service will be interrupted on March 18 from 10:00 AM to 2:00 PM for building-wide maintenance."
-        >
-          View
-        </button>
-        <button
-          class="doc-action-button"
-          type="button"
-          data-action="download"
-          data-doc-title="Water Shutoff Notice"
-          data-doc-filename="water-shutoff-notice.txt"
-          data-doc-content="The Courtyards\nWater Shutoff Notice\nDate: 03/18/2026\nTime: 10:00 AM - 2:00 PM\nReason: Building plumbing maintenance."
-        >
-          Download
-        </button>
-      </div>
-    </div>
+    {% endfor %}
 
     <div class="simple-button2">
       <a class="cancel" href="{{ url_for('res_dash2') }}" id="back-dashboard-button">Back to Dashboard</a>
@@ -256,7 +213,7 @@
 
       if (downloadLeaseBtn) {
         downloadLeaseBtn.addEventListener("click", () => {
-          alert("Use Save as PDF in the print dialog to export this sample lease page.");
+          alert("Use Save as PDF in the print dialog to export this lease page.");
           window.print();
         });
       }
