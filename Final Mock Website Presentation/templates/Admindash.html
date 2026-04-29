@@ -257,16 +257,36 @@
     function showApplicationDetails(appId) {
       const app = applications.find((item) => item.id === appId);
       if (!app) return;
+      const documentMarkup = app.documents && app.documents.length
+        ? app.documents.map((doc) => {
+            if (doc.url) {
+              return `<li><a href="${escapeHtml(doc.url)}" target="_blank" rel="noopener">${escapeHtml(doc.label)}</a></li>`;
+            }
+            return `<li>${escapeHtml(doc.label)}: ${escapeHtml(doc.path)}</li>`;
+          }).join("")
+        : "<li>No uploaded documents found.</li>";
       $("#applicationDetailCard")
         .prop("hidden", false)
         .html(`
           <h3>${escapeHtml(app.id)} | ${escapeHtml(app.status)}</h3>
-          <p><strong>Name:</strong> ${escapeHtml(app.name)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
-          <p><strong>Floor Plan:</strong> ${escapeHtml(app.floorPlan)}</p>
-          <p><strong>Move-In:</strong> ${escapeHtml(app.moveIn)}</p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> ${escapeHtml(app.name)}</p>
+              <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
+              <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
+              <p><strong>Student ID:</strong> ${escapeHtml(app.studentId)}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Floor Plan:</strong> ${escapeHtml(app.floorPlan)}</p>
+              <p><strong>Move-In:</strong> ${escapeHtml(app.moveIn)}</p>
+              <p><strong>Emergency Contact:</strong> ${escapeHtml(app.emergencyName)}</p>
+              <p><strong>Emergency Phone:</strong> ${escapeHtml(app.emergencyPhone)}</p>
+            </div>
+          </div>
           <p><strong>Submitted:</strong> ${escapeHtml(app.date)}</p>
+          <p><strong>Notes:</strong> ${escapeHtml(app.notes || "No notes provided.")}</p>
+          <p><strong>Uploaded Documents:</strong></p>
+          <ul>${documentMarkup}</ul>
           <div class="d-flex gap-2 flex-wrap mt-3">
             <button class="btn btn-success btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Approved">Approve</button>
             <button class="btn btn-danger btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Denied">Deny</button>
@@ -470,6 +490,7 @@
           if (app) app.status = response.status;
           loadApplications();
           showApplicationDetails(appId);
+          alert(response.message || `Application marked ${response.status}.`);
         })
         .fail((xhr) => {
           alert(xhr.responseJSON?.error || "Unable to update application.");
