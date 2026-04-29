@@ -33,43 +33,6 @@
        padding: 0;
    }
 
-   .rent-paypal-checkout {
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: center;
-     text-align: center;
-   }
-   .rent-paypal-centered {
-     width: 100%;
-     max-width: 420px;
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     margin: 0 auto;
-     padding: 12px 16px 24px;
-   }
-   .rent-paypal-centered .api-settings {
-     width: 100%;
-   }
-   .rent-paypal-centered #paypal-button-container {
-     display: flex;
-     flex-wrap: wrap;
-     justify-content: center;
-   }
-   .rent-paypal-centered h6 {
-     font-family: "Montserrat-SemiBold", sans-serif;
-     font-size: 1.1rem;
-   }
-   .rent-paypal-centered .small {
-     font-size: 0.9rem;
-   }
-   .mb-1 { margin-bottom: 0.25rem; }
-   .mt-2 { margin-top: 0.5rem; }
-   .font-weight-bold { font-weight: 700; }
-   .text-success { color: #1a7f37; }
-   .text-danger { color: #b42318; }
-
    /* ── NEW: status pill colors in payment history ─────────────────────────── */
    .status-pill-paid   { color: #1a7f37; font-weight: 600; }
    .status-pill-pending { color: #b45309; font-weight: 600; }
@@ -143,14 +106,59 @@
         </button>
       </section>
 
-      <section class="secure-checkout rent-paypal-checkout" aria-label="Pay rent with PayPal">
-        <!-- PayPal Panel -->
-        <div class="rent-paypal-centered">
-          <div class="api-settings" id="paypalPanel">
-            <h6 class="mb-1 font-weight-bold">💳 Pay Rent</h6>
-            <div id="paypal-button-container"></div>
-            <p id="paypal-status" class="small mt-2"></p>
+      <section class="secure-checkout" aria-labelledby="checkout-heading">
+        <div class="checkout-header">
+          <div>
+            <p class="checkout-kicker">Secure Checkout</p>
+            <h2 id="checkout-heading">Choose Payment Type</h2>
           </div>
+        </div>
+
+        <div class="payment-type-options" role="radiogroup" aria-label="Payment type">
+          <label class="payment-type-option active" id="one-time-option">
+            <input type="radio" name="rent-payment-type" value="one_time" checked>
+            <span>One-Time Payment</span>
+            <small>Pay the current balance today.</small>
+          </label>
+          <label class="payment-type-option" id="recurring-option">
+            <input type="radio" name="rent-payment-type" value="recurring">
+            <span>Set Up Recurring Payment</span>
+            <small>Automatically pay rent each month.</small>
+          </label>
+        </div>
+
+        <div class="checkout-fields">
+          <label for="payment-amount">
+            <span>Amount</span>
+            <input id="payment-amount" type="text" value="{{ balance_due }}" readonly>
+          </label>
+          <label for="payment-method-card-bank">
+            <span>Payment Method</span>
+            <select id="payment-method-card-bank">
+              <option value="Bank Transfer">Bank account through secure checkout</option>
+              <option value="Card">Card through secure checkout</option>
+            </select>
+          </label>
+          <label for="monthly-payment-day">
+            <span>Monthly Payment Day</span>
+            <select id="monthly-payment-day">
+              <option value="1">1st of each month</option>
+              <option value="5">5th of each month</option>
+              <option value="10">10th of each month</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="checkout-authorization" for="authorize-rent-payment">
+          <input class="authorize-checkbox" type="checkbox" id="authorize-rent-payment" name="authorize-rent-payment" />
+          <span>I authorize this payment setup</span>
+        </label>
+
+        <div class="checkout-actions">
+          <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
+          <button class="submit-payment-button" type="button" id="submit-payment-button">
+            Submit Payment
+          </button>
         </div>
       </section>
 
@@ -195,77 +203,107 @@
     </main>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    const PAY_RENT_SUBMIT_URL = {{ url_for('pay_rent_submit') | tojson }};
     (function () {
+      const cancelBtn = document.getElementById("cancel-button");
+      const submitBtn = document.getElementById("submit-payment-button");
       const historyBtn = document.getElementById("view-payment-history-button");
       const historyPanel = document.getElementById("payment-history-panel");
       const closeHistoryBtn = document.getElementById("close-history-button");
       const historyBackdrop = document.getElementById("payment-history-backdrop");
+      const paymentTypeRadios = document.querySelectorAll('input[name="rent-payment-type"]');
 
-      function openPaymentHistory() {
-        if (historyPanel) historyPanel.hidden = false;
-        if (historyBackdrop) {
-          historyBackdrop.hidden = false;
-          historyBackdrop.setAttribute("aria-hidden", "false");
-        }
+      function updatePaymentTypeCards() {
+        paymentTypeRadios.forEach((radio) => {
+          radio.closest(".payment-type-option").classList.toggle("active", radio.checked);
+        });
       }
 
-      function closePaymentHistory() {
-        if (historyPanel) historyPanel.hidden = true;
-        if (historyBackdrop) {
-          historyBackdrop.hidden = true;
-          historyBackdrop.setAttribute("aria-hidden", "true");
-        }
+      paymentTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", updatePaymentTypeCards);
+      });
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", function () {
+          const authorize = document.getElementById("authorize-rent-payment");
+          const oneTime = document.querySelector('input[name="rent-payment-type"][value="one_time"]');
+          if (authorize) authorize.checked = false;
+          if (oneTime) oneTime.checked = true;
+          updatePaymentTypeCards();
+        });
       }
 
       if (historyBtn && historyPanel) {
-        historyBtn.addEventListener("click", openPaymentHistory);
+        historyBtn.addEventListener("click", function () {
+          historyPanel.hidden = false;
+          if (historyBackdrop) {
+            historyBackdrop.hidden = false;
+            historyBackdrop.setAttribute("aria-hidden", "false");
+          }
+        });
       }
 
       if (closeHistoryBtn && historyPanel) {
-        closeHistoryBtn.addEventListener("click", closePaymentHistory);
+        closeHistoryBtn.addEventListener("click", function () {
+          historyPanel.hidden = true;
+          if (historyBackdrop) {
+            historyBackdrop.hidden = true;
+            historyBackdrop.setAttribute("aria-hidden", "true");
+          }
+        });
       }
 
       if (historyBackdrop) {
-        historyBackdrop.addEventListener("click", closePaymentHistory);
+        historyBackdrop.addEventListener("click", function () {
+          if (historyPanel) historyPanel.hidden = true;
+          historyBackdrop.hidden = true;
+          historyBackdrop.setAttribute("aria-hidden", "true");
+        });
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener("click", function () {
+          const authorize = document.getElementById("authorize-rent-payment");
+          const method = document.getElementById("payment-method-card-bank");
+          const paymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+
+          if (!authorize || !authorize.checked) {
+            alert("Please authorize this payment setup first.");
+            return;
+          }
+
+          const label = paymentType && paymentType.value === "recurring" ? "recurring payment" : "one-time payment";
+          const ok = confirm(`Confirm ${label} submission?`);
+          if (!ok) return;
+
+          const fd = new FormData();
+          fd.append("method", method ? method.value : "Bank Transfer");
+          fd.append("account_to_pay", label);
+          fd.append("last4", "0000");
+          fd.append("billing_zip", "00000");
+          fd.append("billing_address", "Secure checkout");
+
+          fetch(PAY_RENT_SUBMIT_URL, {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin",
+          })
+            .then((res) => res.json().then((data) => ({ res, data })))
+            .then(({ res, data }) => {
+              if (!res.ok) {
+                alert(data.error || "Could not submit payment.");
+                return;
+              }
+              alert(`Payment submitted. Payment #: ${data.payment_code}. Confirmation #: ${data.confirmation}.`);
+              window.location.reload();
+            })
+            .catch(() => {
+              alert("Could not submit payment.");
+            });
+        });
       }
     })();
   </script>
-  <script>
-  // Fetch PayPal Client ID from the server, then load the SDK and render the button
-  $.getJSON("/paypal/config", function(cfg) {
-    const script = document.createElement("script");
-    script.src = "https://www.paypal.com/sdk/js?client-id=" + cfg.client_id + "&currency=USD";
-    script.onload = function() {
-      paypal.Buttons({
-        createOrder: function(data, actions) {
-          return actions.order.create({
-            purchase_units: [{ amount: { value: "4.99" } }]
-          });
-        },
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function() {
-            $.ajax({
-              url: "/paypal/verify",
-              method: "POST",
-              contentType: "application/json",
-              data: JSON.stringify({ orderID: data.orderID }),
-              success: function(res) {
-                $("#paypal-status").html(
-                  '<span class="text-success">✅ ' + res.message + '</span>'
-                );
-              }
-            });
-          });
-        },
-        onError: function(err) {
-          $("#paypal-status").html('<span class="text-danger">❌ Payment failed. Please try again.</span>');
-        }
-      }).render("#paypal-button-container");
-    };
-    document.body.appendChild(script);
-  });
-</script>
 </body>
 </html>
