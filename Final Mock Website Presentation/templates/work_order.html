@@ -55,11 +55,71 @@
             {% endif %}
             <a class="nav-link-custom active" id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
             <a class="nav-link-custom" id="scheduleLink" href="{{ url_for('schedule') }}">Schedule</a>
+            {% if is_admin_view %}
+            <a class="nav-link-custom" href="{{ url_for('home') }}#users-section">Users</a>
+            {% endif %}
           </nav>
         </aside>
 
         <!-- Main Content -->
         <main class="col-lg-10 col-md-9 main-content">
+          {% if is_admin_view %}
+          <section class="panel-box mb-4">
+            <h2>Create Work Order</h2>
+            <form id="createWorkOrderForm" class="row g-3">
+              <div class="col-md-4">
+                <select id="createLease" class="form-select" required>
+                  <option value="">Resident / Unit</option>
+                  {% for lease in resident_leases %}
+                  <option value="{{ lease.lease_id }}">{{ lease.resident_name }} | {{ lease.unit_number }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <select id="createStaff" class="form-select" required>
+                  <option value="">Assign Staff</option>
+                  {% for staff in staff_users %}
+                  <option value="{{ staff.id }}">{{ staff.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <select id="createPriority" class="form-select" required>
+                  <option value="">Priority</option>
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                  <option>Urgent</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input id="createCategory" class="form-control" type="text" placeholder="Category" required>
+              </div>
+              <div class="col-md-4">
+                <input id="createTitle" class="form-control" type="text" placeholder="Issue title" required>
+              </div>
+              <div class="col-md-2">
+                <input id="createDate" class="form-control" type="date">
+              </div>
+              <div class="col-md-2">
+                <select id="createWindow" class="form-select">
+                  <option value="">Time</option>
+                  <option>8:00 AM - 10:00 AM</option>
+                  <option>10:00 AM - 12:00 PM</option>
+                  <option>1:00 PM - 3:00 PM</option>
+                  <option>3:00 PM - 5:00 PM</option>
+                </select>
+              </div>
+              <div class="col-md-9">
+                <input id="createDescription" class="form-control" type="text" placeholder="Work order details" required>
+              </div>
+              <div class="col-md-3">
+                <button class="apply-btn w-100" type="submit">Add Work Order</button>
+              </div>
+            </form>
+          </section>
+          {% endif %}
+
           <!-- Filters -->
           <section class="filters-bar">
             <div class="filters-label">Filters</div>
@@ -149,6 +209,13 @@
                 {% if is_admin_view %}
                 <h3>Schedule &amp; Status</h3>
                 <div class="assign-grid">
+                  <select id="assignedStaff" class="assign-input">
+                    <option value="">Assigned Staff</option>
+                    {% for staff in staff_users %}
+                    <option value="{{ staff.id }}">{{ staff.name }}</option>
+                    {% endfor %}
+                  </select>
+
                   <input id="scheduleDate" class="assign-input" type="date" />
 
                   <select id="timeWindow" class="assign-input">
@@ -184,8 +251,14 @@
                 {% endif %}
 
                 <div class="action-buttons">
+                  {% if not is_admin_view %}
+                  <button id="acceptBtn" class="action-btn" type="button">Accept Task</button>
+                  {% endif %}
                   <button id="saveBtn" class="action-btn" type="button">Save Update</button>
                   <button id="closeBtn" class="action-btn" type="button">Close WO</button>
+                  {% if is_admin_view %}
+                  <button id="removeBtn" class="action-btn" type="button">Remove WO</button>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -198,13 +271,19 @@
   <script>
     const workOrders = {{ work_orders | tojson }};
     const workOrderUpdateUrl = {{ url_for('work_order_update') | tojson }};
+    const workOrderCreateUrl = {{ url_for('work_order_create') | tojson }};
+    const workOrderDeleteUrlTemplate = {{ url_for('work_order_delete', work_order_code='__CODE__') | tojson }};
 
     const statusUpdate = document.getElementById("statusUpdate");
     const notesBox = document.getElementById("notesBox");
     const saveBtn = document.getElementById("saveBtn");
     const closeBtn = document.getElementById("closeBtn");
+    const acceptBtn = document.getElementById("acceptBtn");
+    const removeBtn = document.getElementById("removeBtn");
     const scheduleDate = document.getElementById("scheduleDate");
     const timeWindow = document.getElementById("timeWindow");
+    const assignedStaff = document.getElementById("assignedStaff");
+    const createWorkOrderForm = document.getElementById("createWorkOrderForm");
 
     let filteredOrders = [...workOrders];
     let currentIndex = 0;
@@ -267,6 +346,9 @@
       }
       if (timeWindow && order.time_window) {
         timeWindow.value = order.time_window;
+      }
+      if (assignedStaff && order.assigned_staff_id) {
+        assignedStaff.value = order.assigned_staff_id;
       }
     }
 
@@ -332,6 +414,9 @@
       if (timeWindow && timeWindow.value !== "Time Window") {
         payload.time_window = timeWindow.value;
       }
+      if (assignedStaff && assignedStaff.value) {
+        payload.assigned_staff_id = assignedStaff.value;
+      }
 
       fetch(workOrderUpdateUrl, {
         method: "POST",
@@ -349,6 +434,7 @@
           order.notes = payload.notes;
           if (payload.scheduled_date) order.scheduled_date_iso = payload.scheduled_date;
           if (payload.time_window) order.time_window = payload.time_window;
+          if (payload.assigned_staff_id) order.assigned_staff_id = Number(payload.assigned_staff_id);
           renderQueue();
           renderDetails();
           alert(data.message || "Work order update saved.");
@@ -369,6 +455,70 @@
     closeBtn.addEventListener("click", () => {
       persistWorkOrder("Closed");
     });
+
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", () => {
+        persistWorkOrder("In Progress");
+      });
+    }
+
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        const order = filteredOrders[currentIndex];
+        if (!order || !window.confirm(`Remove ${order.id}?`)) return;
+        fetch(workOrderDeleteUrlTemplate.replace("__CODE__", encodeURIComponent(order.id)), {
+          method: "DELETE",
+          credentials: "same-origin",
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not remove work order.");
+              return;
+            }
+            alert(data.message || "Work order removed.");
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("Could not remove work order.");
+          });
+      });
+    }
+
+    if (createWorkOrderForm) {
+      createWorkOrderForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const payload = {
+          lease_id: document.getElementById("createLease").value,
+          assigned_staff_id: document.getElementById("createStaff").value,
+          priority: document.getElementById("createPriority").value,
+          category: document.getElementById("createCategory").value.trim(),
+          issue_title: document.getElementById("createTitle").value.trim(),
+          description: document.getElementById("createDescription").value.trim(),
+          scheduled_date: document.getElementById("createDate").value,
+          time_window: document.getElementById("createWindow").value,
+        };
+
+        fetch(workOrderCreateUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(payload),
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not create work order.");
+              return;
+            }
+            alert(`${data.message} ${data.work_order_code}`);
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("Could not create work order.");
+          });
+      });
+    }
 
     renderQueue();
     renderDetails();
