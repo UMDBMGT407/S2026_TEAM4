@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
   <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture"></script>
 
-
   <style>
    a,
    button,
@@ -84,14 +83,18 @@
               <span class="summary-label">Monthly Rent:</span>
               <span class="summary-value">{{ monthly_rent }}</span>
             </div>
+            {% if utility_charges %}
             <div class="summary-item">
               <span class="summary-label">Utility Charges:</span>
               <span class="summary-value">{{ utility_charges }}</span>
             </div>
+            {% endif %}
+            {% if parking_fee %}
             <div class="summary-item">
               <span class="summary-label">Parking Fee:</span>
               <span class="summary-value">{{ parking_fee }}</span>
             </div>
+            {% endif %}
             <div class="summary-item">
               <span class="summary-label">Last Payment:</span>
               <span class="summary-value">{{ last_payment_date }}</span>
@@ -116,6 +119,7 @@
           </div>
         </div>
 
+        {% if can_pay_rent %}
         <div class="payment-type-options" role="radiogroup" aria-label="Payment type">
           <label class="payment-type-option active" id="one-time-option">
             <input type="radio" name="rent-payment-type" value="one_time" checked>
@@ -164,6 +168,12 @@
         </div>
 
         <div id="paypal-rent-button-container"></div>
+        {% else %}
+        <div class="checkout-empty-state">
+          <h3>No active rent balance</h3>
+          <p>Rent checkout will appear after this resident has an active lease and a balance from the database.</p>
+        </div>
+        {% endif %}
       </section>
 
       <!-- ── CHANGED: Payment History panel now shows resident-only data.       -->
@@ -309,7 +319,7 @@
         });
       }
 
-      if (window.paypal) {
+      if ({{ can_pay_rent | tojson }} && window.paypal) {
         paypal.Buttons({
           style: {
             layout: "vertical",
