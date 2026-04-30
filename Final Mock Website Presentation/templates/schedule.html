@@ -47,6 +47,7 @@
     <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
     <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
     {% if is_admin_view %}
+    <a href="{{ url_for('home') }}#admin-tools-section">Admin Tools</a>
     <a href="{{ url_for('home') }}#users-section">Users</a>
     {% endif %}
   </nav>
