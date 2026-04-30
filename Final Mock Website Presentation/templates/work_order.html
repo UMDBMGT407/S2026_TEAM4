@@ -50,16 +50,12 @@
         <aside class="col-lg-2 col-md-3 sidebar">
           <nav class="sidebar-nav">
             <a class="nav-link-custom" id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
-            {% if is_admin_view %}
-            <a class="nav-link-custom" href="{{ url_for('home') }}#applications-section">Applications</a>
-            {% endif %}
             {% if show_payments_link %}
             <a class="nav-link-custom" id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
             {% endif %}
             <a class="nav-link-custom active" id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
             <a class="nav-link-custom" id="scheduleLink" href="{{ url_for('schedule') }}">Schedule</a>
             {% if is_admin_view %}
-            <a class="nav-link-custom" href="{{ url_for('home') }}#admin-tools-section">Admin Tools</a>
             <a class="nav-link-custom" href="{{ url_for('home') }}#users-section">Users</a>
             {% endif %}
           </nav>
@@ -68,7 +64,7 @@
         <!-- Main Content -->
         <main class="col-lg-10 col-md-9 main-content">
           {% if is_admin_view %}
-          <section class="panel-box mb-4">
+          <section class="panel-box create-workorder-panel mb-4">
             <h2>Create Work Order</h2>
             <form id="createWorkOrderForm" class="row g-3">
               <div class="col-md-4">
