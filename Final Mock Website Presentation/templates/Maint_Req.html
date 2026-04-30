@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Maint_Req.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
-  
-  
+
   <style>
    a,
    button,
@@ -25,16 +24,15 @@
        border: none;
        text-decoration: none;
        background: none;
-   
        -webkit-font-smoothing: antialiased;
    }
-   
+
    menu, ol, ul {
        list-style-type: none;
        margin: 0;
        padding: 0;
    }
-   </style>
+  </style>
   <title>The Courtyards | Maintenance Request</title>
 </head>
 <body>
@@ -101,9 +99,9 @@
     <div class="preferred-access-time">Preferred Access Time</div>
     <select class="dropdown-access-time" name="access-time" aria-label="Preferred access time">
       <option value="">Select time</option>
-      <option value="morning">Morning (8am–12pm)</option>
-      <option value="afternoon">Afternoon (12pm–5pm)</option>
-      <option value="evening">Evening (5pm–8pm)</option>
+      <option value="morning">Morning (8am-12pm)</option>
+      <option value="afternoon">Afternoon (12pm-5pm)</option>
+      <option value="evening">Evening (5pm-8pm)</option>
       <option value="any">Any time</option>
     </select>
     <div class="rectangle-17"></div>
@@ -118,7 +116,7 @@
       minlength="5"
     ></textarea>
     <img class="polygon-1" src="{{ url_for('static', filename='images/polygon-10.svg') }}" />
-    <img class="polygon-3" src="{{ url_for('static', filename='images/polygon-30.svg') }}" />
+    <img class="polygon-3 location-arrow-hidden" src="{{ url_for('static', filename='images/polygon-30.svg') }}" />
     <img class="polygon-4" src="{{ url_for('static', filename='images/polygon-40.svg') }}" />
     <div class="rectangle-18"></div>
     <button
@@ -129,23 +127,18 @@
       Submit Request
     </button>
     <input class="upload-photo-file" type="file" name="upload-photo-file" aria-label="Upload photo or file" />
-    <button
+    <textarea
       class="access-notes-instructions"
-      type="button"
+      name="access-notes"
       aria-label="Access notes / instructions"
-    >
-      Access Notes / Instructions
-    </button>
+      placeholder="Access notes / instructions"
+      rows="2"
+    ></textarea>
+    <p class="maintenance-form-message" id="maintenance-form-message" hidden></p>
 
-    <!-- ── NEW: My Requests status tracker ───────────────────────────────────
-         Displays the logged-in resident's maintenance requests and their
-         current status (Pending → Assigned → In Progress → Closed).
-         Data is fetched from /resident/maintenance/status (resident-scoped,
-         no cross-tenant data) and refreshes automatically after submission.
-    ─────────────────────────────────────────────────────────────────────── -->
     <div class="my-requests-panel" id="my-requests-panel">
       <h2 style="font-size:1rem; font-weight:700; margin-bottom:14px; color:#222;">
-        📋 My Maintenance Requests
+        My Maintenance Requests
       </h2>
       <div id="requests-table-wrap" style="overflow-x:auto;">
         <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
@@ -161,23 +154,30 @@
             </tr>
           </thead>
           <tbody id="requests-tbody">
-            <tr><td colspan="7" style="padding:12px 10px; color:#777;">Loading…</td></tr>
+            <tr><td colspan="7" style="padding:12px 10px; color:#777;">Loading...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-    <!-- ── END NEW ─────────────────────────────────────────────────────────── -->
-  </div><!-- end .cr-02-maintenance-request -->
+  </div>
   <script>
     const MAINTENANCE_SUBMIT_URL = {{ url_for('maintenance_request_submit') | tojson }};
-    // ── NEW: status table URL ─────────────────────────────────────────────────
     const MAINTENANCE_STATUS_URL = {{ url_for('resident_maintenance_status') | tojson }};
-    // ── END NEW ───────────────────────────────────────────────────────────────
+
     (function () {
       const root = document.querySelector(".cr-02-maintenance-request");
       const cancelBtn = document.getElementById("cancel-clear");
       const submitBtn = document.getElementById("submit-request-button");
+      const formMessage = document.getElementById("maintenance-form-message");
       if (!root) return;
+
+      function showFormMessage(message, isError) {
+        if (!formMessage) return;
+        formMessage.hidden = false;
+        formMessage.textContent = message;
+        formMessage.classList.remove("error", "success");
+        formMessage.classList.add(isError ? "error" : "success");
+      }
 
       if (cancelBtn) {
         cancelBtn.addEventListener("click", () => {
@@ -192,6 +192,11 @@
             }
             el.value = "";
           });
+          if (formMessage) {
+            formMessage.hidden = true;
+            formMessage.textContent = "";
+            formMessage.classList.remove("error", "success");
+          }
         });
       }
 
@@ -203,21 +208,46 @@
           const priority = root.querySelector('[name="priority"]');
           const accessTime = root.querySelector('[name="access-time"]');
           const description = root.querySelector('[name="issue-description"]');
+          const accessNotes = root.querySelector('[name="access-notes"]');
           const attachment = root.querySelector('[name="upload-photo-file"]');
-          const requiredFields = [category, priority, description].filter(Boolean);
-          for (const field of requiredFields) {
-            if (typeof field.checkValidity === "function" && !field.checkValidity()) {
-              field.reportValidity();
-              field.focus();
-              return;
-            }
+          const descriptionValue = String(description?.value || "").trim();
+
+          if (!String(category?.value || "").trim()) {
+            showFormMessage("Choose an issue category.", true);
+            return;
           }
+          if (!String(priority?.value || "").trim()) {
+            showFormMessage("Choose a priority level.", true);
+            return;
+          }
+          if (!descriptionValue) {
+            showFormMessage("Describe the issue before submitting.", true);
+            return;
+          }
+          if (descriptionValue.length < 5) {
+            showFormMessage("Issue description must be at least 5 characters.", true);
+            return;
+          }
+
+          if (formMessage) {
+            formMessage.hidden = true;
+            formMessage.textContent = "";
+            formMessage.classList.remove("error", "success");
+          }
+
+          const accessTimeValue = String(accessTime?.value || "").trim();
+          const accessNotesValue = String(accessNotes?.value || "").trim();
+          const fullDescription = [
+            descriptionValue,
+            accessTimeValue ? `Preferred access time: ${accessTimeValue}` : "",
+            accessNotesValue ? `Access notes: ${accessNotesValue}` : "",
+          ].filter(Boolean).join("\n");
 
           fd.append("category", category ? category.value : "");
           fd.append("location", location ? location.value : "");
           fd.append("priority", priority ? priority.value : "");
           fd.append("access_time", accessTime ? accessTime.value : "");
-          fd.append("description", description ? description.value : "");
+          fd.append("description", fullDescription);
           if (attachment && attachment.files && attachment.files[0]) {
             fd.append("attachment", attachment.files[0]);
           }
@@ -230,10 +260,10 @@
             .then((res) => res.json().then((data) => ({ res, data })))
             .then(({ res, data }) => {
               if (!res.ok) {
-                alert(data.error || "Could not submit maintenance request.");
+                showFormMessage(data.error || "Could not submit maintenance request.", true);
                 return;
               }
-              alert(`${data.message} Request #: ${data.request_code}`);
+              showFormMessage(`${data.message} Request #: ${data.request_code}`, false);
               root.querySelectorAll("input, select, textarea").forEach((el) => {
                 if (el.tagName === "SELECT" || el.type === "file") {
                   el.value = "";
@@ -241,23 +271,20 @@
                 }
                 el.value = "";
               });
-              // ── NEW: refresh the status table after a successful submission ──
               loadRequests();
-              // ── END NEW ────────────────────────────────────────────────────
             })
             .catch(() => {
-              alert("Could not submit maintenance request.");
+              showFormMessage("Could not submit maintenance request.", true);
             });
         });
       }
     })();
 
-    // ── NEW: load + render the resident's maintenance request status table ───
     const STATUS_COLORS = {
-      "Open":        "#b45309",
-      "Assigned":    "#1d4ed8",
+      "Open": "#b45309",
+      "Assigned": "#1d4ed8",
       "In Progress": "#7c3aed",
-      "Closed":      "#1a7f37",
+      "Closed": "#1a7f37",
     };
 
     function loadRequests() {
@@ -280,8 +307,8 @@
                   <td style="padding:7px 10px;">${r.issue_title}</td>
                   <td style="padding:7px 10px;">${r.priority}</td>
                   <td style="padding:7px 10px; font-weight:600; color:${color};">${r.status}</td>
-                  <td style="padding:7px 10px;">${r.work_order_code || "—"}</td>
-                  <td style="padding:7px 10px;">${r.scheduled_date !== "—" ? r.scheduled_date + (r.time_window !== "—" ? "<br><small>" + r.time_window + "</small>" : "") : "—"}</td>
+                  <td style="padding:7px 10px;">${r.work_order_code || "-"}</td>
+                  <td style="padding:7px 10px;">${r.scheduled_date !== "-" ? r.scheduled_date + (r.time_window !== "-" ? "<br><small>" + r.time_window + "</small>" : "") : "-"}</td>
                   <td style="padding:7px 10px;">${r.created_at}</td>
                 </tr>`;
             })
@@ -293,9 +320,7 @@
         });
     }
 
-    // Load immediately on page open
     loadRequests();
-    // ── END NEW ───────────────────────────────────────────────────────────────
   </script>
 </body>
 </html>
