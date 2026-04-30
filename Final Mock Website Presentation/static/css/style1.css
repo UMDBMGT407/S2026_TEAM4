@@ -47,9 +47,9 @@ button {
   height: 100px;
   background: rgba(179, 179, 179, 0.85);
   display: grid;
-  grid-template-columns: 220px 1fr 260px;
+  grid-template-columns: 220px minmax(0, 1fr) auto;
   align-items: center;
-  padding: 0 24px 0 0;
+  padding: 0 28px 0 0;
 }
 .header-left {
   display: flex;
