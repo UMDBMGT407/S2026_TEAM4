@@ -102,7 +102,7 @@ def db_one(sql, params=()):
 
 def money(value):
     if value is None:
-        return "$0.00"
+        return "--"
     amount = float(value)
     return f"${amount:,.2f}"
 
@@ -241,14 +241,22 @@ def _application_code_for_email(email):
 
 
 def _deposit_page_context(email):
-    """Values for deposit.html: code from DB, $100 deposit, due = submitted_at + 30 days."""
-    deposit_amount = 100
+    """Values for deposit.html from the latest application and selected floor plan."""
+    deposit_amount = Decimal("0.00")
     application_code = None
     due_date_display = None
-    row = _latest_application_row_for_email(email)
+    row = db_one(
+        "SELECT a.application_code, a.submitted_at, fp.rent AS deposit_amount "
+        "FROM applications a "
+        "JOIN floorplans fp ON a.floorplan_id = fp.id "
+        "WHERE LOWER(TRIM(a.applicant_email)) = %s "
+        "ORDER BY a.submitted_at DESC LIMIT 1",
+        (str(email).strip().lower(),),
+    )
     if row:
-        application_code = row[0] or None
-        submitted_at = row[1]
+        application_code = row.get("application_code") or None
+        deposit_amount = Decimal(str(row.get("deposit_amount") or "0.00"))
+        submitted_at = row.get("submitted_at")
         if submitted_at is not None:
             if isinstance(submitted_at, datetime):
                 base = submitted_at
@@ -261,7 +269,7 @@ def _deposit_page_context(email):
                 due_date_display = due.strftime("%B %d, %Y")
     return {
         "application_code": application_code,
-        "deposit_amount": deposit_amount,
+        "deposit_amount": money(deposit_amount),
         "deposit_amount_value": f"{deposit_amount:.2f}",
         "due_date_display": due_date_display,
     }
@@ -443,24 +451,28 @@ def _resident_dashboard_context(user_id):
         for payment in payments
         if payment.get("status") in {"Pending", "Failed"}
     )
-    monthly_rent = lease["monthly_rent_value"] if lease else 0
-    balance_due = unpaid_total or monthly_rent
+    has_active_lease = lease is not None
+    monthly_rent = lease["monthly_rent_value"] if has_active_lease else 0
+    balance_due = (unpaid_total or monthly_rent) if has_active_lease else 0
     last_payment = next(
         (payment for payment in payments if payment.get("status") == "Paid"), None
     )
+    next_due = _next_rent_due_date() if has_active_lease else None
     return {
         "lease": lease,
         "payments": payments,
         "payment_history": payment_history,
-        "balance_due": money(balance_due),
+        "has_active_lease": has_active_lease,
+        "can_pay_rent": has_active_lease and float(balance_due) > 0,
+        "balance_due": money(balance_due) if has_active_lease else "--",
         "balance_due_value": f"{float(balance_due):.2f}",
-        "monthly_rent": money(monthly_rent),
+        "monthly_rent": money(monthly_rent) if has_active_lease else "--",
         "monthly_rent_value": f"{float(monthly_rent):.2f}",
-        "utility_charges": money(0),
-        "parking_fee": money(0),
+        "utility_charges": None,
+        "parking_fee": None,
         "last_payment_date": last_payment["payment_date_display"] if last_payment else "--",
-        "next_due_date": date_display(_next_rent_due_date()),
-        "next_due_short": date_display(_next_rent_due_date(), "%m/%d"),
+        "next_due_date": date_display(next_due),
+        "next_due_short": date_display(next_due, "%m/%d"),
         "maintenance_requests": requests,
     }
 
@@ -594,6 +606,32 @@ def _uploaded_document_link(label, stored_path):
     return {"label": label, "url": url, "path": clean_path}
 
 
+def _dashboard_application_data(row):
+    document_links = []
+    id_link = _uploaded_document_link("Uploaded ID", row.get("app_id"))
+    if id_link:
+        document_links.append(id_link)
+    for index, path in enumerate(str(row.get("app_supp_docs") or "").split(";"), start=1):
+        doc_link = _uploaded_document_link(f"Supporting Document {index}", path)
+        if doc_link:
+            document_links.append(doc_link)
+    return {
+        "id": row.get("application_code"),
+        "name": row.get("applicant_name"),
+        "email": row.get("applicant_email"),
+        "phone": row.get("applicant_phone"),
+        "studentId": row.get("student_id") or "--",
+        "emergencyName": row.get("emergency_name") or "--",
+        "emergencyPhone": row.get("emergency_phone") or "--",
+        "notes": row.get("applicant_notes") or row.get("notes") or "",
+        "documents": document_links,
+        "floorPlan": row.get("floorplan_name"),
+        "moveIn": date_display(row.get("desired_move_in")),
+        "date": date_display(row.get("submitted_at")),
+        "status": row.get("status"),
+    }
+
+
 def _next_rent_due_date(today=None):
     today = today or date.today()
     year = today.year + (1 if today.month == 12 else 0)
@@ -607,6 +645,17 @@ def _lease_end_date(start_date):
     except ValueError:
         anniversary = start_date.replace(year=start_date.year + 1, month=2, day=28)
     return anniversary - timedelta(days=1)
+
+
+def _one_year_later(value):
+    if isinstance(value, datetime):
+        value = value.date()
+    if not isinstance(value, date):
+        value = date.today()
+    try:
+        return value.replace(year=value.year + 1)
+    except ValueError:
+        return value.replace(year=value.year + 1, month=2, day=28)
 
 
 def _create_resident_records_for_prospect(cursor, user_id, email):
@@ -683,7 +732,7 @@ def _create_resident_records_for_prospect(cursor, user_id, email):
             start_date,
             _lease_end_date(start_date),
             rent,
-            Decimal("100.00"),
+            rent,
         ),
     )
     return None
@@ -709,6 +758,158 @@ def _ensure_resident_records_for_user(user_id):
         cur.close()
 
 
+def _create_admin_application_cycle(cursor, application_code):
+    cursor.execute(
+        "SELECT a.application_code, a.applicant_name, a.applicant_email, "
+        "a.applicant_phone, a.floorplan_id, a.desired_move_in, a.student_id, "
+        "a.emergency_name, a.emergency_phone, a.applicant_notes, a.app_id, "
+        "a.app_supp_docs, fp.name AS floorplan_name "
+        "FROM applications a "
+        "JOIN floorplans fp ON a.floorplan_id = fp.id "
+        "WHERE a.application_code = %s",
+        (application_code,),
+    )
+    existing = cursor.fetchone()
+    if not existing:
+        return None, "Application not found."
+
+    (
+        old_code,
+        applicant_name,
+        applicant_email,
+        applicant_phone,
+        floorplan_id,
+        desired_move_in,
+        student_id,
+        emergency_name,
+        emergency_phone,
+        applicant_notes,
+        app_id,
+        app_supp_docs,
+        floorplan_name,
+    ) = existing
+    new_code = _unique_application_code(cursor)
+    submitted_at = datetime.now()
+    app_columns = _mysql_table_columns(cursor, "applications")
+    cycle_note = f"Admin opened a new application cycle from {old_code}."
+    values = {
+        "application_code": new_code,
+        "applicant_name": applicant_name,
+        "applicant_email": applicant_email,
+        "applicant_phone": applicant_phone,
+        "floorplan_id": floorplan_id,
+        "desired_move_in": _one_year_later(desired_move_in),
+        "student_id": student_id or "--",
+        "emergency_name": emergency_name or "--",
+        "emergency_phone": emergency_phone or "0000000000",
+        "applicant_notes": cycle_note,
+        "app_id": app_id or "admin-renewal-cycle",
+        "app_supp_docs": app_supp_docs,
+        "status": "Pending",
+        "submitted_at": submitted_at,
+        "notes": cycle_note,
+    }
+    _applications_insert(cursor, app_columns, values)
+    row = {
+        "application_code": new_code,
+        "applicant_name": applicant_name,
+        "applicant_email": applicant_email,
+        "applicant_phone": applicant_phone,
+        "student_id": values["student_id"],
+        "emergency_name": values["emergency_name"],
+        "emergency_phone": values["emergency_phone"],
+        "applicant_notes": cycle_note,
+        "app_id": values["app_id"],
+        "app_supp_docs": app_supp_docs,
+        "notes": cycle_note,
+        "desired_move_in": values["desired_move_in"],
+        "status": "Pending",
+        "submitted_at": submitted_at,
+        "floorplan_name": floorplan_name,
+    }
+    return _dashboard_application_data(row), None
+
+
+def _create_resident_renewal_application(cursor, user_id, notes):
+    cursor.execute(
+        "SELECT a.id FROM applications a "
+        "WHERE LOWER(TRIM(a.applicant_email)) = %s "
+        "AND a.status = 'Pending' "
+        "AND (a.notes LIKE 'Lease renewal request%' OR a.applicant_notes LIKE 'Lease renewal request%') "
+        "LIMIT 1",
+        (current_user.email.strip().lower(),),
+    )
+    if cursor.fetchone():
+        return None, "You already have a pending renewal request."
+
+    cursor.execute(
+        "SELECT l.lease_code, l.end_date, l.monthly_rent, l.unit_id, "
+        "u.floorplan_id, fp.name AS floorplan_name "
+        "FROM leases l "
+        "JOIN units u ON l.unit_id = u.id "
+        "JOIN floorplans fp ON u.floorplan_id = fp.id "
+        "WHERE l.resident_user_id = %s AND l.status IN ('Active', 'Pending') "
+        "ORDER BY FIELD(l.status, 'Active', 'Pending'), l.end_date DESC LIMIT 1",
+        (user_id,),
+    )
+    lease = cursor.fetchone()
+    if not lease:
+        return None, "No active lease was found for this resident."
+
+    lease_code, end_date, _monthly_rent, unit_id, floorplan_id, floorplan_name = lease
+    cursor.execute(
+        "SELECT applicant_phone, student_id, emergency_name, emergency_phone, app_id, app_supp_docs "
+        "FROM applications "
+        "WHERE LOWER(TRIM(applicant_email)) = %s "
+        "ORDER BY submitted_at DESC LIMIT 1",
+        (current_user.email.strip().lower(),),
+    )
+    previous = cursor.fetchone()
+    phone = previous[0] if previous and previous[0] else "0000000000"
+    student_id = previous[1] if previous and previous[1] else "--"
+    emergency_name = previous[2] if previous and previous[2] else "--"
+    emergency_phone = previous[3] if previous and previous[3] else "0000000000"
+    app_id = previous[4] if previous and previous[4] else "resident-renewal-request"
+    app_supp_docs = previous[5] if previous and previous[5] else None
+
+    submitted_at = datetime.now()
+    new_code = _unique_application_code(cursor)
+    renewal_note = (
+        f"Lease renewal request for lease {lease_code}. "
+        f"Resident notes: {notes or 'No notes provided.'}"
+    )
+    values = {
+        "application_code": new_code,
+        "applicant_name": current_user.name,
+        "applicant_email": current_user.email.strip().lower(),
+        "applicant_phone": phone,
+        "floorplan_id": floorplan_id,
+        "desired_move_in": (end_date + timedelta(days=1)) if isinstance(end_date, date) else date.today(),
+        "student_id": student_id,
+        "emergency_name": emergency_name,
+        "emergency_phone": emergency_phone,
+        "applicant_notes": renewal_note,
+        "app_id": app_id,
+        "app_supp_docs": app_supp_docs,
+        "assigned_unit_id": unit_id,
+        "status": "Pending",
+        "submitted_at": submitted_at,
+        "notes": renewal_note,
+    }
+    app_columns = _mysql_table_columns(cursor, "applications")
+    _applications_insert(cursor, app_columns, values)
+    cursor.execute(
+        "UPDATE applications SET assigned_unit_id = %s, notes = %s "
+        "WHERE application_code = %s",
+        (unit_id, renewal_note, new_code),
+    )
+    return {
+        "application_code": new_code,
+        "floorplan_name": floorplan_name,
+        "desired_move_in": date_display(values["desired_move_in"]),
+    }, None
+
+
 def _admin_dashboard_context():
     applications = db_all(
         "SELECT a.application_code, a.applicant_name, a.applicant_email, "
@@ -722,31 +923,7 @@ def _admin_dashboard_context():
     )
     dashboard_applications = []
     for row in applications:
-        document_links = []
-        id_link = _uploaded_document_link("Uploaded ID", row.get("app_id"))
-        if id_link:
-            document_links.append(id_link)
-        for index, path in enumerate(str(row.get("app_supp_docs") or "").split(";"), start=1):
-            doc_link = _uploaded_document_link(f"Supporting Document {index}", path)
-            if doc_link:
-                document_links.append(doc_link)
-        dashboard_applications.append(
-            {
-                "id": row.get("application_code"),
-                "name": row.get("applicant_name"),
-                "email": row.get("applicant_email"),
-                "phone": row.get("applicant_phone"),
-                "studentId": row.get("student_id") or "--",
-                "emergencyName": row.get("emergency_name") or "--",
-                "emergencyPhone": row.get("emergency_phone") or "--",
-                "notes": row.get("applicant_notes") or row.get("notes") or "",
-                "documents": document_links,
-                "floorPlan": row.get("floorplan_name"),
-                "moveIn": date_display(row.get("desired_move_in")),
-                "date": date_display(row.get("submitted_at")),
-                "status": row.get("status"),
-            }
-        )
+        dashboard_applications.append(_dashboard_application_data(row))
 
     work_orders = _work_order_rows(limit=6)
     dashboard_work_orders = [
@@ -1218,6 +1395,27 @@ def application_decision(application_code):
     mysql.connection.commit()
     cur.close()
     return jsonify({"message": f"Application {status.lower()}.", "status": status})
+
+
+@app.route("/applications/<application_code>/renewal", methods=["POST"])
+@login_required
+@role_required("Admin")
+def application_renewal_cycle(application_code):
+    cur = mysql.connection.cursor()
+    try:
+        application, error = _create_admin_application_cycle(cur, application_code)
+        if error:
+            mysql.connection.rollback()
+            return jsonify({"error": error}), 404
+        mysql.connection.commit()
+    finally:
+        cur.close()
+    return jsonify(
+        {
+            "message": f"New application cycle {application['id']} created.",
+            "application": application,
+        }
+    )
 
 
 @app.route("/payments")
@@ -1715,8 +1913,10 @@ def _applications_insert(cursor, app_columns, values_by_key):
         "app_id",
         "app_supp_docs",
         "id_document_path",
+        "assigned_unit_id",
         "status",
         "submitted_at",
+        "notes",
     ]
     resolved = []
     for logical in order:
@@ -2008,6 +2208,29 @@ def floorplan():
 @role_required("Resident")
 def lease_info():
     return render_template("Lease_info.html", lease=_resident_lease(current_user.id))
+
+
+@app.route("/lease/renewal/request", methods=["POST"])
+@login_required
+@role_required("Resident")
+def lease_renewal_request():
+    payload = request.get_json(silent=True) or request.form
+    notes = (payload.get("notes") or "").strip()
+    cur = mysql.connection.cursor()
+    try:
+        renewal, error = _create_resident_renewal_application(cur, current_user.id, notes)
+        if error:
+            mysql.connection.rollback()
+            return jsonify({"error": error}), 400
+        mysql.connection.commit()
+    finally:
+        cur.close()
+    return jsonify(
+        {
+            "message": f"Renewal request {renewal['application_code']} was sent to admin.",
+            "renewal": renewal,
+        }
+    )
 
 
 @app.route("/maint_req")
