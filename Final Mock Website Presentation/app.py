@@ -26,8 +26,10 @@ app.secret_key = "skiddy00 "  # Replace with a secure secret in production.
 
 FTS_DB_PATH = os.path.join(os.path.dirname(__file__), "datasets_fts.db")
 
-# API keys are loaded from .env — they never touch the browser
-PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
+# API keys are loaded from .env. For classroom/demo use, fall back to the
+# PayPal sandbox shorthand so checkout buttons still render locally.
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "").strip() or "sb"
+
 
 # MySQL configuration
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "127.0.0.1")
