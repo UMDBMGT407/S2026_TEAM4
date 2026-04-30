@@ -342,6 +342,19 @@ a {
   line-height: 1.5;
 }
 
+.admin-tools-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.admin-tools-actions .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 10px 16px;
+}
+
 .summary-chip {
   display: inline-flex;
   align-items: center;
