@@ -188,6 +188,7 @@
 
   <script>
     (function () {
+      const renewalRequestUrl = {{ url_for('lease_renewal_request') | tojson }};
       const requestBtn = document.getElementById("request-renewal-button");
       const downloadLeaseBtn = document.getElementById("download-lease-pdf-button");
       const docButtons = document.querySelectorAll(".doc-action-button");
@@ -207,7 +208,26 @@
       if (requestBtn) {
         requestBtn.addEventListener("click", () => {
           const ok = confirm("Confirm renewal request?");
-          if (ok) alert("Renewal request sent");
+          if (!ok) return;
+          const notes = document.getElementById("options-notes-textbox")?.value || "";
+          requestBtn.disabled = true;
+          requestBtn.textContent = "Sending...";
+          fetch(renewalRequestUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notes })
+          })
+            .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+            .then(({ ok, data }) => {
+              if (!ok) throw new Error(data.error || "Unable to send renewal request.");
+              alert(data.message || "Renewal request sent to admin.");
+              requestBtn.textContent = "Renewal Requested";
+            })
+            .catch((error) => {
+              alert(error.message);
+              requestBtn.disabled = false;
+              requestBtn.textContent = "Request Renewal";
+            });
         });
       }
 
