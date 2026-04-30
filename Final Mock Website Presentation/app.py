@@ -521,7 +521,47 @@ def _payments_context():
     }
 
 
+def _ensure_work_orders_for_maintenance_requests():
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("SELECT id FROM users WHERE role = 'staff' ORDER BY id LIMIT 1")
+        staff_row = cur.fetchone()
+        if not staff_row:
+            return
+
+        default_staff_id = staff_row[0]
+        cur.execute(
+            "SELECT mr.id, mr.request_code "
+            "FROM maintenance_requests mr "
+            "LEFT JOIN work_orders wo ON wo.request_id = mr.id "
+            "WHERE wo.id IS NULL AND mr.status IN ('Open', 'Assigned', 'In Progress') "
+            "ORDER BY mr.created_at, mr.id"
+        )
+        missing_requests = cur.fetchall()
+        for request_id, request_code in missing_requests:
+            work_order_code = unique_code(cur, "work_orders", "work_order_code", "WO", 3)
+            cur.execute(
+                "INSERT INTO work_orders "
+                "(work_order_code, request_id, assigned_staff_id, status, notes) "
+                "VALUES (%s, %s, %s, 'Open', %s)",
+                (
+                    work_order_code,
+                    request_id,
+                    default_staff_id,
+                    f"Auto-created from maintenance request {request_code}.",
+                ),
+            )
+        if missing_requests:
+            mysql.connection.commit()
+    except Exception:
+        mysql.connection.rollback()
+        raise
+    finally:
+        cur.close()
+
+
 def _work_order_rows(staff_id=None, limit=None):
+    _ensure_work_orders_for_maintenance_requests()
     params = []
     where = ""
     if staff_id is not None:
@@ -539,9 +579,12 @@ def _work_order_rows(staff_id=None, limit=None):
         "JOIN leases l ON mr.lease_id = l.id "
         "JOIN units u ON l.unit_id = u.id "
         "JOIN users r ON mr.resident_user_id = r.id "
-        "JOIN users s ON wo.assigned_staff_id = s.id "
+        "LEFT JOIN users s ON wo.assigned_staff_id = s.id "
         f"{where}"
-        "ORDER BY wo.scheduled_date DESC, wo.id DESC"
+        "ORDER BY "
+        "CASE WHEN wo.status = 'Closed' THEN 1 ELSE 0 END, "
+        "COALESCE(wo.scheduled_date, DATE(mr.created_at)) DESC, "
+        "wo.id DESC"
     )
     if limit:
         sql += f" LIMIT {int(limit)}"
@@ -925,7 +968,7 @@ def _admin_dashboard_context():
     for row in applications:
         dashboard_applications.append(_dashboard_application_data(row))
 
-    work_orders = _work_order_rows(limit=6)
+    work_orders = _work_order_rows()
     dashboard_work_orders = [
         {
             "id": row.get("id"),
@@ -933,7 +976,7 @@ def _admin_dashboard_context():
             "priority": row.get("priority"),
             "status": row.get("status"),
         }
-        for row in work_orders
+        for row in work_orders[:6]
     ]
     payments = _payment_rows()
     dashboard_summary = {
