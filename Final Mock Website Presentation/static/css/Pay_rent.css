@@ -892,6 +892,11 @@ body {
   color: #ffffff;
 }
 
+#paypal-rent-button-container {
+  margin-top: 16px;
+  max-width: 720px;
+}
+
 .payment-history-panel {
   background: rgba(245, 245, 245, 0.98);
   border: 1px solid rgba(0, 0, 0, 0.16);
