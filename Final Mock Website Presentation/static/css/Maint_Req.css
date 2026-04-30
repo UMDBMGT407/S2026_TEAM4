@@ -7,7 +7,7 @@
 }
 .cr-02-maintenance-request {
   background: #ffffff;
-  min-height: 1180px;
+  min-height: 1280px;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
@@ -21,14 +21,13 @@
   top: 646px;
 }
 .background {
-  opacity: 0.7;
-  width: 1440px;
-  height: 1025px;
+  opacity: 0.38;
+  width: 100%;
+  height: 100%;
   position: absolute;
-  left: 0px;
-  top: 0px;
+  left: 0;
+  top: 0;
   object-fit: cover;
-  aspect-ratio: 1440/1025;
 }
 .header {
   background: #b3b3b3;
@@ -118,7 +117,7 @@
   opacity: 0.8;
   width: 244px;
   height: calc(100% - 93px);
-  min-height: 931px;
+  min-height: 1187px;
   position: absolute;
   left: 0px;
   top: 93px;
@@ -185,13 +184,16 @@
   overflow: visible;
 }
 .rectangle-9 {
-  background: #d9d9d9;
-  opacity: 0.85;
+  background: rgba(217, 217, 217, 0.84);
   width: 1082px;
   height: 662px;
   position: absolute;
   left: 287px;
   top: 149px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(6px);
 }
 .priority {
   color: #000000;
@@ -214,22 +216,17 @@
   top: 350px;
 }
 .rectangle-16 {
-  background: #fffbfb;
-  width: 229px;
-  height: 59px;
-  position: absolute;
-  left: 315px;
-  top: 724px;
+  display: none;
 }
 .submit-a-maintenance-request {
   color: #000000;
   text-align: left;
   font-family: "Montserrat-Bold", sans-serif;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 700;
   position: absolute;
   left: 325px;
-  top: 177px;
+  top: 183px;
 }
 .rectangle-10 {
   background: #eeeeee;
@@ -238,6 +235,7 @@
   position: absolute;
   left: 297px;
   top: 268px;
+  border-radius: 12px;
 }
 .rectangle-12 {
   background: #eeeeee;
@@ -246,6 +244,7 @@
   position: absolute;
   left: 297px;
   top: 382px;
+  border-radius: 12px;
 }
 .polygon-2 {
   width: 34px;
@@ -263,6 +262,7 @@
   position: absolute;
   left: 315px;
   top: 616px;
+  border-radius: 12px;
 }
 .rectangle-11 {
   background: #eeeeee;
@@ -271,6 +271,7 @@
   position: absolute;
   left: 857px;
   top: 268px;
+  border-radius: 12px;
 }
 .rectangle-13 {
   background: #eeeeee;
@@ -279,6 +280,7 @@
   position: absolute;
   left: 857px;
   top: 379px;
+  border-radius: 12px;
 }
 .rectangle-15 {
   background: #eeeeee;
@@ -287,17 +289,7 @@
   position: absolute;
   left: 857px;
   top: 616px;
-}
-.cancel {
-  color: #000000;
-  text-align: left;
-  font-family: "Montserrat-Medium", sans-serif;
-  font-size: 26px;
-  font-weight: 500;
-  position: absolute;
-  left: 381px;
-  top: 737px;
-  cursor: pointer;
+  border-radius: 12px;
 }
 .issue-category {
   color: #000000;
@@ -320,12 +312,13 @@
   top: 233px;
 }
 .rectangle-17 {
-  background: #d9d9d9;
+  background: rgba(238, 238, 238, 0.92);
   width: 1045px;
-  height: 98px;
+  height: 112px;
   position: absolute;
   left: 305px;
   top: 486px;
+  border-radius: 16px;
 }
 .describe-the-issue {
   color: #000000;
@@ -351,18 +344,19 @@
 .issue-description-input {
   position: absolute;
   left: 310px;
-  top: 498px;
+  top: 502px;
   width: 1030px;
-  height: 72px;
-  padding: 10px 12px;
+  height: 92px;
+  padding: 14px 16px;
   resize: none;
   background: transparent;
   border: none;
   outline: none;
   font-family: "Montserrat-Medium", sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #000000;
+  line-height: 1.45;
 }
 
 .issue-description-input::placeholder {
@@ -386,6 +380,9 @@
   transform: translate(-31.72px, -21px);
   overflow: visible;
 }
+.location-arrow-hidden {
+  display: none;
+}
 .polygon-4 {
   width: 34px;
   height: 28px;
@@ -396,28 +393,60 @@
   overflow: visible;
 }
 .rectangle-18 {
-  background: #fffbfb;
-  width: 229px;
-  height: 59px;
-  position: absolute;
-  left: 1121px;
-  top: 724px;
+  display: none;
 }
 .submit-request-button {
   color: #000000;
-  text-align: left;
+  text-align: center;
   font-family: "Montserrat-Medium", sans-serif;
   font-size: 26px;
   font-weight: 500;
   position: absolute;
-  left: 1129px;
-  top: 738px;
+  left: 1121px;
+  top: 724px;
+  width: 229px;
+  height: 59px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .submit-request-button:focus {
   outline: 3px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
+}
+.submit-request-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+.cancel {
+  color: #000000;
+  text-align: center;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  position: absolute;
+  left: 315px;
+  top: 724px;
+  width: 229px;
+  height: 59px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cancel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 .upload-photo-file {
   color: #000000;
@@ -425,11 +454,13 @@
   font-size: 18px;
   font-weight: 500;
   position: absolute;
-  left: 440px;
-  top: 629px;
-  width: 430px;
-  height: 38px;
-  padding: 4px 0;
+  left: 315px;
+  top: 616px;
+  width: 503px;
+  height: 57px;
+  padding: 11px 16px;
+  background: #eeeeee;
+  border-radius: 12px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -453,36 +484,54 @@
 .access-notes-instructions {
   color: #000000;
   font-family: "Montserrat-Medium", sans-serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 500;
   position: absolute;
-  left: 933px;
-  top: 629px;
-  width: 392px;
-  height: 34px;
-  padding: 0 16px;
-  background: #f5f5f5;
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  left: 857px;
+  top: 616px;
+  width: 503px;
+  height: 57px;
+  padding: 10px 16px;
+  background: #eeeeee;
+  border: none;
+  border-radius: 12px;
   text-align: left;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-.access-notes-instructions:hover {
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  resize: none;
+  white-space: normal;
+  cursor: text;
+  transition: box-shadow 0.15s ease;
+  line-height: 1.35;
 }
 .access-notes-instructions:focus {
   outline: 3px solid rgba(117, 117, 117, 0.35);
   outline-offset: 2px;
 }
-.access-notes-instructions:active {
-  transform: translateY(1px);
+.access-notes-instructions::placeholder {
+  color: rgba(0, 0, 0, 0.6);
 }
 
-/* Dropdowns for Issue Category, Priority, and Preferred Access Time */
+.maintenance-form-message {
+  position: absolute;
+  left: 315px;
+  top: 804px;
+  width: 1035px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  z-index: 3;
+}
+.maintenance-form-message.error {
+  background: rgba(180, 35, 24, 0.12);
+  color: #8f1d14;
+  border: 1px solid rgba(180, 35, 24, 0.2);
+}
+.maintenance-form-message.success {
+  background: rgba(26, 127, 55, 0.12);
+  color: #166534;
+  border: 1px solid rgba(26, 127, 55, 0.2);
+}
+
 .dropdown-issue-category,
 .dropdown-location,
 .dropdown-priority,
@@ -495,20 +544,18 @@
   -moz-appearance: none;
   appearance: none;
   font-family: "Montserrat-Medium", sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #000000;
   padding: 0 44px 0 16px;
   cursor: pointer;
 }
 
-/* Location is now a text input */
 .dropdown-location {
   cursor: text;
   padding-right: 16px;
 }
 
-/* Issue Category dropdown (over rectangle-10) */
 .dropdown-issue-category {
   left: 310px;
   top: 283px;
@@ -516,7 +563,6 @@
   height: 40px;
 }
 
-/* Location dropdown (over rectangle-11) */
 .dropdown-location {
   left: 870px;
   top: 283px;
@@ -524,7 +570,6 @@
   height: 40px;
 }
 
-/* Priority dropdown (over rectangle-12) */
 .dropdown-priority {
   left: 310px;
   top: 397px;
@@ -532,7 +577,6 @@
   height: 40px;
 }
 
-/* Preferred Access Time dropdown (over rectangle-13) */
 .dropdown-access-time {
   left: 870px;
   top: 397px;
@@ -541,15 +585,71 @@
 }
 
 .my-requests-panel {
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  background: rgba(217, 217, 217, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
   left: 310px;
-  max-height: 250px;
+  max-height: 360px;
   overflow: auto;
-  padding: 16px 18px;
+  padding: 18px 20px 16px;
   position: absolute;
-  top: 860px;
-  width: 1040px;
+  top: 840px;
+  width: 1050px;
   z-index: 2;
+  backdrop-filter: blur(6px);
+}
+.my-requests-panel h2 {
+  margin: 0 0 14px;
+  color: #111111 !important;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 28px !important;
+  font-weight: 700;
+}
+.my-requests-panel table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  font-size: 0.92rem !important;
+}
+.my-requests-panel thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 12px 14px !important;
+  background: rgba(238, 238, 238, 0.96) !important;
+  color: #111111;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.my-requests-panel tbody td {
+  padding: 14px !important;
+  color: #111111;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 0.95rem;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(238, 238, 238, 0.72);
+}
+.my-requests-panel tbody tr:hover td {
+  background: rgba(238, 238, 238, 0.92);
+}
+.my-requests-panel small {
+  display: inline-block;
+  margin-top: 4px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 0.82rem;
+}
+.my-requests-panel::-webkit-scrollbar {
+  width: 8px;
+}
+.my-requests-panel::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.5);
+  border-radius: 999px;
+}
+.my-requests-panel::-webkit-scrollbar-track {
+  background: transparent;
 }
