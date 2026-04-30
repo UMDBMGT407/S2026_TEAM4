@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Pay_rent.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture"></script>
 
   <style>
    a,
@@ -156,10 +157,12 @@
 
         <div class="checkout-actions">
           <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
-          <button class="submit-payment-button" type="button" id="submit-payment-button">
+          <button class="submit-payment-button" type="button" id="submit-payment-button" hidden>
             Submit Payment
           </button>
         </div>
+
+        <div id="paypal-rent-button-container"></div>
       </section>
 
       <!-- ── CHANGED: Payment History panel now shows resident-only data.       -->
@@ -204,7 +207,8 @@
   </div>
 
   <script>
-    const PAY_RENT_SUBMIT_URL = {{ url_for('pay_rent_submit') | tojson }};
+    const PAY_RENT_PAYMENT_API_URL = {{ url_for('api_rent_payment') | tojson }};
+    const RENT_PAYMENT_AMOUNT = {{ balance_due_value | tojson }};
     (function () {
       const cancelBtn = document.getElementById("cancel-button");
       const submitBtn = document.getElementById("submit-payment-button");
@@ -284,7 +288,7 @@
           fd.append("billing_zip", "00000");
           fd.append("billing_address", "Secure checkout");
 
-          fetch(PAY_RENT_SUBMIT_URL, {
+          fetch(PAY_RENT_PAYMENT_API_URL, {
             method: "POST",
             body: fd,
             credentials: "same-origin",
@@ -302,6 +306,46 @@
               alert("Could not submit payment.");
             });
         });
+      }
+
+      if (window.paypal) {
+        paypal.Buttons({
+          style: {
+            layout: "vertical",
+            color: "gold",
+            shape: "rect",
+            label: "paypal",
+          },
+          createOrder: function (_data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                amount: { value: RENT_PAYMENT_AMOUNT },
+              }],
+            });
+          },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function () {
+              return fetch(PAY_RENT_PAYMENT_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify({ paypal_order_id: data.orderID }),
+              })
+                .then((res) => res.json().then((payload) => ({ res, payload })))
+                .then(({ res, payload }) => {
+                  if (!res.ok) {
+                    alert(payload.error || "Payment was captured, but could not be recorded.");
+                    return;
+                  }
+                  alert(`Payment recorded. Payment #: ${payload.payment_code}. Confirmation #: ${payload.confirmation}.`);
+                  window.location.reload();
+                });
+            });
+          },
+          onError: function () {
+            alert("PayPal checkout could not be started.");
+          },
+        }).render("#paypal-rent-button-container");
       }
     })();
   </script>
