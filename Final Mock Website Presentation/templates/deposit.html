@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/deposit.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture"></script>
 
 
   <style>
@@ -160,17 +161,20 @@
 
         <div class="checkout-actions">
           <a href="{{ url_for('status_page') }}" class="cancel-button">Cancel</a>
-          <button class="submit-deposit-button" type="button" id="submit-deposit-button">
+          <button class="submit-deposit-button" type="button" id="submit-deposit-button" hidden>
             Submit Deposit Payment
           </button>
         </div>
+
+        <div id="paypal-deposit-button-container"></div>
 
         <p id="deposit-status" class="deposit-status-message" aria-live="polite"></p>
       </section>
     </main>
   </div>
   <script>
-  const DEPOSIT_PAY_URL = {{ url_for('deposit_pay') | tojson }};
+  const DEPOSIT_PAYMENT_API_URL = {{ url_for('api_deposit_payment') | tojson }};
+  const DEPOSIT_PAYMENT_AMOUNT = {{ deposit_amount_value | tojson }};
 
   (function () {
     const submitBtn = document.getElementById("submit-deposit-button");
@@ -194,7 +198,7 @@
         status.textContent = "Recording deposit payment...";
       }
 
-      fetch(DEPOSIT_PAY_URL, {
+      fetch(DEPOSIT_PAYMENT_API_URL, {
         method: "POST",
         credentials: "same-origin",
       })
@@ -221,6 +225,59 @@
           }
         });
     });
+
+    if (window.paypal) {
+      paypal.Buttons({
+        style: {
+          layout: "vertical",
+          color: "gold",
+          shape: "rect",
+          label: "paypal",
+        },
+        createOrder: function (_data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: { value: DEPOSIT_PAYMENT_AMOUNT },
+            }],
+          });
+        },
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function () {
+            if (status) {
+              status.className = "deposit-status-message";
+              status.textContent = "Recording PayPal deposit payment...";
+            }
+            return fetch(DEPOSIT_PAYMENT_API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin",
+              body: JSON.stringify({ paypal_order_id: data.orderID }),
+            })
+              .then((res) => res.json().then((payload) => ({ res, payload })))
+              .then(({ res, payload }) => {
+                if (!res.ok) {
+                  throw new Error(payload.error || "Deposit was captured, but could not be recorded.");
+                }
+                if (status) {
+                  status.className = "deposit-status-message text-success";
+                  status.textContent = payload.message || "Deposit payment recorded.";
+                }
+                if (payload.redirect) {
+                  setTimeout(function () {
+                    window.location.href = payload.redirect;
+                  }, 800);
+                }
+              });
+          });
+        },
+        onError: function () {
+          if (status) {
+            status.className = "deposit-status-message text-danger";
+            status.textContent = "PayPal checkout could not be started.";
+          }
+        },
+      }).render("#paypal-deposit-button-container");
+    }
   })();
   </script>
 </body>
