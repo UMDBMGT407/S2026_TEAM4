@@ -622,6 +622,11 @@
   opacity: 0.7;
 }
 
+#paypal-deposit-button-container {
+  margin-top: 16px;
+  max-width: 720px;
+}
+
 .deposit-status-message {
   font-family: "Montserrat-SemiBold", sans-serif;
   font-size: 16px;
