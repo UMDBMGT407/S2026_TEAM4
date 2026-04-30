@@ -7,12 +7,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/Maint_Req.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 
-
   <style>
    a,
    button,
    input,
    select,
+   textarea,
    h1,
    h2,
    h3,
@@ -38,8 +38,8 @@
 </head>
 <body>
   <div class="cr-02-maintenance-request">
-    <div class="rectangle-5"></div>
     <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+
     <header class="top-header">
       <div class="header-left">
         <a href="{{ url_for('res_dash2') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
@@ -49,118 +49,144 @@
       </div>
       <div class="header-right">
         <button class="profile-btn" type="button" aria-label="Profile"></button>
-        <div class="role-indicator"><span class="user-role">Resident</span></div>
         <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+        <div class="role-indicator"><span class="user-role">Resident</span></div>
       </div>
     </header>
+
     <div class="sidebar"></div>
+
     <div class="nav-buttons">
       <a href="{{ url_for('res_dash2') }}" class="dashboard">Dashboard</a>
       <a href="{{ url_for('pay_rent') }}" class="pay-rent">Pay Rent</a>
       <a href="{{ url_for('maint_req') }}" class="maintenance">Maintenance</a>
       <a href="{{ url_for('lease_info') }}" class="my-lease">My Lease</a>
     </div>
-    <div class="rectangle-9"></div>
-    <div class="priority">Priority</div>
-    <div class="rectangle-16"></div>
-    <div class="submit-a-maintenance-request">Submit A Maintenance Request</div>
-    <div class="rectangle-10"></div>
-    <div class="rectangle-12"></div>
-    <img class="polygon-2" src="{{ url_for('static', filename='images/polygon-20.svg') }}" />
-    <div class="rectangle-14"></div>
-    <div class="rectangle-11"></div>
-    <div class="rectangle-13"></div>
-    <div class="rectangle-15"></div>
-    <button class="cancel" type="button" id="cancel-clear">Cancel</button>
-    <div class="issue-category">Issue Category</div>
-    <select class="dropdown-issue-category" name="issue-category" aria-label="Issue category" required>
-      <option value="">Select category</option>
-      <option value="plumbing">Plumbing</option>
-      <option value="electrical">Electrical</option>
-      <option value="hvac">HVAC / Heating</option>
-      <option value="appliance">Appliance</option>
-      <option value="pest">Pest control</option>
-      <option value="other">Other</option>
-    </select>
-    <div class="location-unit-room">Location (Unit/room)</div>
-    <input
-      class="dropdown-location"
-      type="text"
-      name="location"
-      aria-label="Location (unit/room)"
-      placeholder="Enter location"
-    />
-    <select class="dropdown-priority" name="priority" aria-label="Priority" required>
-      <option value="">Select priority</option>
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
-      <option value="urgent">Urgent</option>
-    </select>
-    <div class="preferred-access-time">Preferred Access Time</div>
-    <select class="dropdown-access-time" name="access-time" aria-label="Preferred access time">
-      <option value="">Select time</option>
-      <option value="morning">Morning (8am-12pm)</option>
-      <option value="afternoon">Afternoon (12pm-5pm)</option>
-      <option value="evening">Evening (5pm-8pm)</option>
-      <option value="any">Any time</option>
-    </select>
-    <div class="rectangle-17"></div>
-    <div class="describe-the-issue">Describe the issue</div>
-    <textarea
-      class="issue-description-input"
-      name="issue-description"
-      aria-label="Describe the issue"
-      placeholder="Type details"
-      rows="3"
-      required
-      minlength="5"
-    ></textarea>
-    <img class="polygon-1" src="{{ url_for('static', filename='images/polygon-10.svg') }}" />
-    <img class="polygon-3 location-arrow-hidden" src="{{ url_for('static', filename='images/polygon-30.svg') }}" />
-    <img class="polygon-4" src="{{ url_for('static', filename='images/polygon-40.svg') }}" />
-    <div class="rectangle-18"></div>
-    <button
-      class="submit-request-button"
-      type="button"
-      id="submit-request-button"
-    >
-      Submit Request
-    </button>
-    <input class="upload-photo-file" type="file" name="upload-photo-file" aria-label="Upload photo or file" />
-    <textarea
-      class="access-notes-instructions"
-      name="access-notes"
-      aria-label="Access notes / instructions"
-      placeholder="Access notes / instructions"
-      rows="2"
-    ></textarea>
-    <p class="maintenance-form-message" id="maintenance-form-message" hidden></p>
 
-    <div class="my-requests-panel" id="my-requests-panel">
-      <h2 style="font-size:1rem; font-weight:700; margin-bottom:14px; color:#222;">
-        My Maintenance Requests
-      </h2>
-      <div id="requests-table-wrap" style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
-          <thead>
-            <tr style="background:#f4f4f4; text-align:left;">
-              <th style="padding:7px 10px;">Request #</th>
-              <th style="padding:7px 10px;">Issue</th>
-              <th style="padding:7px 10px;">Priority</th>
-              <th style="padding:7px 10px;">Status</th>
-              <th style="padding:7px 10px;">Work Order</th>
-              <th style="padding:7px 10px;">Scheduled</th>
-              <th style="padding:7px 10px;">Submitted</th>
-            </tr>
-          </thead>
-          <tbody id="requests-tbody">
-            <tr><td colspan="7" style="padding:12px 10px; color:#777;">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <main class="maintenance-content">
+      <section class="maintenance-request-card" aria-labelledby="maintenance-request-heading">
+        <div class="card-header">
+          <div>
+            <h2 id="maintenance-request-heading">Submit a Maintenance Request</h2>
+          </div>
+        </div>
+
+        <div class="maintenance-form-grid">
+          <label for="issue-category">
+            <span>Issue Category</span>
+            <select id="issue-category" name="issue-category" required>
+              <option value="">Select category</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="hvac">HVAC / Heating</option>
+              <option value="appliance">Appliance</option>
+              <option value="pest">Pest control</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label for="location">
+            <span>Location (Unit/room)</span>
+            <input
+              id="location"
+              type="text"
+              name="location"
+              aria-label="Location (unit/room)"
+              placeholder="Enter location"
+            />
+          </label>
+
+          <label for="priority">
+            <span>Priority</span>
+            <select id="priority" name="priority" required>
+              <option value="">Select priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+
+          <label for="access-time">
+            <span>Preferred Access Time</span>
+            <select id="access-time" name="access-time" aria-label="Preferred access time">
+              <option value="">Select time</option>
+              <option value="morning">Morning (8am-12pm)</option>
+              <option value="afternoon">Afternoon (12pm-5pm)</option>
+              <option value="evening">Evening (5pm-8pm)</option>
+              <option value="any">Any time</option>
+            </select>
+          </label>
+
+          <label class="full-width" for="issue-description">
+            <span>Describe the issue</span>
+            <textarea
+              id="issue-description"
+              name="issue-description"
+              aria-label="Describe the issue"
+              placeholder="Type details"
+              rows="4"
+              required
+              minlength="5"
+            ></textarea>
+          </label>
+
+          <label for="upload-photo-file">
+            <span>Upload photo or file</span>
+            <input id="upload-photo-file" class="upload-photo-file" type="file" name="upload-photo-file" aria-label="Upload photo or file" />
+          </label>
+
+          <label for="access-notes" class="full-width-mobile">
+            <span>Access Notes / Instructions</span>
+            <textarea
+              id="access-notes"
+              class="access-notes-instructions"
+              name="access-notes"
+              aria-label="Access notes / instructions"
+              placeholder="Add gate codes, pet info, or entry instructions"
+              rows="2"
+            ></textarea>
+          </label>
+        </div>
+
+        <p class="maintenance-form-message" id="maintenance-form-message" hidden></p>
+
+        <div class="maintenance-actions">
+          <button class="cancel" type="button" id="cancel-clear">Cancel</button>
+          <button class="submit-request-button" type="button" id="submit-request-button">
+            Submit Request
+          </button>
+        </div>
+      </section>
+
+      <section class="my-requests-panel" id="my-requests-panel">
+        <div class="history-header">
+          <div>
+            <h2>My Maintenance Requests</h2>
+          </div>
+        </div>
+        <div id="requests-table-wrap" class="requests-table-wrap">
+          <table class="requests-table">
+            <thead>
+              <tr>
+                <th>Request #</th>
+                <th>Issue</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Work Order</th>
+                <th>Scheduled</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="requests-tbody">
+              <tr><td colspan="7" class="requests-message">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
   </div>
+
   <script>
     const MAINTENANCE_SUBMIT_URL = {{ url_for('maintenance_request_submit') | tojson }};
     const MAINTENANCE_STATUS_URL = {{ url_for('resident_maintenance_status') | tojson }};
@@ -286,6 +312,7 @@
       "Assigned": "#1d4ed8",
       "In Progress": "#7c3aed",
       "Closed": "#1a7f37",
+      "Completed": "#1a7f37",
     };
 
     function loadRequests() {
@@ -296,28 +323,28 @@
         .then((rows) => {
           if (!rows.length) {
             tbody.innerHTML =
-              '<tr><td colspan="7" style="padding:12px 10px; color:#777;">No maintenance requests yet.</td></tr>';
+              '<tr><td colspan="7" class="requests-message">No maintenance requests yet.</td></tr>';
             return;
           }
           tbody.innerHTML = rows
             .map((r) => {
               const color = STATUS_COLORS[r.status] || "#555";
               return `
-                <tr style="border-bottom:1px solid #eee;">
-                  <td style="padding:7px 10px;">${r.request_code}</td>
-                  <td style="padding:7px 10px;">${r.issue_title}</td>
-                  <td style="padding:7px 10px;">${r.priority}</td>
-                  <td style="padding:7px 10px; font-weight:600; color:${color};">${r.status}</td>
-                  <td style="padding:7px 10px;">${r.work_order_code || "-"}</td>
-                  <td style="padding:7px 10px;">${r.scheduled_date !== "-" ? r.scheduled_date + (r.time_window !== "-" ? "<br><small>" + r.time_window + "</small>" : "") : "-"}</td>
-                  <td style="padding:7px 10px;">${r.created_at}</td>
+                <tr>
+                  <td>${r.request_code}</td>
+                  <td>${r.issue_title}</td>
+                  <td>${r.priority}</td>
+                  <td class="request-status" style="color:${color};">${r.status}</td>
+                  <td>${r.work_order_code || "-"}</td>
+                  <td>${r.scheduled_date !== "-" ? r.scheduled_date + (r.time_window !== "-" ? "<br><small>" + r.time_window + "</small>" : "") : "-"}</td>
+                  <td>${r.created_at}</td>
                 </tr>`;
             })
             .join("");
         })
         .catch(() => {
           tbody.innerHTML =
-            '<tr><td colspan="7" style="padding:12px 10px; color:#b42318;">Could not load requests.</td></tr>';
+            '<tr><td colspan="7" class="requests-message requests-error">Could not load requests.</td></tr>';
         });
     }
 
@@ -325,3 +352,4 @@
   </script>
 </body>
 </html>
+
