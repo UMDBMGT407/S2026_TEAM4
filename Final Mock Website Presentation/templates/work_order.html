@@ -4,28 +4,42 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>{{ page_title }}</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
+
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vars1.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}" />
 </head>
+
 <body>
   <div class="workorders-page">
-    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="Courtyards background" />
+    <img
+      class="background"
+      src="{{ url_for('static', filename='images/background0.png') }}"
+      alt="Courtyards background"
+    />
 
     <header class="top-header">
       <div class="header-left">
-        <img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" />
+        <img
+          class="logo"
+          src="{{ url_for('static', filename='images/logo0.png') }}"
+          alt="Courtyards logo"
+        />
       </div>
 
       <div class="header-center">
@@ -33,43 +47,51 @@
       </div>
 
       <div class="header-right">
-  <button class="profile-btn" type="button" aria-label="Profile"></button>
-  <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
-  <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
-</div>
+        <button class="profile-btn" type="button" aria-label="Profile"></button>
+        <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+      </div>
     </header>
 
     <div class="container-fluid page-shell">
       <div class="row">
-        <!-- Sidebar -->
         <aside class="col-lg-2 col-md-3 sidebar">
           <nav class="sidebar-nav">
             <a class="nav-link-custom" id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
+
             {% if show_payments_link %}
             <a class="nav-link-custom" id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
             {% endif %}
-            <a class="nav-link-custom active" id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
+
+            <a class="nav-link-custom active" id="workOrdersLink" href="{{ url_for('work_order') }}">
+              {{ work_order_label }}
+            </a>
+
             <a class="nav-link-custom" id="scheduleLink" href="{{ url_for('schedule') }}">Schedule</a>
+
             {% if is_admin_view %}
             <a class="nav-link-custom" href="{{ url_for('home') }}#users-section">Users</a>
             {% endif %}
           </nav>
         </aside>
 
-        <!-- Main Content -->
         <main class="col-lg-10 col-md-9 main-content">
           {% if is_admin_view %}
           <section class="panel-box mb-4">
             <h2>Create Work Order</h2>
+
             <form id="createWorkOrderForm" class="row g-3">
               <div class="col-md-4">
                 <select id="createLease" class="form-select" required>
                   <option value="">Resident / Unit</option>
                   {% for lease in resident_leases %}
-                  <option value="{{ lease.lease_id }}">{{ lease.resident_name }} | {{ lease.unit_number }}</option>
+                  <option value="{{ lease.lease_id }}">
+                    {{ lease.resident_name }} | {{ lease.unit_number }}
+                  </option>
                   {% endfor %}
                 </select>
               </div>
+
               <div class="col-md-4">
                 <select id="createStaff" class="form-select" required>
                   <option value="">Assign Staff</option>
@@ -78,6 +100,7 @@
                   {% endfor %}
                 </select>
               </div>
+
               <div class="col-md-4">
                 <select id="createPriority" class="form-select" required>
                   <option value="">Priority</option>
@@ -87,15 +110,19 @@
                   <option>Urgent</option>
                 </select>
               </div>
+
               <div class="col-md-4">
-                <input id="createCategory" class="form-control" type="text" placeholder="Category" required>
+                <input id="createCategory" class="form-control" type="text" placeholder="Category" required />
               </div>
+
               <div class="col-md-4">
-                <input id="createTitle" class="form-control" type="text" placeholder="Issue title" required>
+                <input id="createTitle" class="form-control" type="text" placeholder="Issue title" required />
               </div>
+
               <div class="col-md-2">
-                <input id="createDate" class="form-control" type="date">
+                <input id="createDate" class="form-control" type="date" />
               </div>
+
               <div class="col-md-2">
                 <select id="createWindow" class="form-select">
                   <option value="">Time</option>
@@ -105,9 +132,17 @@
                   <option>3:00 PM - 5:00 PM</option>
                 </select>
               </div>
+
               <div class="col-md-9">
-                <input id="createDescription" class="form-control" type="text" placeholder="Work order details" required>
+                <input
+                  id="createDescription"
+                  class="form-control"
+                  type="text"
+                  placeholder="Work order details"
+                  required
+                />
               </div>
+
               <div class="col-md-3">
                 <button class="apply-btn w-100" type="submit">Add Work Order</button>
               </div>
@@ -115,7 +150,6 @@
           </section>
           {% endif %}
 
-          <!-- Filters -->
           <section class="filters-bar">
             <div class="filters-label">Filters</div>
 
@@ -132,6 +166,7 @@
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
+              <option value="Urgent">Urgent</option>
             </select>
 
             <select id="buildingFilter" class="filter-input">
@@ -145,14 +180,13 @@
               id="searchFilter"
               class="filter-input search-input"
               type="text"
-              placeholder="WO# / Unit / Resident"
+              placeholder="WO# / Unit / Resident / Staff / Issue"
             />
 
             <button id="applyFiltersBtn" class="apply-btn" type="button">Apply</button>
           </section>
 
           <section class="row g-4 content-row">
-            <!-- Left side -->
             <div class="col-xl-5">
               <div class="panel-box workorder-list-panel">
                 <h2>Work Order Queue</h2>
@@ -166,6 +200,7 @@
                         <th>Issue</th>
                         <th>Priority</th>
                         <th>Status</th>
+                        <th>Assigned Staff</th>
                       </tr>
                     </thead>
                     <tbody id="workOrderQueueBody"></tbody>
@@ -179,7 +214,6 @@
               </div>
             </div>
 
-            <!-- Right side -->
             <div class="col-xl-7">
               <div class="details-panel">
                 <h2>Work Order Details</h2>
@@ -202,7 +236,8 @@
                 </div>
 
                 {% if is_admin_view %}
-                <h3>Schedule &amp; <th>Status</th></h3>
+                <h3>Schedule &amp; Status</h3>
+
                 <div class="assign-grid">
                   <select id="assignedStaff" class="assign-input">
                     <option value="">Assigned Staff</option>
@@ -234,6 +269,7 @@
                 <textarea id="notesBox" class="notes-box" placeholder="Enter notes here..."></textarea>
                 {% else %}
                 <h3>Update Status</h3>
+
                 <div class="assign-grid">
                   <select id="statusUpdate" class="assign-input">
                     <option>Update Status</option>
@@ -249,8 +285,10 @@
                   {% if not is_admin_view %}
                   <button id="acceptBtn" class="action-btn" type="button">Accept Task</button>
                   {% endif %}
+
                   <button id="saveBtn" class="action-btn" type="button">Save Update</button>
                   <button id="closeBtn" class="action-btn" type="button">Close WO</button>
+
                   {% if is_admin_view %}
                   <button id="removeBtn" class="action-btn" type="button">Remove WO</button>
                   {% endif %}
@@ -283,8 +321,22 @@
     let filteredOrders = [...workOrders];
     let currentIndex = 0;
 
+    function getAssignedStaffName(order) {
+      return order.assigned_staff || order.assigned_staff_name || "Unassigned";
+    }
+
     function renderQueue() {
       const tbody = document.getElementById("workOrderQueueBody");
+
+      if (!filteredOrders.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center">No work orders match the current filters.</td>
+          </tr>
+        `;
+        return;
+      }
+
       tbody.innerHTML = filteredOrders.map((order, index) => `
         <tr data-index="${index}" class="queue-row ${index === currentIndex ? "selected-row" : ""}">
           <td>${order.id}</td>
@@ -292,6 +344,7 @@
           <td>${order.issue}</td>
           <td>${order.priority}</td>
           <td>${order.status}</td>
+          <td>${getAssignedStaffName(order)}</td>
         </tr>
       `).join("");
 
@@ -306,6 +359,7 @@
 
     function renderDetails() {
       const order = filteredOrders[currentIndex];
+
       if (!order) {
         document.getElementById("woMeta1").textContent = "";
         document.getElementById("woMeta2").textContent = "";
@@ -314,37 +368,38 @@
         document.getElementById("issueDescription").textContent = "No work orders match the current filters.";
         document.getElementById("attachmentLink").textContent = "";
         document.getElementById("attachmentLink").removeAttribute("href");
-        if (statusUpdate) {
-          statusUpdate.value = "Update Status";
-        }
-        if (notesBox) {
-          notesBox.value = "";
-        }
+
+        if (statusUpdate) statusUpdate.value = "Update Status";
+        if (notesBox) notesBox.value = "";
+
         return;
       }
 
-      document.getElementById("woMeta1").textContent = `WO #: ${order.id}   Status: ${order.status}`;
-      document.getElementById("woMeta2").textContent = `Unit: Building ${order.building} / Unit ${order.unit}   Priority: ${order.priority}`;
-      document.getElementById("woMeta3").textContent = `Resident: ${order.resident}   Phone: ${order.phone}`;
-      document.getElementById("woMeta4").textContent = `Issue Category: ${order.category}   Requested: ${order.requested}`;
-      document.getElementById("issueDescription").textContent = order.description;
-      document.getElementById("attachmentLink").textContent = order.attachment;
+      document.getElementById("woMeta1").textContent =
+        `WO #: ${order.id}   Status: ${order.status}`;
+
+      document.getElementById("woMeta2").textContent =
+        `Unit: Building ${order.building} / Unit ${order.unit}   Priority: ${order.priority}   Assigned: ${getAssignedStaffName(order)}`;
+
+      document.getElementById("woMeta3").textContent =
+        `Resident: ${order.resident}   Phone: ${order.phone}`;
+
+      document.getElementById("woMeta4").textContent =
+        `Issue Category: ${order.category}   Requested: ${order.requested}`;
+
+      document.getElementById("issueDescription").textContent =
+        order.description || "No description provided.";
+
+      document.getElementById("attachmentLink").textContent =
+        order.attachment || "No attachment uploaded.";
+
       document.getElementById("attachmentLink").setAttribute("href", "#");
-      if (statusUpdate) {
-        statusUpdate.value = order.status;
-      }
-      if (notesBox) {
-        notesBox.value = order.notes || "";
-      }
-      if (scheduleDate) {
-        scheduleDate.value = order.scheduled_date_iso || "";
-      }
-      if (timeWindow && order.time_window) {
-        timeWindow.value = order.time_window;
-      }
-      if (assignedStaff && order.assigned_staff_id) {
-        assignedStaff.value = order.assigned_staff_id;
-      }
+
+      if (statusUpdate) statusUpdate.value = order.status;
+      if (notesBox) notesBox.value = order.notes || "";
+      if (scheduleDate) scheduleDate.value = order.scheduled_date_iso || "";
+      if (timeWindow && order.time_window) timeWindow.value = order.time_window;
+      if (assignedStaff && order.assigned_staff_id) assignedStaff.value = order.assigned_staff_id;
     }
 
     function applyFilters() {
@@ -357,11 +412,14 @@
         const matchesStatus = !status || order.status === status;
         const matchesPriority = !priority || order.priority === priority;
         const matchesBuilding = !building || order.building === building;
+
         const matchesSearch =
           !search ||
-          order.id.toLowerCase().includes(search) ||
-          order.unit.toLowerCase().includes(search) ||
-          order.resident.toLowerCase().includes(search);
+          String(order.id).toLowerCase().includes(search) ||
+          String(order.unit).toLowerCase().includes(search) ||
+          String(order.resident).toLowerCase().includes(search) ||
+          String(order.issue || "").toLowerCase().includes(search) ||
+          String(getAssignedStaffName(order)).toLowerCase().includes(search);
 
         return matchesStatus && matchesPriority && matchesBuilding && matchesSearch;
       });
@@ -391,26 +449,38 @@
 
     function persistWorkOrder(newStatus) {
       const order = filteredOrders[currentIndex];
-      if (!order) {
-        return;
-      }
 
-      const statusToSave =
+      if (!order) return;
+
+      let statusToSave =
         newStatus ||
         (statusUpdate && statusUpdate.value !== "Update Status" ? statusUpdate.value : order.status);
+
       const payload = {
         work_order_code: order.id,
         status: statusToSave,
         notes: notesBox ? notesBox.value : order.notes || "",
       };
+
       if (scheduleDate && scheduleDate.value) {
         payload.scheduled_date = scheduleDate.value;
       }
+
       if (timeWindow && timeWindow.value !== "Time Window") {
         payload.time_window = timeWindow.value;
       }
+
       if (assignedStaff && assignedStaff.value) {
-        payload.assigned_staff_id = assignedStaff.value;
+        payload.assigned_staff_id = Number(assignedStaff.value);
+        order.assigned_staff_id = Number(assignedStaff.value);
+
+        const selectedOption = assignedStaff.options[assignedStaff.selectedIndex];
+        order.assigned_staff = selectedOption ? selectedOption.text : "Assigned";
+
+        if (order.status === "Open") {
+          payload.status = "Assigned";
+          statusToSave = "Assigned";
+        }
       }
 
       fetch(workOrderUpdateUrl, {
@@ -425,13 +495,17 @@
             alert(data.error || "Could not update work order.");
             return;
           }
+
           order.status = statusToSave;
           order.notes = payload.notes;
+
           if (payload.scheduled_date) order.scheduled_date_iso = payload.scheduled_date;
           if (payload.time_window) order.time_window = payload.time_window;
           if (payload.assigned_staff_id) order.assigned_staff_id = Number(payload.assigned_staff_id);
+
           renderQueue();
           renderDetails();
+
           alert(data.message || "Work order update saved.");
         })
         .catch(() => {
@@ -444,6 +518,7 @@
         persistWorkOrder(statusUpdate.value);
         return;
       }
+
       persistWorkOrder();
     });
 
@@ -460,7 +535,9 @@
     if (removeBtn) {
       removeBtn.addEventListener("click", () => {
         const order = filteredOrders[currentIndex];
+
         if (!order || !window.confirm(`Remove ${order.id}?`)) return;
+
         fetch(workOrderDeleteUrlTemplate.replace("__CODE__", encodeURIComponent(order.id)), {
           method: "DELETE",
           credentials: "same-origin",
@@ -471,6 +548,7 @@
               alert(data.error || "Could not remove work order.");
               return;
             }
+
             alert(data.message || "Work order removed.");
             window.location.reload();
           })
@@ -483,6 +561,7 @@
     if (createWorkOrderForm) {
       createWorkOrderForm.addEventListener("submit", (event) => {
         event.preventDefault();
+
         const payload = {
           lease_id: document.getElementById("createLease").value,
           assigned_staff_id: document.getElementById("createStaff").value,
@@ -493,6 +572,18 @@
           scheduled_date: document.getElementById("createDate").value,
           time_window: document.getElementById("createWindow").value,
         };
+
+        if (
+          !payload.lease_id ||
+          !payload.assigned_staff_id ||
+          !payload.priority ||
+          !payload.category ||
+          !payload.issue_title ||
+          !payload.description
+        ) {
+          alert("Please fill out all required work order fields.");
+          return;
+        }
 
         fetch(workOrderCreateUrl, {
           method: "POST",
@@ -506,6 +597,7 @@
               alert(data.error || "Could not create work order.");
               return;
             }
+
             alert(`${data.message} ${data.work_order_code}`);
             window.location.reload();
           })
@@ -518,6 +610,5 @@
     renderQueue();
     renderDetails();
   </script>
-
 </body>
 </html>
