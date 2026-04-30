@@ -638,7 +638,9 @@
 
 html,
 body {
+  height: auto;
   min-height: 100%;
+  overflow-y: auto !important;
 }
 
 body {
@@ -648,8 +650,10 @@ body {
 
 .cr-03-pay-rent {
   background: transparent;
-  min-height: 100vh;
+  min-height: 1800px;
   overflow-x: hidden;
+  overflow-y: visible !important;
+  padding-bottom: 520px;
   padding-top: 93px;
   position: relative;
 }
@@ -672,7 +676,7 @@ body {
 .pay-rent-content {
   margin: 0 40px 0 280px;
   max-width: none;
-  padding: 48px 28px 80px;
+  padding: 48px 28px 680px;
   position: relative;
   z-index: 1;
   width: auto;
@@ -742,7 +746,8 @@ body {
   color: #000000;
   font-family: "Montserrat-Regular", sans-serif;
   margin: 0 auto;
-  min-height: 340px;
+  min-height: 980px;
+  overflow: visible !important;
   padding: 26px 34px 28px;
   position: relative;
   top: auto;
@@ -895,6 +900,16 @@ body {
 #paypal-rent-button-container {
   margin-top: 16px;
   max-width: 720px;
+  min-height: 760px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 2;
+}
+
+#paypal-rent-button-container > div,
+#paypal-rent-button-container iframe {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .payment-history-panel {
@@ -952,7 +967,7 @@ body {
 
   .pay-rent-content {
     margin: 96px 0 0;
-    padding: 28px 16px 60px;
+    padding: 28px 16px 760px;
   }
 
   .pay-rent-summary-card {
@@ -977,5 +992,79 @@ body {
     right: 16px;
     top: 220px;
     width: auto;
+  }
+}
+
+/* Unified floating sidebar */
+@media (min-width: 901px) {
+  .sidebar {
+    background: rgba(217, 217, 217, 0.86);
+    border-radius: 24px;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    left: 20px;
+    top: 122px;
+    width: 260px;
+    height: calc(100% - 146px);
+    min-height: auto;
+    z-index: 1;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns {
+    left: 46px;
+    top: 150px;
+    width: 210px;
+    z-index: 2;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .nav-btns .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .nav-buttons a,
+  .left-side-options a,
+  .nav-btns .nav-buttons a {
+    display: block;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #111111;
+    font-family: "Montserrat-SemiBold", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.18;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .nav-buttons a:hover,
+  .left-side-options a:hover,
+  .nav-btns .nav-buttons a:hover,
+  .cr-01-resident-dashboard .nav-buttons .dashboard,
+  .cr-03-pay-rent .nav-buttons .pay-rent,
+  .cr-02-maintenance-request .nav-buttons .maintenance,
+  .cr-04-my-lease .nav-buttons .my-lease,
+  .cr-04-my-lease .nav-buttons .my-lease2,
+  .pr-01-unit-search-inquiry-process-1-1 .left-side-options .floor-plans2,
+  .pr-02-lease-application-form-process-1-2 .nav-buttons .apply,
+  .pr-03-deposit-payment-process-1-4 .nav-buttons .application-status,
+  .pr-04-application-status-process-1-3-decision-updated-records .nav-buttons .application-status2 {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
   }
 }
