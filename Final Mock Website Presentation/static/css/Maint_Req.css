@@ -5,34 +5,40 @@
 .cr-02-maintenance-request * {
   box-sizing: border-box;
 }
-
 .cr-02-maintenance-request {
   background: #ffffff;
-  min-height: 1380px;
+  min-height: 1180px;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
 }
-
-.background {
-  opacity: 0.48;
-  width: 1440px;
-  height: 1200px;
+.rectangle-5 {
+  background: #ffffff;
+  width: 907px;
+  height: 56px;
   position: absolute;
-  left: 0;
-  top: 0;
-  object-fit: cover;
+  left: 315px;
+  top: 646px;
 }
-
+.background {
+  opacity: 0.7;
+  width: 1440px;
+  height: 1025px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 1440/1025;
+}
 .header {
   background: #b3b3b3;
   opacity: 0.85;
   width: 1440px;
   height: 93px;
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 0px;
+  top: 0px;
 }
-
 .action-items {
   width: 430px;
   height: 66px;
@@ -44,7 +50,6 @@
   justify-content: flex-end;
   gap: 14px;
 }
-
 .image-1 {
   width: 109px;
   height: 66px;
@@ -54,7 +59,6 @@
   object-fit: cover;
   aspect-ratio: 109/66;
 }
-
 .Logout {
   color: #000000;
   text-align: left;
@@ -66,7 +70,6 @@
   width: auto;
   height: auto;
 }
-
 .role-indicator {
   background: #757575;
   border-radius: 999px;
@@ -79,7 +82,6 @@
   order: 2;
   flex-shrink: 0;
 }
-
 .user-role {
   color: #ffffff;
   text-align: center;
@@ -90,17 +92,15 @@
   width: auto;
   line-height: 1.15;
 }
-
 .logo {
   width: 205px;
   height: 105px;
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 0px;
+  top: 0px;
   object-fit: cover;
   aspect-ratio: 205/105;
 }
-
 .maintenance-request {
   color: #000000;
   text-align: left;
@@ -113,18 +113,16 @@
   width: 501px;
   height: 66px;
 }
-
 .sidebar {
   background: #d9d9d9;
   opacity: 0.8;
   width: 244px;
   height: calc(100% - 93px);
-  min-height: 1287px;
+  min-height: 931px;
   position: absolute;
-  left: 0;
+  left: 0px;
   top: 93px;
 }
-
 .nav-buttons {
   display: flex;
   flex-direction: column;
@@ -136,12 +134,10 @@
   left: 26px;
   top: 240px;
 }
-
 .nav-buttons a {
   font-size: 22px;
   line-height: 1.2;
 }
-
 .dashboard {
   color: #000000;
   text-align: left;
@@ -151,7 +147,6 @@
   position: relative;
   align-self: stretch;
 }
-
 .pay-rent {
   color: #000000;
   text-align: left;
@@ -161,7 +156,6 @@
   position: relative;
   align-self: stretch;
 }
-
 .maintenance {
   color: #000000;
   text-align: left;
@@ -171,7 +165,6 @@
   position: relative;
   align-self: stretch;
 }
-
 .my-lease {
   color: #000000;
   text-align: left;
@@ -181,304 +174,456 @@
   position: relative;
   align-self: stretch;
 }
-
-.maintenance-content {
-  position: relative;
-  z-index: 1;
-  width: 1040px;
-  margin-left: 300px;
-  padding: 140px 0 56px;
+.rectangle-1 {
+  border-radius: 0px;
+  opacity: 0.5;
+  width: 178px;
+  height: 46px;
+  position: absolute;
+  left: 22px;
+  top: 375px;
+  overflow: visible;
 }
-
-.maintenance-request-card,
-.my-requests-panel {
-  background: rgba(255, 255, 255, 0.64);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(5px);
+.rectangle-9 {
+  background: #d9d9d9;
+  opacity: 0.85;
+  width: 1082px;
+  height: 662px;
+  position: absolute;
+  left: 287px;
+  top: 149px;
 }
-
-.maintenance-request-card {
-  padding: 34px 40px 30px;
-  margin-bottom: 28px;
-}
-
-.card-header {
-  margin-bottom: 24px;
-}
-
-.maintenance-request-card h2,
-.my-requests-panel h2 {
+.priority {
   color: #000000;
-  font-family: "Montserrat-Bold", sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.15;
-}
-
-.maintenance-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px 26px;
-}
-
-.maintenance-form-grid label {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  color: #000000;
-  font-family: "Montserrat-SemiBold", sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.maintenance-form-grid label span {
-  display: block;
-}
-
-.maintenance-form-grid input,
-.maintenance-form-grid select,
-.maintenance-form-grid textarea {
-  width: 100%;
-  background: rgba(245, 245, 245, 0.96);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 14px;
-  color: #000000;
-  font-family: "Montserrat-Medium", sans-serif;
-  font-size: 17px;
-  font-weight: 500;
-  line-height: 1.4;
-  padding: 16px 18px;
-}
-
-.maintenance-form-grid select {
-  appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #303030 50%),
-    linear-gradient(135deg, #303030 50%, transparent 50%);
-  background-position:
-    calc(100% - 24px) calc(50% - 3px),
-    calc(100% - 16px) calc(50% - 3px);
-  background-size: 8px 8px, 8px 8px;
-  background-repeat: no-repeat;
-  padding-right: 46px;
-}
-
-.maintenance-form-grid textarea {
-  resize: vertical;
-  min-height: 92px;
-}
-
-.maintenance-form-grid .full-width {
-  grid-column: 1 / -1;
-}
-
-.upload-photo-file {
-  padding: 12px 14px !important;
-}
-
-.upload-photo-file::file-selector-button {
-  margin-right: 12px;
-  padding: 9px 14px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  color: #000000;
-  font-family: "Montserrat-Medium", sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.upload-photo-file::file-selector-button:hover {
-  background: #f8f8f8;
-}
-
-.access-notes-instructions {
-  min-height: 64px;
-}
-
-.maintenance-form-message {
-  margin-top: 20px;
-  padding: 13px 16px;
-  border-radius: 12px;
-  font-family: "Montserrat-SemiBold", sans-serif;
-  font-size: 15px;
-}
-
-.maintenance-form-message.error {
-  background: rgba(180, 35, 24, 0.12);
-  color: #8f1d14;
-  border: 1px solid rgba(180, 35, 24, 0.18);
-}
-
-.maintenance-form-message.success {
-  background: rgba(26, 127, 55, 0.12);
-  color: #166534;
-  border: 1px solid rgba(26, 127, 55, 0.18);
-}
-
-.maintenance-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.cancel,
-.submit-request-button {
-  min-width: 180px;
-  height: 56px;
-  border-radius: 12px;
-  font-family: "Montserrat-SemiBold", sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
-
-.cancel {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000000;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.submit-request-button {
-  background: #60785f;
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(46, 76, 54, 0.2);
-}
-
-.cancel:hover,
-.submit-request-button:hover {
-  transform: translateY(-1px);
-}
-
-.my-requests-panel {
-  padding: 28px 30px 24px;
-}
-
-.history-header {
-  margin-bottom: 18px;
-}
-
-.requests-table-wrap {
-  overflow-x: auto;
-}
-
-.requests-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.92rem;
-}
-
-.requests-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 13px 14px;
-  background: rgba(238, 238, 238, 0.96);
-  color: #111111;
   text-align: left;
-  font-family: "Montserrat-SemiBold", sans-serif;
-  font-size: 0.86rem;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.requests-table tbody td {
-  padding: 14px;
-  color: #111111;
   font-family: "Montserrat-Medium", sans-serif;
-  font-size: 0.95rem;
-  vertical-align: top;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.48);
+  font-size: 27px;
+  font-weight: 500;
+  position: absolute;
+  left: 315px;
+  top: 350px;
 }
-
-.requests-table tbody tr:hover td {
-  background: rgba(238, 238, 238, 0.72);
+.preferred-access-time {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 27px;
+  font-weight: 500;
+  position: absolute;
+  left: 869px;
+  top: 350px;
 }
-
-.requests-table small {
-  display: inline-block;
-  margin-top: 4px;
-  color: rgba(0, 0, 0, 0.68);
-  font-size: 0.82rem;
+.rectangle-16 {
+  background: #fffbfb;
+  width: 229px;
+  height: 59px;
+  position: absolute;
+  left: 315px;
+  top: 724px;
 }
-
-.requests-message {
-  padding: 16px 14px !important;
-  color: #666 !important;
-}
-
-.requests-error {
-  color: #b42318 !important;
-}
-
-.request-status {
+.submit-a-maintenance-request {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 30px;
   font-weight: 700;
+  position: absolute;
+  left: 325px;
+  top: 177px;
+}
+.rectangle-10 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 297px;
+  top: 268px;
+}
+.rectangle-12 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 297px;
+  top: 382px;
+}
+.polygon-2 {
+  width: 34px;
+  height: 28px;
+  position: absolute;
+  left: 786px;
+  top: 427px;
+  transform: translate(-31.72px, -21px);
+  overflow: visible;
+}
+.rectangle-14 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 315px;
+  top: 616px;
+}
+.rectangle-11 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 857px;
+  top: 268px;
+}
+.rectangle-13 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 857px;
+  top: 379px;
+}
+.rectangle-15 {
+  background: #eeeeee;
+  width: 503px;
+  height: 57px;
+  position: absolute;
+  left: 857px;
+  top: 616px;
+}
+.cancel {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  position: absolute;
+  left: 381px;
+  top: 737px;
+  cursor: pointer;
+}
+.issue-category {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 27px;
+  font-weight: 500;
+  position: absolute;
+  left: 315px;
+  top: 235px;
+}
+.location-unit-room {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 27px;
+  font-weight: 500;
+  position: absolute;
+  left: 869px;
+  top: 233px;
+}
+.rectangle-17 {
+  background: #d9d9d9;
+  width: 1045px;
+  height: 98px;
+  position: absolute;
+  left: 305px;
+  top: 486px;
+}
+.describe-the-issue {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 27px;
+  font-weight: 500;
+  position: absolute;
+  left: 310px;
+  top: 453px;
+}
+.placeholder-type-details {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  position: absolute;
+  left: 310px;
+  top: 514px;
 }
 
-.my-requests-panel::-webkit-scrollbar {
-  width: 8px;
-}
-
-.my-requests-panel::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.5);
-  border-radius: 999px;
-}
-
-.my-requests-panel::-webkit-scrollbar-track {
+.issue-description-input {
+  position: absolute;
+  left: 310px;
+  top: 498px;
+  width: 1030px;
+  height: 72px;
+  padding: 10px 12px;
+  resize: none;
   background: transparent;
+  border: none;
+  outline: none;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
 }
 
-@media (max-width: 1200px) {
-  .maintenance-content {
-    width: calc(100% - 330px);
-  }
+.issue-description-input::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+.polygon-1 {
+  width: 34px;
+  height: 28px;
+  position: absolute;
+  left: 786px;
+  top: 311px;
+  transform: translate(-31.72px, -21px);
+  overflow: visible;
+}
+.polygon-3 {
+  width: 34px;
+  height: 28px;
+  position: absolute;
+  left: 1350px;
+  top: 311px;
+  transform: translate(-31.72px, -21px);
+  overflow: visible;
+}
+.polygon-4 {
+  width: 34px;
+  height: 28px;
+  position: absolute;
+  left: 1350px;
+  top: 422px;
+  transform: translate(-31.72px, -21px);
+  overflow: visible;
+}
+.rectangle-18 {
+  background: #fffbfb;
+  width: 229px;
+  height: 59px;
+  position: absolute;
+  left: 1121px;
+  top: 724px;
+}
+.submit-request-button {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  position: absolute;
+  left: 1129px;
+  top: 738px;
+  cursor: pointer;
 }
 
-@media (max-width: 960px) {
-  .maintenance-content {
-    width: calc(100% - 44px);
-    margin-left: 22px;
-    padding-top: 190px;
-  }
+.submit-request-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.upload-photo-file {
+  color: #000000;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  position: absolute;
+  left: 440px;
+  top: 629px;
+  width: 430px;
+  height: 38px;
+  padding: 4px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.upload-photo-file::file-selector-button {
+  margin-right: 14px;
+  padding: 8px 14px;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.upload-photo-file::file-selector-button:hover {
+  background: #ffffff;
+}
+.access-notes-instructions {
+  color: #000000;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  position: absolute;
+  left: 933px;
+  top: 629px;
+  width: 392px;
+  height: 34px;
+  padding: 0 16px;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.access-notes-instructions:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+.access-notes-instructions:focus {
+  outline: 3px solid rgba(117, 117, 117, 0.35);
+  outline-offset: 2px;
+}
+.access-notes-instructions:active {
+  transform: translateY(1px);
+}
 
+/* Dropdowns for Issue Category, Priority, and Preferred Access Time */
+.dropdown-issue-category,
+.dropdown-location,
+.dropdown-priority,
+.dropdown-access-time {
+  position: absolute;
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
+  padding: 0 44px 0 16px;
+  cursor: pointer;
+}
+
+/* Location is now a text input */
+.dropdown-location {
+  cursor: text;
+  padding-right: 16px;
+}
+
+/* Issue Category dropdown (over rectangle-10) */
+.dropdown-issue-category {
+  left: 310px;
+  top: 283px;
+  width: 480px;
+  height: 40px;
+}
+
+/* Location dropdown (over rectangle-11) */
+.dropdown-location {
+  left: 870px;
+  top: 283px;
+  width: 480px;
+  height: 40px;
+}
+
+/* Priority dropdown (over rectangle-12) */
+.dropdown-priority {
+  left: 310px;
+  top: 397px;
+  width: 480px;
+  height: 40px;
+}
+
+/* Preferred Access Time dropdown (over rectangle-13) */
+.dropdown-access-time {
+  left: 870px;
+  top: 397px;
+  width: 480px;
+  height: 40px;
+}
+
+.my-requests-panel {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  left: 310px;
+  max-height: 250px;
+  overflow: auto;
+  padding: 16px 18px;
+  position: absolute;
+  top: 860px;
+  width: 1040px;
+  z-index: 2;
+}
+
+/* Unified floating sidebar */
+@media (min-width: 901px) {
   .sidebar {
-    display: none;
-  }
-
-  .nav-buttons {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: calc(100% - 44px);
-    margin: 110px 22px 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 14px;
+    background: rgba(217, 217, 217, 0.86);
+    border-radius: 24px;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    left: 20px;
+    top: 122px;
+    width: 260px;
+    height: calc(100% - 146px);
+    min-height: auto;
     z-index: 1;
   }
 
-  .nav-buttons a {
-    background: rgba(255, 255, 255, 0.55);
-    padding: 10px 14px;
-    border-radius: 12px;
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns {
+    left: 46px;
+    top: 150px;
+    width: 210px;
+    z-index: 2;
   }
 
-  .maintenance-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .maintenance-actions {
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns .nav-buttons {
+    display: flex;
     flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
   }
 
-  .cancel,
-  .submit-request-button {
+  .nav-btns .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
     width: 100%;
+  }
+
+  .nav-buttons a,
+  .left-side-options a,
+  .nav-btns .nav-buttons a {
+    display: block;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #111111;
+    font-family: "Montserrat-SemiBold", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.18;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .nav-buttons a:hover,
+  .left-side-options a:hover,
+  .nav-btns .nav-buttons a:hover,
+  .cr-01-resident-dashboard .nav-buttons .dashboard,
+  .cr-03-pay-rent .nav-buttons .pay-rent,
+  .cr-02-maintenance-request .nav-buttons .maintenance,
+  .cr-04-my-lease .nav-buttons .my-lease,
+  .cr-04-my-lease .nav-buttons .my-lease2,
+  .pr-01-unit-search-inquiry-process-1-1 .left-side-options .floor-plans2,
+  .pr-02-lease-application-form-process-1-2 .nav-buttons .apply,
+  .pr-03-deposit-payment-process-1-4 .nav-buttons .application-status,
+  .pr-04-application-status-process-1-3-decision-updated-records .nav-buttons .application-status2 {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
   }
 }
