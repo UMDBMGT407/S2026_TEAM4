@@ -159,6 +159,9 @@ button {
   padding: 14px 16px 18px;
   min-height: 620px;
 }
+.create-workorder-panel {
+  min-height: auto;
+}
 .panel-box h2,
 .details-panel h2 {
   margin: 0 0 12px;
