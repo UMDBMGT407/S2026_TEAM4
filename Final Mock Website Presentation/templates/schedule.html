@@ -1,39 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page_title }}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet"
-  />
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars1.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}" />
+  >
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars3.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style3.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
 </head>
 <body>
-  <div class="workorders-page">
-    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="Courtyards background" />
-
+  <div class="admin-page {{ 'admin-schedule-view' if is_admin_view else 'staff-schedule-view' }}">
     <header class="top-header">
       <div class="header-left">
-        <img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" />
+        <img src="{{ url_for('static', filename='images/logo0.png') }}" class="logo" alt="Courtyards logo">
       </div>
-
       <div class="header-center">
-        <h1 id="pageTitle">{{ work_order_label }}</h1>
+        <h1>Schedule</h1>
       </div>
 
       <div class="header-right">
-        <button class="profile-btn" type="button" aria-label="Profile"></button>
         <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
               <div class="container mt-4">
     <!-- Header with Logout -->
@@ -43,464 +35,311 @@
       </div>
       </div>
     </header>
-
-    <div class="container-fluid page-shell">
-      <div class="row">
-        <!-- Sidebar -->
-        <aside class="col-lg-2 col-md-3 sidebar">
-          <nav class="sidebar-nav">
-            <a class="nav-link-custom" id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
-            {% if show_payments_link %}
-            <a class="nav-link-custom" id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
-            {% endif %}
-            <a class="nav-link-custom active" id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
-            <a class="nav-link-custom" id="scheduleLink" href="{{ url_for('schedule') }}">Schedule</a>
+    <aside class="sidebar">
+  <nav class="sidebar-nav">
+    <a id="dashboardLink" href="{{ url_for(dashboard_endpoint) }}">Dashboard</a>
+    {% if is_admin_view %}
+    <a href="{{ url_for('home') }}#applications-section">Applications</a>
+    {% endif %}
+    {% if show_payments_link %}
+    <a id="paymentsLink" href="{{ url_for('payments') }}">Payments</a>
+    {% endif %}
+    <a id="workOrdersLink" href="{{ url_for('work_order') }}">{{ work_order_label }}</a>
+    <a id="scheduleLink" href="{{ url_for('schedule') }}" class="active">Schedule</a>
+    {% if is_admin_view %}
+    <a href="{{ url_for('home') }}#users-section">Users</a>
+    {% endif %}
+  </nav>
+</aside>
+    <main class="main-content">
+      <section class="summary-row">
+        <div class="summary-card">
+          <p>{{ "Staff Scheduled Today" if is_admin_view else "My Scheduled Work Orders" }}</p>
+          <h3>{{ schedule_summary.staff_scheduled if is_admin_view else schedule_summary.work_orders }}</h3>
+          <span>{{ "dynamic staff schedule" if is_admin_view else "assigned to you" }}</span>
+        </div>
+        <div class="summary-card">
+          <p>{{ "Work Orders Today" if is_admin_view else "Open Work Orders" }}</p>
+          <h3>{{ schedule_summary.work_orders }}</h3>
+          <span>{{ "assigned orders" if is_admin_view else "assigned to you" }}</span>
+        </div>
+        <div class="summary-card">
+          <p>{{ "Open Shifts This Week" if is_admin_view else "Active Work Orders" }}</p>
+          <h3>{{ schedule_summary.open_shifts }}</h3>
+          <span>{{ "upcoming schedule" if is_admin_view else "work-order calendar" }}</span>
+        </div>
+      </section>
+      <section class="filters-card">
+        <h2>Filters</h2>
+        <div class="filters-row">
+          <select id="staffFilter">
             {% if is_admin_view %}
-            <a class="nav-link-custom" href="{{ url_for('home') }}#users-section">Users</a>
+            <option value="all">Staff</option>
+            {% for staff in staff_options %}
+            <option value="{{ staff }}">{{ staff }}</option>
+            {% endfor %}
+            {% else %}
+            <option value="all">My Schedule</option>
             {% endif %}
-          </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="col-lg-10 col-md-9 main-content">
-          {% if is_admin_view %}
-          <section class="panel-box create-workorder-panel mb-4">
-            <h2>Create Work Order</h2>
-            <form id="createWorkOrderForm" class="row g-3">
-              <div class="col-md-4">
-                <select id="createLease" class="form-select" required>
-                  <option value="">Resident / Unit</option>
-                  {% for lease in resident_leases %}
-                  <option value="{{ lease.lease_id }}">{{ lease.resident_name }} | {{ lease.unit_number }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col-md-4">
-                <select id="createStaff" class="form-select" required>
-                  <option value="">Assign Staff</option>
-                  {% for staff in staff_users %}
-                  <option value="{{ staff.id }}">{{ staff.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col-md-4">
-                <select id="createPriority" class="form-select" required>
-                  <option value="">Priority</option>
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
-                  <option>Urgent</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <input id="createCategory" class="form-control" type="text" placeholder="Category" required>
-              </div>
-              <div class="col-md-4">
-                <input id="createTitle" class="form-control" type="text" placeholder="Issue title" required>
-              </div>
-              <div class="col-md-2">
-                <input id="createDate" class="form-control" type="date">
-              </div>
-              <div class="col-md-2">
-                <select id="createWindow" class="form-select">
-                  <option value="">Time</option>
-                  <option>8:00 AM - 10:00 AM</option>
-                  <option>10:00 AM - 12:00 PM</option>
-                  <option>1:00 PM - 3:00 PM</option>
-                  <option>3:00 PM - 5:00 PM</option>
-                </select>
-              </div>
-              <div class="col-md-9">
-                <input id="createDescription" class="form-control" type="text" placeholder="Work order details" required>
-              </div>
-              <div class="col-md-3">
-                <button class="apply-btn w-100" type="submit">Add Work Order</button>
-              </div>
-            </form>
-          </section>
-          {% endif %}
-
-          <!-- Filters -->
-          <section class="filters-bar">
-            <div class="filters-label">Filters</div>
-
-            <select id="statusFilter" class="filter-input">
-              <option value="">Status</option>
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Assigned">Assigned</option>
-              <option value="Closed">Closed</option>
-            </select>
-
-            <select id="priorityFilter" class="filter-input">
-              <option value="">Priority</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-
-            <select id="buildingFilter" class="filter-input">
-              <option value="">Building</option>
-              {% for building in building_options %}
-              <option value="{{ building }}">{{ building }}</option>
-              {% endfor %}
-            </select>
-
-            <input
-              id="searchFilter"
-              class="filter-input search-input"
-              type="text"
-              placeholder="WO# / Unit / Resident"
-            />
-
-            <button id="applyFiltersBtn" class="apply-btn" type="button">Apply</button>
-          </section>
-
-          <section class="row g-4 content-row">
-            <!-- Left side -->
-            <div class="col-xl-5">
-              <div class="panel-box workorder-list-panel">
-                <h2>Work Order Queue</h2>
-
-                <div class="table-responsive workorder-scroll">
-                  <table class="table custom-table align-middle mb-3">
-                    <thead>
-                      <tr>
-                        <th>WO#</th>
-                        <th>Unit</th>
-                        <th>Issue</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody id="workOrderQueueBody"></tbody>
-                  </table>
-                </div>
-
-                <div class="pager-wrap">
-                  <button class="pager-btn" id="prevBtn" type="button">Prev</button>
-                  <button class="pager-btn" id="nextBtn" type="button">Next</button>
-                </div>
-              </div>
+          </select>
+          <input id="unitFilter" type="text" placeholder="Search Unit">
+          <input id="woFilter" type="text" placeholder="Search WO#">
+          <button id="applyBtn" type="button">Apply</button>
+        </div>
+      </section>
+      {% if is_admin_view %}
+      <section class="filters-card">
+        <h2>Manage Staff Calendar</h2>
+        <form id="scheduleShiftForm" class="filters-row schedule-management-form">
+          <select id="scheduleEntrySelect">
+            <option value="">New schedule entry</option>
+            {% for shift in schedule_shifts %}
+            <option value="{{ shift.id }}">{{ shift.date }} | {{ shift.staff }} | {{ shift.shift }}</option>
+            {% endfor %}
+          </select>
+          <select id="scheduleStaff" required>
+            <option value="">Staff</option>
+            {% for staff in staff_users %}
+            <option value="{{ staff.id }}">{{ staff.name }}</option>
+            {% endfor %}
+          </select>
+          <input id="scheduleDateInput" type="date" required>
+          <input id="scheduleStartInput" type="time" required>
+          <input id="scheduleEndInput" type="time" required>
+          <input id="scheduleNoteInput" type="text" placeholder="Assignment note">
+          <button id="saveShiftBtn" type="submit">Save</button>
+          <button id="removeShiftBtn" type="button">Remove</button>
+        </form>
+      </section>
+      {% endif %}
+      <section class="schedule-layout">
+        <div class="schedule-left">
+          <div class="content-card">
+            <div class="calendar-toolbar">
+              <button id="prevMonthBtn" type="button" class="calendar-nav-btn">Previous</button>
+              <h2 id="calendarTitle">{{ "Staff Schedule" if is_admin_view else "My Schedule" }}</h2>
+              <button id="nextMonthBtn" type="button" class="calendar-nav-btn">Next</button>
             </div>
-
-            <!-- Right side -->
-            <div class="col-xl-7">
-              <div class="details-panel">
-                <h2>Work Order Details</h2>
-
-                <div class="detail-card">
-                  <p id="woMeta1"></p>
-                  <p id="woMeta2"></p>
-                  <p id="woMeta3"></p>
-                  <p id="woMeta4"></p>
-                </div>
-
-                <h3>Issue Description</h3>
-                <div class="detail-card description-card">
-                  <p id="issueDescription"></p>
-                </div>
-
-                <h3>Attachments</h3>
-                <div class="detail-card attachments-card">
-                  <a href="#" id="attachmentLink">Photo/File View/Download</a>
-                </div>
-
-                {% if is_admin_view %}
-                <h3>Schedule &amp; Status</h3>
-                <div class="assign-grid">
-                  <select id="assignedStaff" class="assign-input">
-                    <option value="">Assigned Staff</option>
-                    {% for staff in staff_users %}
-                    <option value="{{ staff.id }}">{{ staff.name }}</option>
-                    {% endfor %}
-                  </select>
-
-                  <input id="scheduleDate" class="assign-input" type="date" />
-
-                  <select id="timeWindow" class="assign-input">
-                    <option>Time Window</option>
-                    <option>8:00 AM - 10:00 AM</option>
-                    <option>10:00 AM - 12:00 PM</option>
-                    <option>1:00 PM - 3:00 PM</option>
-                    <option>3:00 PM - 5:00 PM</option>
-                  </select>
-
-                  <select id="statusUpdate" class="assign-input">
-                    <option>Update Status</option>
-                    <option>Open</option>
-                    <option>Assigned</option>
-                    <option>In Progress</option>
-                    <option>Closed</option>
-                  </select>
-                </div>
-
-                <h4>Notes to Maintenance / Resident</h4>
-                <textarea id="notesBox" class="notes-box" placeholder="Enter notes here..."></textarea>
-                {% else %}
-                <h3>Update Status</h3>
-                <div class="assign-grid">
-                  <select id="statusUpdate" class="assign-input">
-                    <option>Update Status</option>
-                    <option>Open</option>
-                    <option>Assigned</option>
-                    <option>In Progress</option>
-                    <option>Closed</option>
-                  </select>
-                </div>
-                {% endif %}
-
-                <div class="action-buttons">
-                  {% if not is_admin_view %}
-                  <button id="acceptBtn" class="action-btn" type="button">Accept Task</button>
-                  {% endif %}
-                  <button id="saveBtn" class="action-btn" type="button">Save Update</button>
-                  <button id="closeBtn" class="action-btn" type="button">Close WO</button>
-                  {% if is_admin_view %}
-                  <button id="removeBtn" class="action-btn" type="button">Remove WO</button>
-                  {% endif %}
-                </div>
-              </div>
+            <div class="month-grid" id="monthGrid"></div>
+          </div>
+        </div>
+        <div class="schedule-right">
+          <div class="content-card">
+            <h2>{{ "Calendar Details" if is_admin_view else "Selected Schedule Details" }}</h2>
+            <div id="selectedEventDetails" class="selected-event-details">
+              <h3>{{ "Calendar Details" if is_admin_view else "Work Order Details" }}</h3>
+              <p>{{ "Click a shift or work order on the calendar to view the time and details." if is_admin_view else "Click a work order on the calendar to view the time and details." }}</p>
             </div>
-          </section>
-        </main>
-      </div>
-    </div>
+          </div>
+          <div class="content-card">
+            <h2>Notes</h2>
+            <textarea id="scheduleNotes" rows="6" placeholder="Add notes about today’s staff schedule or work orders..."></textarea>
+          </div>
+          <div class="content-card">
+            <div class="schedule-actions">
+              <a href="{{ url_for(back_endpoint) }}" class="back-btn" id="backLink">Back to Dashboard</a>
+              <button id="printBtn" type="button" class="print-btn">Print Schedule</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
-
   <script>
-    const workOrders = {{ work_orders | tojson }};
-    const workOrderUpdateUrl = {{ url_for('work_order_update') | tojson }};
-    const workOrderCreateUrl = {{ url_for('work_order_create') | tojson }};
-    const workOrderDeleteUrlTemplate = {{ url_for('work_order_delete', work_order_code='__CODE__') | tojson }};
-
-    const statusUpdate = document.getElementById("statusUpdate");
-    const notesBox = document.getElementById("notesBox");
-    const saveBtn = document.getElementById("saveBtn");
-    const closeBtn = document.getElementById("closeBtn");
-    const acceptBtn = document.getElementById("acceptBtn");
-    const removeBtn = document.getElementById("removeBtn");
-    const scheduleDate = document.getElementById("scheduleDate");
-    const timeWindow = document.getElementById("timeWindow");
-    const assignedStaff = document.getElementById("assignedStaff");
-    const createWorkOrderForm = document.getElementById("createWorkOrderForm");
-
-    let filteredOrders = [...workOrders];
-    let currentIndex = 0;
-
-    function renderQueue() {
-      const tbody = document.getElementById("workOrderQueueBody");
-      tbody.innerHTML = filteredOrders.map((order, index) => `
-        <tr data-index="${index}" class="queue-row ${index === currentIndex ? "selected-row" : ""}">
-          <td>${order.id}</td>
-          <td>${order.unit}</td>
-          <td>${order.issue}</td>
-          <td>${order.priority}</td>
-          <td>${order.status}</td>
-        </tr>
-      `).join("");
-
-      document.querySelectorAll(".queue-row").forEach((row) => {
-        row.addEventListener("click", () => {
-          currentIndex = Number(row.dataset.index);
-          renderQueue();
-          renderDetails();
+    const monthGrid = document.getElementById("monthGrid");
+    const calendarTitle = document.getElementById("calendarTitle");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const staffFilter = document.getElementById("staffFilter");
+    const unitFilter = document.getElementById("unitFilter");
+    const woFilter = document.getElementById("woFilter");
+    const applyBtn = document.getElementById("applyBtn");
+    const assignmentItems = document.querySelectorAll(".assignment-item");
+    const selectedEventDetails = document.getElementById("selectedEventDetails");
+    const isAdminView = {{ is_admin_view | tojson }};
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    const calendarEvents = {{ schedule_events | tojson }};
+    const scheduleShifts = {{ schedule_shifts | tojson }};
+    const scheduleShiftUrl = {{ url_for('schedule_shift') | tojson }};
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[char]));
+    }
+    function eventMatchesFilters(item) {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      const itemStaff = (item.staff || "").toLowerCase();
+      const itemUnit = (item.unit || "").toLowerCase();
+      const itemWO = (item.wo || "").toLowerCase();
+      const matchesStaff =
+        staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+      const matchesUnit =
+        unitValue === "" || itemUnit.includes(unitValue);
+      const matchesWO =
+        woValue === "" || itemWO.includes(woValue);
+      return matchesStaff && matchesUnit && matchesWO;
+    }
+    function showEventDetails(item) {
+      if (!selectedEventDetails || !item) return;
+      const staffLine = isAdminView && item.staff ? `<p><strong>Staff:</strong> ${escapeHtml(item.staff)}</p>` : "";
+      const workOrderFields = item.type === "work_order" ? `
+        ${item.resident ? `<p><strong>Resident:</strong> ${escapeHtml(item.resident)}</p>` : ""}
+        ${item.phone ? `<p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p>` : ""}
+      ` : "";
+      selectedEventDetails.innerHTML = `
+        <h3>${escapeHtml(item.type === "work_order" ? item.title : item.staff || item.title)}</h3>
+        <p><strong>Type:</strong> ${escapeHtml(item.type === "work_order" ? "Work Order" : "Staff Schedule")}</p>
+        <p><strong>Time:</strong> ${escapeHtml(item.shift || item.time_window || "Scheduled")}</p>
+        ${staffLine}
+        ${workOrderFields}
+        ${item.unit ? `<p><strong>Unit:</strong> ${escapeHtml(item.unit)}</p>` : ""}
+        ${item.issue ? `<p><strong>Details:</strong> ${escapeHtml(item.issue)}</p>` : ""}
+        ${item.description ? `<p><strong>Description:</strong> ${escapeHtml(item.description)}</p>` : ""}
+        ${item.status ? `<p><strong>Status:</strong> ${escapeHtml(item.status)}</p>` : ""}
+      `;
+    }
+    function renderCalendar(month, year) {
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      calendarTitle.textContent = `${monthNames[month]} ${year} ${isAdminView ? "Staff Schedule" : "My Schedule"}`;
+      monthGrid.innerHTML = "";
+      dayNames.forEach((day) => {
+        const head = document.createElement("div");
+        head.className = "month-head";
+        head.textContent = day;
+        monthGrid.appendChild(head);
+      });
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.className = "month-cell empty-cell";
+        monthGrid.appendChild(blank);
+      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const cell = document.createElement("div");
+        cell.className = "month-cell";
+        const dateLabel = document.createElement("div");
+        dateLabel.className = "month-date";
+        dateLabel.textContent = day;
+        cell.appendChild(dateLabel);
+        const dayEvents = calendarEvents.filter((item) => {
+          const matchesDate = item.date === dateString;
+          return matchesDate && eventMatchesFilters(item);
         });
-      });
-    }
-
-    function renderDetails() {
-      const order = filteredOrders[currentIndex];
-      if (!order) {
-        document.getElementById("woMeta1").textContent = "";
-        document.getElementById("woMeta2").textContent = "";
-        document.getElementById("woMeta3").textContent = "";
-        document.getElementById("woMeta4").textContent = "";
-        document.getElementById("issueDescription").textContent = "No work orders match the current filters.";
-        document.getElementById("attachmentLink").textContent = "";
-        document.getElementById("attachmentLink").removeAttribute("href");
-        if (statusUpdate) {
-          statusUpdate.value = "Update Status";
-        }
-        if (notesBox) {
-          notesBox.value = "";
-        }
-        return;
-      }
-
-      document.getElementById("woMeta1").textContent = `WO #: ${order.id}   Status: ${order.status}`;
-      document.getElementById("woMeta2").textContent = `Unit: Building ${order.building} / Unit ${order.unit}   Priority: ${order.priority}`;
-      document.getElementById("woMeta3").textContent = `Resident: ${order.resident}   Phone: ${order.phone}`;
-      document.getElementById("woMeta4").textContent = `Issue Category: ${order.category}   Requested: ${order.requested}`;
-      document.getElementById("issueDescription").textContent = order.description;
-      document.getElementById("attachmentLink").textContent = order.attachment;
-      document.getElementById("attachmentLink").setAttribute("href", "#");
-      if (statusUpdate) {
-        statusUpdate.value = order.status;
-      }
-      if (notesBox) {
-        notesBox.value = order.notes || "";
-      }
-      if (scheduleDate) {
-        scheduleDate.value = order.scheduled_date_iso || "";
-      }
-      if (timeWindow && order.time_window) {
-        timeWindow.value = order.time_window;
-      }
-      if (assignedStaff && order.assigned_staff_id) {
-        assignedStaff.value = order.assigned_staff_id;
-      }
-    }
-
-    function applyFilters() {
-      const status = document.getElementById("statusFilter").value;
-      const priority = document.getElementById("priorityFilter").value;
-      const building = document.getElementById("buildingFilter").value;
-      const search = document.getElementById("searchFilter").value.toLowerCase().trim();
-
-      filteredOrders = workOrders.filter((order) => {
-        const matchesStatus = !status || order.status === status;
-        const matchesPriority = !priority || order.priority === priority;
-        const matchesBuilding = !building || order.building === building;
-        const matchesSearch =
-          !search ||
-          order.id.toLowerCase().includes(search) ||
-          order.unit.toLowerCase().includes(search) ||
-          order.resident.toLowerCase().includes(search);
-
-        return matchesStatus && matchesPriority && matchesBuilding && matchesSearch;
-      });
-
-      currentIndex = 0;
-      renderQueue();
-      renderDetails();
-    }
-
-    document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
-
-    document.getElementById("prevBtn").addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        renderQueue();
-        renderDetails();
-      }
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      if (currentIndex < filteredOrders.length - 1) {
-        currentIndex++;
-        renderQueue();
-        renderDetails();
-      }
-    });
-
-    function persistWorkOrder(newStatus) {
-      const order = filteredOrders[currentIndex];
-      if (!order) {
-        return;
-      }
-
-      const statusToSave =
-        newStatus ||
-        (statusUpdate && statusUpdate.value !== "Update Status" ? statusUpdate.value : order.status);
-      const payload = {
-        work_order_code: order.id,
-        status: statusToSave,
-        notes: notesBox ? notesBox.value : order.notes || "",
-      };
-      if (scheduleDate && scheduleDate.value) {
-        payload.scheduled_date = scheduleDate.value;
-      }
-      if (timeWindow && timeWindow.value !== "Time Window") {
-        payload.time_window = timeWindow.value;
-      }
-      if (assignedStaff && assignedStaff.value) {
-        payload.assigned_staff_id = assignedStaff.value;
-      }
-
-      fetch(workOrderUpdateUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify(payload),
-      })
-        .then((res) => res.json().then((data) => ({ res, data })))
-        .then(({ res, data }) => {
-          if (!res.ok) {
-            alert(data.error || "Could not update work order.");
-            return;
+        dayEvents.forEach((item) => {
+          const task = document.createElement("button");
+          task.type = "button";
+          task.className = `calendar-task ${item.className} ${item.type === "work_order" ? "calendar-work-order" : "calendar-shift"}`;
+          let label;
+          if (item.type === "work_order") {
+            label = isAdminView
+              ? `${item.title} | Work Order`
+              : `${item.title} | Unit ${item.unit || "--"}`;
+          } else {
+            label = item.staff || item.title || "Staff";
           }
-          order.status = statusToSave;
-          order.notes = payload.notes;
-          if (payload.scheduled_date) order.scheduled_date_iso = payload.scheduled_date;
-          if (payload.time_window) order.time_window = payload.time_window;
-          if (payload.assigned_staff_id) order.assigned_staff_id = Number(payload.assigned_staff_id);
-          renderQueue();
-          renderDetails();
-          alert(data.message || "Work order update saved.");
-        })
-        .catch(() => {
-          alert("Could not update work order.");
-        });
-    }
-
-    saveBtn.addEventListener("click", () => {
-      if (statusUpdate && statusUpdate.value !== "Update Status") {
-        persistWorkOrder(statusUpdate.value);
-        return;
-      }
-      persistWorkOrder();
-    });
-
-    closeBtn.addEventListener("click", () => {
-      persistWorkOrder("Closed");
-    });
-
-    if (acceptBtn) {
-      acceptBtn.addEventListener("click", () => {
-        persistWorkOrder("In Progress");
-      });
-    }
-
-    if (removeBtn) {
-      removeBtn.addEventListener("click", () => {
-        const order = filteredOrders[currentIndex];
-        if (!order || !window.confirm(`Remove ${order.id}?`)) return;
-        fetch(workOrderDeleteUrlTemplate.replace("__CODE__", encodeURIComponent(order.id)), {
-          method: "DELETE",
-          credentials: "same-origin",
-        })
-          .then((res) => res.json().then((data) => ({ res, data })))
-          .then(({ res, data }) => {
-            if (!res.ok) {
-              alert(data.error || "Could not remove work order.");
-              return;
-            }
-            alert(data.message || "Work order removed.");
-            window.location.reload();
-          })
-          .catch(() => {
-            alert("Could not remove work order.");
+          task.innerHTML = `
+            <strong>${escapeHtml(label)}</strong>
+            <span>${escapeHtml(item.shift || item.time_window || "Scheduled")}</span>
+          `;
+          task.addEventListener("click", () => {
+            document.querySelectorAll(".calendar-task.selected").forEach((el) => el.classList.remove("selected"));
+            task.classList.add("selected");
+            showEventDetails(item);
           });
+          cell.appendChild(task);
+        });
+        monthGrid.appendChild(cell);
+      }
+    }
+    function applyFilters() {
+      const staffValue = staffFilter.value.toLowerCase().trim();
+      const unitValue = unitFilter.value.toLowerCase().trim();
+      const woValue = woFilter.value.toLowerCase().trim();
+      assignmentItems.forEach((item) => {
+        if (!item.getAttribute("data-wo")) return;
+        const itemStaff = item.getAttribute("data-staff").toLowerCase();
+        const itemUnit = item.getAttribute("data-unit").toLowerCase();
+        const itemWO = item.getAttribute("data-wo").toLowerCase();
+        const matchesStaff =
+          staffValue === "all" || staffValue === "" || itemStaff.includes(staffValue);
+        const matchesUnit =
+          unitValue === "" || itemUnit.includes(unitValue);
+        const matchesWO =
+          woValue === "" || itemWO.includes(woValue);
+        item.style.display = matchesStaff && matchesUnit && matchesWO ? "" : "none";
+      });
+      renderCalendar(currentMonth, currentYear);
+    }
+    prevMonthBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    nextMonthBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    });
+    applyBtn.addEventListener("click", applyFilters);
+    staffFilter.addEventListener("change", applyFilters);
+    unitFilter.addEventListener("input", applyFilters);
+    woFilter.addEventListener("input", applyFilters);
+    const scheduleShiftForm = document.getElementById("scheduleShiftForm");
+    const scheduleEntrySelect = document.getElementById("scheduleEntrySelect");
+    const removeShiftBtn = document.getElementById("removeShiftBtn");
+    const scheduleStaff = document.getElementById("scheduleStaff");
+    const scheduleDateInput = document.getElementById("scheduleDateInput");
+    const scheduleStartInput = document.getElementById("scheduleStartInput");
+    const scheduleEndInput = document.getElementById("scheduleEndInput");
+    const scheduleNoteInput = document.getElementById("scheduleNoteInput");
+    if (scheduleEntrySelect) {
+      scheduleEntrySelect.addEventListener("change", () => {
+        const shift = scheduleShifts.find((item) => String(item.id) === scheduleEntrySelect.value);
+        if (!shift) {
+          if (scheduleShiftForm) scheduleShiftForm.reset();
+          scheduleEntrySelect.value = "";
+          return;
+        }
+        scheduleStaff.value = shift.staff_user_id || "";
+        scheduleDateInput.value = shift.date || "";
+        scheduleStartInput.value = shift.start_time || "";
+        scheduleEndInput.value = shift.end_time || "";
+        scheduleNoteInput.value = shift.note || "";
       });
     }
-
-    if (createWorkOrderForm) {
-      createWorkOrderForm.addEventListener("submit", (event) => {
+    if (scheduleShiftForm) {
+      scheduleShiftForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const payload = {
-          lease_id: document.getElementById("createLease").value,
-          assigned_staff_id: document.getElementById("createStaff").value,
-          priority: document.getElementById("createPriority").value,
-          category: document.getElementById("createCategory").value.trim(),
-          issue_title: document.getElementById("createTitle").value.trim(),
-          description: document.getElementById("createDescription").value.trim(),
-          scheduled_date: document.getElementById("createDate").value,
-          time_window: document.getElementById("createWindow").value,
+          schedule_id: scheduleEntrySelect.value,
+          staff_user_id: scheduleStaff.value,
+          shift_date: scheduleDateInput.value,
+          start_time: scheduleStartInput.value,
+          end_time: scheduleEndInput.value,
+          assignment_note: scheduleNoteInput.value.trim(),
         };
-
-        fetch(workOrderCreateUrl, {
-          method: "POST",
+        fetch(scheduleShiftUrl, {
+          method: payload.schedule_id ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
           body: JSON.stringify(payload),
@@ -508,21 +347,47 @@
           .then((res) => res.json().then((data) => ({ res, data })))
           .then(({ res, data }) => {
             if (!res.ok) {
-              alert(data.error || "Could not create work order.");
+              alert(data.error || "Could not save schedule entry.");
               return;
             }
-            alert(`${data.message} ${data.work_order_code}`);
+            alert(data.message || "Schedule saved.");
             window.location.reload();
           })
           .catch(() => {
-            alert("Could not create work order.");
+            alert("Could not save schedule entry.");
           });
       });
     }
-
-    renderQueue();
-    renderDetails();
+    if (removeShiftBtn) {
+      removeShiftBtn.addEventListener("click", () => {
+        if (!scheduleEntrySelect.value) {
+          alert("Choose a schedule entry first.");
+          return;
+        }
+        fetch(scheduleShiftUrl, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ schedule_id: scheduleEntrySelect.value }),
+        })
+          .then((res) => res.json().then((data) => ({ res, data })))
+          .then(({ res, data }) => {
+            if (!res.ok) {
+              alert(data.error || "Could not remove schedule entry.");
+              return;
+            }
+            alert(data.message || "Schedule entry removed.");
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("Could not remove schedule entry.");
+          });
+      });
+    }
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
+    renderCalendar(currentMonth, currentYear);
   </script>
-
 </body>
 </html>
