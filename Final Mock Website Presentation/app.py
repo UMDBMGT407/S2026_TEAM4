@@ -1831,10 +1831,9 @@ def deposit():
     )
 
 
-@app.route("/deposit/pay", methods=["POST"])
-@login_required
-@role_required("Prospect")
-def deposit_pay():
+def _record_deposit_payment():
+    payload = request.get_json(silent=True) or {}
+    paypal_order_id = (payload.get("paypal_order_id") or "").strip()
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT id, status FROM applications "
@@ -1852,13 +1851,32 @@ def deposit_pay():
     if row[1] != "Approved":
         cur.close()
         return jsonify({"error": "Your application must be approved before paying the deposit."}), 400
+    note = (
+        f"Deposit completed through PayPal order {paypal_order_id}."
+        if paypal_order_id
+        else "Deposit payment submitted online."
+    )
     cur.execute(
         "UPDATE applications SET status = %s, notes = %s WHERE id = %s",
-        ("Deposit Paid", "Deposit payment submitted online.", row[0]),
+        ("Deposit Paid", note, row[0]),
     )
     mysql.connection.commit()
     cur.close()
     return jsonify({"message": "Deposit marked as paid.", "redirect": url_for("status_page")})
+
+
+@app.route("/api/payments/deposit", methods=["POST"])
+@login_required
+@role_required("Prospect")
+def api_deposit_payment():
+    return _record_deposit_payment()
+
+
+@app.route("/deposit/pay", methods=["POST"])
+@login_required
+@role_required("Prospect")
+def deposit_pay():
+    return _record_deposit_payment()
 
 
 @app.route("/floorplan")
@@ -1995,10 +2013,7 @@ def pay_rent():
     return render_template("Pay_rent.html", **_resident_dashboard_context(current_user.id))
 
 
-@app.route("/pay_rent/submit", methods=["POST"])
-@login_required
-@role_required("Resident")
-def pay_rent_submit():
+def _record_rent_payment():
     lease = _active_lease_row_for_user(current_user.id)
     if not lease:
         return jsonify({"error": "No active lease was found for this resident."}), 400
@@ -2053,6 +2068,20 @@ def pay_rent_submit():
             "confirmation": confirmation,
         }
     )
+
+
+@app.route("/api/payments/rent", methods=["POST"])
+@login_required
+@role_required("Resident")
+def api_rent_payment():
+    return _record_rent_payment()
+
+
+@app.route("/pay_rent/submit", methods=["POST"])
+@login_required
+@role_required("Resident")
+def pay_rent_submit():
+    return _record_rent_payment()
 
 
 @app.route("/res_dash2")
