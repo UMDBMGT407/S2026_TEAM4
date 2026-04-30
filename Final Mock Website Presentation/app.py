@@ -2197,34 +2197,90 @@ def _record_deposit_payment():
     payload = request.get_json(silent=True) or {}
     paypal_order_id = (payload.get("paypal_order_id") or "").strip()
     cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, status FROM applications "
-        "WHERE LOWER(TRIM(applicant_email)) = %s "
-        "ORDER BY submitted_at DESC LIMIT 1",
-        (current_user.email.strip().lower(),),
-    )
-    row = cur.fetchone()
-    if not row:
+    try:
+        cur.execute(
+            "SELECT a.id, a.application_code, a.status, fp.rent AS deposit_amount "
+            "FROM applications a "
+            "JOIN floorplans fp ON a.floorplan_id = fp.id "
+            "WHERE LOWER(TRIM(a.applicant_email)) = %s "
+            "ORDER BY a.submitted_at DESC LIMIT 1",
+            (current_user.email.strip().lower(),),
+        )
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"error": "Application not found."}), 404
+
+        application_id, application_code, status, deposit_amount = row
+        if status == "Deposit Paid":
+            return jsonify({"message": "Deposit is already marked as paid.", "redirect": url_for("status_page")})
+        if status != "Approved":
+            return jsonify({"error": "Your application must be approved before paying the deposit."}), 400
+
+        note = (
+            f"Deposit completed through PayPal order {paypal_order_id}."
+            if paypal_order_id
+            else "Deposit payment submitted online."
+        )
+        cur.execute(
+            "UPDATE applications SET status = %s, notes = %s WHERE id = %s",
+            ("Deposit Paid", note, application_id),
+        )
+
+        resident_error = _create_resident_records_for_prospect(
+            cur,
+            current_user.id,
+            current_user.email.strip().lower(),
+        )
+        if resident_error:
+            mysql.connection.rollback()
+            return jsonify({"error": resident_error}), 400
+
+        cur.execute(
+            "SELECT id, security_deposit FROM leases "
+            "WHERE resident_user_id = %s AND status IN ('Active', 'Pending') "
+            "ORDER BY id DESC LIMIT 1",
+            (current_user.id,),
+        )
+        lease_row = cur.fetchone()
+        if not lease_row:
+            mysql.connection.rollback()
+            return jsonify({"error": "Could not create a lease for this deposit payment."}), 400
+
+        lease_id, security_deposit = lease_row
+        payment_amount = Decimal(str(security_deposit or deposit_amount or "0.00"))
+        payment_code = unique_code(cur, "payments", "payment_code", "P", 4)
+        confirmation = "CNF" + f"{secrets.randbelow(100000):05d}"
+        cur.execute(
+            "INSERT INTO payments "
+            "(payment_code, lease_id, resident_user_id, amount, method, status, "
+            "payment_date, confirmation_number, notes) "
+            "VALUES (%s, %s, %s, %s, 'Card', 'Paid', %s, %s, %s)",
+            (
+                payment_code,
+                lease_id,
+                current_user.id,
+                payment_amount,
+                date.today(),
+                confirmation,
+                f"Application deposit for {application_code}. {note}",
+            ),
+        )
+
+        mysql.connection.commit()
+    except Exception:
+        mysql.connection.rollback()
+        raise
+    finally:
         cur.close()
-        return jsonify({"error": "Application not found."}), 404
-    if row[1] == "Deposit Paid":
-        cur.close()
-        return jsonify({"message": "Deposit is already marked as paid.", "redirect": url_for("status_page")})
-    if row[1] != "Approved":
-        cur.close()
-        return jsonify({"error": "Your application must be approved before paying the deposit."}), 400
-    note = (
-        f"Deposit completed through PayPal order {paypal_order_id}."
-        if paypal_order_id
-        else "Deposit payment submitted online."
+
+    return jsonify(
+        {
+            "message": "Deposit marked as paid.",
+            "payment_code": payment_code,
+            "confirmation": confirmation,
+            "redirect": url_for("status_page"),
+        }
     )
-    cur.execute(
-        "UPDATE applications SET status = %s, notes = %s WHERE id = %s",
-        ("Deposit Paid", note, row[0]),
-    )
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({"message": "Deposit marked as paid.", "redirect": url_for("status_page")})
 
 
 @app.route("/api/payments/deposit", methods=["POST"])
@@ -2444,6 +2500,23 @@ def _record_rent_payment():
             payment_notes,
         ),
     )
+    payment_id = cur.lastrowid
+    if payment_status == "Paid":
+        cur.execute(
+            "UPDATE payments "
+            "SET status = 'Resolved', "
+            "notes = TRIM(CONCAT(COALESCE(notes, ''), ' ', %s)) "
+            "WHERE lease_id = %s "
+            "AND resident_user_id = %s "
+            "AND status IN ('Pending', 'Failed') "
+            "AND id <> %s",
+            (
+                f"Resolved by online payment {payment_code} ({confirmation}).",
+                lease["id"],
+                current_user.id,
+                payment_id,
+            ),
+        )
     mysql.connection.commit()
     cur.close()
     return jsonify(
