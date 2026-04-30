@@ -26,10 +26,8 @@ app.secret_key = "skiddy00 "  # Replace with a secure secret in production.
 
 FTS_DB_PATH = os.path.join(os.path.dirname(__file__), "datasets_fts.db")
 
-# API keys are loaded from .env. For classroom/demo use, fall back to the
-# PayPal sandbox shorthand so checkout buttons still render locally.
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "").strip() or "sb"
-
+# API keys are loaded from .env — they never touch the browser
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
 
 # MySQL configuration
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "127.0.0.1")
@@ -435,6 +433,7 @@ def _resident_maintenance_requests(user_id, limit=None):
 
 
 def _resident_dashboard_context(user_id):
+    _ensure_resident_records_for_user(user_id)
     lease = _resident_lease(user_id)
     payments = _resident_payments(user_id, limit=5)
     payment_history = _resident_payments(user_id)
@@ -600,6 +599,114 @@ def _next_rent_due_date(today=None):
     year = today.year + (1 if today.month == 12 else 0)
     month = 1 if today.month == 12 else today.month + 1
     return date(year, month, 1)
+
+
+def _lease_end_date(start_date):
+    try:
+        anniversary = start_date.replace(year=start_date.year + 1)
+    except ValueError:
+        anniversary = start_date.replace(year=start_date.year + 1, month=2, day=28)
+    return anniversary - timedelta(days=1)
+
+
+def _create_resident_records_for_prospect(cursor, user_id, email):
+    cursor.execute(
+        "SELECT a.id, a.application_code, a.floorplan_id, a.desired_move_in, "
+        "a.assigned_unit_id, fp.rent "
+        "FROM applications a "
+        "JOIN floorplans fp ON a.floorplan_id = fp.id "
+        "WHERE LOWER(TRIM(a.applicant_email)) = %s AND a.status = 'Deposit Paid' "
+        "ORDER BY a.submitted_at DESC LIMIT 1",
+        (email,),
+    )
+    application = cursor.fetchone()
+    if not application:
+        return "Prospective residents can only become residents after their deposit is paid."
+
+    app_id, application_code, floorplan_id, desired_move_in, assigned_unit_id, rent = application
+    cursor.execute(
+        "SELECT id FROM leases WHERE resident_user_id = %s "
+        "AND status IN ('Active', 'Pending') LIMIT 1",
+        (user_id,),
+    )
+    if cursor.fetchone():
+        return None
+
+    unit_id = assigned_unit_id
+    if unit_id:
+        cursor.execute(
+            "SELECT id FROM units WHERE id = %s AND floorplan_id = %s",
+            (unit_id, floorplan_id),
+        )
+        if cursor.fetchone() is None:
+            unit_id = None
+
+    if not unit_id:
+        cursor.execute(
+            "SELECT id FROM units WHERE floorplan_id = %s "
+            "AND status IN ('Reserved', 'Available') "
+            "ORDER BY FIELD(status, 'Reserved', 'Available'), id LIMIT 1",
+            (floorplan_id,),
+        )
+        row = cursor.fetchone()
+        unit_id = row[0] if row else None
+
+    if not unit_id:
+        unit_number = application_code
+        cursor.execute("SELECT id FROM units WHERE unit_number = %s", (unit_number,))
+        if cursor.fetchone():
+            unit_number = unique_code(cursor, "units", "unit_number", "U", 5)
+        cursor.execute(
+            "INSERT INTO units (building, unit_number, floorplan_id, status) "
+            "VALUES (%s, %s, %s, 'Occupied')",
+            ("Building Assignment", unit_number, floorplan_id),
+        )
+        unit_id = cursor.lastrowid
+    else:
+        cursor.execute("UPDATE units SET status = 'Occupied' WHERE id = %s", (unit_id,))
+
+    cursor.execute(
+        "UPDATE applications SET assigned_unit_id = %s WHERE id = %s AND assigned_unit_id IS NULL",
+        (unit_id, app_id),
+    )
+    start_date = desired_move_in if isinstance(desired_move_in, date) else date.today()
+    lease_code = unique_code(cursor, "leases", "lease_code", "L", 4)
+    cursor.execute(
+        "INSERT INTO leases "
+        "(lease_code, resident_user_id, unit_id, start_date, end_date, monthly_rent, "
+        "security_deposit, status) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, 'Active')",
+        (
+            lease_code,
+            user_id,
+            unit_id,
+            start_date,
+            _lease_end_date(start_date),
+            rent,
+            Decimal("100.00"),
+        ),
+    )
+    return None
+
+
+def _ensure_resident_records_for_user(user_id):
+    if not current_user.is_authenticated:
+        return
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute(
+            "SELECT id FROM leases WHERE resident_user_id = %s "
+            "AND status IN ('Active', 'Pending') LIMIT 1",
+            (user_id,),
+        )
+        if cur.fetchone():
+            return
+        error = _create_resident_records_for_prospect(cur, user_id, current_user.email)
+        if error:
+            return
+        mysql.connection.commit()
+    finally:
+        cur.close()
 
 
 def _admin_dashboard_context():
@@ -1017,10 +1124,12 @@ def update_user(user_id):
         return jsonify({"error": "New password must be at least 6 characters."}), 400
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
-    if cur.fetchone() is None:
+    cur.execute("SELECT id, email, role FROM users WHERE id = %s", (user_id,))
+    existing_user = cur.fetchone()
+    if existing_user is None:
         cur.close()
         return jsonify({"error": "User not found."}), 404
+    current_role = canonical_role(existing_user[2])
     cur.execute(
         "SELECT id FROM users WHERE LOWER(TRIM(email)) = %s AND id <> %s",
         (email, user_id),
@@ -1028,6 +1137,14 @@ def update_user(user_id):
     if cur.fetchone():
         cur.close()
         return jsonify({"error": "Another user already has that email."}), 409
+    if current_role == "prospect" and role == "resident":
+        promotion_error = _create_resident_records_for_prospect(cur, user_id, email)
+        if promotion_error:
+            cur.close()
+            return (
+                jsonify({"error": promotion_error}),
+                400,
+            )
 
     if password:
         cur.execute(
