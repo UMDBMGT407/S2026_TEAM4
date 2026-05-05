@@ -29,8 +29,8 @@
         <h1>Admin Dashboard</h1>
       </div>
       <div class="header-right">
-        <button class="profile-btn" type="button" aria-label="Admin profile"></button>
         <div class="role-indicator">Admin</div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
         <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
       </div>
     </header>
@@ -279,6 +279,11 @@
     function showApplicationDetails(appId) {
       const app = applications.find((item) => item.id === appId);
       if (!app) return;
+      const approveLabel = app.isRenewal ? "Approve Renewal" : "Approve";
+      const denyLabel = app.isRenewal ? "Deny Renewal" : "Deny";
+      const renewalCycleButton = app.isRenewal
+        ? ""
+        : `<button class="btn btn-outline-dark btn-sm application-renewal-btn" type="button" data-app-id="${escapeHtml(app.id)}">Create Renewal Cycle</button>`;
       const documentMarkup = app.documents && app.documents.length
         ? app.documents.map((doc) => {
             if (doc.url) {
@@ -306,14 +311,15 @@
             </div>
           </div>
           <p><strong>Submitted:</strong> ${escapeHtml(app.date)}</p>
+          <p><strong>Type:</strong> ${app.isRenewal ? "Lease Renewal Request" : "New Application"}</p>
           <p><strong>Notes:</strong> ${escapeHtml(app.notes || "No notes provided.")}</p>
           <p><strong>Uploaded Documents:</strong></p>
           <ul>${documentMarkup}</ul>
           <div class="d-flex gap-2 flex-wrap mt-3">
-            <button class="btn btn-success btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Approved">Approve</button>
-            <button class="btn btn-danger btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Denied">Deny</button>
+            <button class="btn btn-success btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Approved">${approveLabel}</button>
+            <button class="btn btn-danger btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Denied">${denyLabel}</button>
             <button class="btn btn-outline-secondary btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Pending">Mark Pending</button>
-            <button class="btn btn-outline-dark btn-sm application-renewal-btn" type="button" data-app-id="${escapeHtml(app.id)}">Create Renewal Cycle</button>
+            ${renewalCycleButton}
           </div>
         `);
     }
