@@ -30,16 +30,25 @@ FTS_DB_PATH = os.path.join(os.path.dirname(__file__), "datasets_fts.db")
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
 
 # MySQL configuration
-app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "127.0.0.1")
-app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", "3306"))
-app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "skiddy00")
-app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "407_courtyards")
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'Iliketocode123!'
+app.config['MYSQL_DB'] = '407_courtyards'
 mysql = MySQL(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+
+@app.context_processor
+def user_header_context():
+    first_name = "Account"
+    if current_user.is_authenticated:
+        display_name = (current_user.name or current_user.email or "").strip()
+        if display_name:
+            first_name = display_name.split()[0]
+    return {"current_user_first_name": first_name}
 
 ROLE_LABELS = {
     "admin": "Admin",
@@ -125,6 +134,19 @@ def iso_date(value):
     if isinstance(value, date):
         return value.isoformat()
     return str(value)
+
+
+def parse_iso_date(value):
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if value:
+        try:
+            return datetime.strptime(str(value), "%Y-%m-%d").date()
+        except ValueError:
+            return None
+    return None
 
 
 def time_display(value):
@@ -339,6 +361,16 @@ def _resident_lease(user_id):
     )
     if not row:
         return None
+    pending_renewal = db_one(
+        "SELECT l.id, l.lease_code, l.start_date, l.end_date, l.monthly_rent, "
+        "l.security_deposit, l.status, u.building, u.unit_number, fp.name AS floorplan_name "
+        "FROM leases l "
+        "JOIN units u ON l.unit_id = u.id "
+        "JOIN floorplans fp ON u.floorplan_id = fp.id "
+        "WHERE l.resident_user_id = %s AND l.status = 'Pending' AND l.id <> %s "
+        "ORDER BY l.start_date ASC LIMIT 1",
+        (user_id, row.get("id")),
+    )
     start_date = row.get("start_date")
     end_date = row.get("end_date")
     renewal_deadline = end_date - timedelta(days=60) if isinstance(end_date, date) else None
@@ -389,6 +421,30 @@ def _resident_lease(user_id):
             ),
         },
     ]
+    if pending_renewal:
+        pending_start = pending_renewal.get("start_date")
+        pending_end = pending_renewal.get("end_date")
+        lease_documents.append(
+            {
+                "title": "Pending Renewal Lease",
+                "date": date_display(pending_start),
+                "type": "Renewal",
+                "filename": f"{pending_renewal.get('lease_code') or 'renewal'}-pending-renewal.txt",
+                "content": (
+                    f"The Courtyards Pending Renewal Lease\n"
+                    f"Lease ID: {pending_renewal.get('lease_code') or '--'}\n"
+                    f"Resident: {current_user.name}\n"
+                    f"Unit: {pending_renewal.get('building') or '--'} / "
+                    f"{pending_renewal.get('unit_number') or '--'}\n"
+                    f"Term: {date_display(pending_start)} - {date_display(pending_end)}\n"
+                    f"Monthly rent: {money(pending_renewal.get('monthly_rent'))}\n"
+                    f"Status: Pending resident/admin finalization"
+                ),
+            }
+        )
+    renewal_status = "Eligible to Renew" if row.get("status") == "Active" else "Not Eligible"
+    if pending_renewal:
+        renewal_status = f"Approved - Pending Lease {pending_renewal.get('lease_code')}"
     return {
         **row,
         "monthly_rent_value": float(row.get("monthly_rent") or 0),
@@ -397,7 +453,7 @@ def _resident_lease(user_id):
         "start_date_display": date_display(row.get("start_date")),
         "end_date_display": date_display(row.get("end_date")),
         "end_date_short": date_display(row.get("end_date"), "%m/%d"),
-        "renewal_status": "Eligible to Renew" if row.get("status") == "Active" else "Not Eligible",
+        "renewal_status": renewal_status,
         "renewal_deadline_display": date_display(renewal_deadline),
         "proposed_term_display": f"{lease_term_months} Months",
         "proposed_rent_display": f"{money(proposed_rent)} / month",
@@ -425,6 +481,24 @@ def _resident_payments(user_id, limit=None):
     return rows
 
 
+def _pending_rent_payment_for_lease(user_id, lease_id):
+    row = db_one(
+        "SELECT id, payment_code, lease_id, amount, method, status, payment_date, "
+        "confirmation_number, notes "
+        "FROM payments "
+        "WHERE resident_user_id = %s AND lease_id = %s AND status = 'Pending' "
+        "AND (notes IS NULL OR notes NOT LIKE %s) "
+        "ORDER BY payment_date DESC, id DESC LIMIT 1",
+        (user_id, lease_id, "Application deposit%"),
+    )
+    if not row:
+        return None
+    row["amount_value"] = float(row.get("amount") or 0)
+    row["amount_display"] = money(row.get("amount"))
+    row["payment_date_display"] = date_display(row.get("payment_date"))
+    return row
+
+
 def _resident_maintenance_requests(user_id, limit=None):
     sql = (
         "SELECT request_code, category, issue_title, description, priority, status, created_at "
@@ -446,14 +520,12 @@ def _resident_dashboard_context(user_id):
     payments = _resident_payments(user_id, limit=5)
     payment_history = _resident_payments(user_id)
     requests = _resident_maintenance_requests(user_id, limit=4)
-    unpaid_total = sum(
-        payment["amount_value"]
-        for payment in payments
-        if payment.get("status") in {"Pending", "Failed"}
-    )
     has_active_lease = lease is not None
     monthly_rent = lease["monthly_rent_value"] if has_active_lease else 0
-    balance_due = (unpaid_total or monthly_rent) if has_active_lease else 0
+    balance_due = monthly_rent if has_active_lease else 0
+    pending_rent_payment = (
+        _pending_rent_payment_for_lease(user_id, lease["id"]) if has_active_lease else None
+    )
     last_payment = next(
         (payment for payment in payments if payment.get("status") == "Paid"), None
     )
@@ -463,7 +535,11 @@ def _resident_dashboard_context(user_id):
         "payments": payments,
         "payment_history": payment_history,
         "has_active_lease": has_active_lease,
-        "can_pay_rent": has_active_lease and float(balance_due) > 0,
+        "has_pending_rent_payment": pending_rent_payment is not None,
+        "pending_rent_payment": pending_rent_payment,
+        "can_pay_rent": (
+            has_active_lease and float(balance_due) > 0 and pending_rent_payment is None
+        ),
         "balance_due": money(balance_due) if has_active_lease else "--",
         "balance_due_value": f"{float(balance_due):.2f}",
         "monthly_rent": money(monthly_rent) if has_active_lease else "--",
@@ -492,6 +568,7 @@ def _payment_rows():
         row["amount_value"] = float(row.get("amount") or 0)
         row["amount"] = money(row.get("amount"))
         row["date"] = date_display(row.get("payment_date"))
+        row["payment_date_iso"] = iso_date(row.get("payment_date"))
         row["resident"] = row.get("resident_name")
         row["phone"] = row.get("resident_email")
         row["leaseId"] = row.get("lease_code")
@@ -603,7 +680,14 @@ def _work_order_rows(staff_id=None, limit=None):
         row["scheduled_date_iso"] = iso_date(scheduled_date)
         row["scheduled_date"] = iso_date(scheduled_date)
         row["created_at"] = date_display(created_at)
-        row["attachment"] = row.get("attachment_name") or "No attachment"
+        attachment_name = row.get("attachment_name")
+        row["attachment"] = attachment_name or "No attachment"
+        row["attachment_url"] = ""
+        if attachment_name:
+            attachment_rel = os.path.join("images", "maintenance_uploads", attachment_name)
+            attachment_abs = os.path.join(app.root_path, "static", attachment_rel)
+            if os.path.exists(attachment_abs):
+                row["attachment_url"] = url_for("static", filename=attachment_rel)
         row["description"] = row.get("description") or ""
         row["staff"] = row.get("assigned_staff_name") or "Unassigned"
     return rows
@@ -650,6 +734,14 @@ def _uploaded_document_link(label, stored_path):
 
 
 def _dashboard_application_data(row):
+    notes_text = " ".join(
+        str(row.get(key) or "")
+        for key in ("applicant_notes", "notes", "app_id")
+    )
+    is_renewal = (
+        "Lease renewal request" in notes_text
+        or "resident-renewal-request" in notes_text
+    )
     document_links = []
     id_link = _uploaded_document_link("Uploaded ID", row.get("app_id"))
     if id_link:
@@ -672,6 +764,7 @@ def _dashboard_application_data(row):
         "moveIn": date_display(row.get("desired_move_in")),
         "date": date_display(row.get("submitted_at")),
         "status": row.get("status"),
+        "isRenewal": is_renewal,
     }
 
 
@@ -874,16 +967,17 @@ def _create_admin_application_cycle(cursor, application_code):
 
 
 def _create_resident_renewal_application(cursor, user_id, notes):
+    renewal_like = "Lease renewal request%"
     cursor.execute(
         "SELECT a.id FROM applications a "
         "WHERE LOWER(TRIM(a.applicant_email)) = %s "
-        "AND a.status = 'Pending' "
-        "AND (a.notes LIKE 'Lease renewal request%' OR a.applicant_notes LIKE 'Lease renewal request%') "
+        "AND a.status IN ('Pending', 'Approved') "
+        "AND (a.notes LIKE %s OR a.applicant_notes LIKE %s) "
         "LIMIT 1",
-        (current_user.email.strip().lower(),),
+        (current_user.email.strip().lower(), renewal_like, renewal_like),
     )
     if cursor.fetchone():
-        return None, "You already have a pending renewal request."
+        return None, "You already have a renewal request on file."
 
     cursor.execute(
         "SELECT l.lease_code, l.end_date, l.monthly_rent, l.unit_id, "
@@ -951,6 +1045,100 @@ def _create_resident_renewal_application(cursor, user_id, notes):
         "floorplan_name": floorplan_name,
         "desired_move_in": date_display(values["desired_move_in"]),
     }, None
+
+
+def _create_renewed_lease_for_application(cursor, application_code):
+    cursor.execute(
+        "SELECT a.applicant_email, a.desired_move_in, a.assigned_unit_id, "
+        "a.floorplan_id, a.notes, a.applicant_notes, a.app_id, fp.rent "
+        "FROM applications a "
+        "JOIN floorplans fp ON a.floorplan_id = fp.id "
+        "WHERE a.application_code = %s",
+        (application_code,),
+    )
+    application = cursor.fetchone()
+    if not application:
+        return None, "Application not found."
+
+    (
+        applicant_email,
+        desired_move_in,
+        assigned_unit_id,
+        _floorplan_id,
+        notes,
+        applicant_notes,
+        app_id,
+        floorplan_rent,
+    ) = application
+    renewal_marker = " ".join(str(value or "") for value in (notes, applicant_notes, app_id))
+    if (
+        "Lease renewal request" not in renewal_marker
+        and "resident-renewal-request" not in renewal_marker
+    ):
+        return None, None
+
+    cursor.execute(
+        "SELECT id FROM users "
+        "WHERE LOWER(TRIM(email)) = %s AND LOWER(TRIM(role)) = 'resident' "
+        "LIMIT 1",
+        ((applicant_email or "").strip().lower(),),
+    )
+    resident = cursor.fetchone()
+    if not resident:
+        return None, "Renewal approved, but no resident account matched this request."
+    resident_user_id = resident[0]
+
+    cursor.execute(
+        "SELECT id, end_date, monthly_rent, security_deposit, unit_id "
+        "FROM leases "
+        "WHERE resident_user_id = %s AND status IN ('Active', 'Pending') "
+        "ORDER BY FIELD(status, 'Active', 'Pending'), end_date DESC LIMIT 1",
+        (resident_user_id,),
+    )
+    current_lease = cursor.fetchone()
+    if not current_lease:
+        return None, "Renewal approved, but no active lease was found for this resident."
+
+    _current_lease_id, current_end, monthly_rent, security_deposit, current_unit_id = current_lease
+    unit_id = assigned_unit_id or current_unit_id
+    start_date = parse_iso_date(desired_move_in)
+    if not start_date:
+        start_date = (current_end + timedelta(days=1)) if isinstance(current_end, date) else date.today()
+    end_date = _lease_end_date(start_date)
+    monthly_rent = monthly_rent or floorplan_rent or Decimal("0.00")
+    security_deposit = security_deposit or monthly_rent
+
+    cursor.execute(
+        "SELECT lease_code FROM leases "
+        "WHERE resident_user_id = %s AND unit_id = %s AND start_date = %s "
+        "AND status IN ('Active', 'Pending') LIMIT 1",
+        (resident_user_id, unit_id, start_date),
+    )
+    existing = cursor.fetchone()
+    if existing:
+        return existing[0], None
+
+    lease_code = unique_code(cursor, "leases", "lease_code", "L", 4)
+    cursor.execute(
+        "INSERT INTO leases "
+        "(lease_code, resident_user_id, unit_id, start_date, end_date, monthly_rent, "
+        "security_deposit, status) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')",
+        (
+            lease_code,
+            resident_user_id,
+            unit_id,
+            start_date,
+            end_date,
+            monthly_rent,
+            security_deposit,
+        ),
+    )
+    cursor.execute(
+        "UPDATE applications SET assigned_unit_id = %s WHERE application_code = %s",
+        (unit_id, application_code),
+    )
+    return lease_code, None
 
 
 def _admin_dashboard_context():
@@ -1421,23 +1609,45 @@ def application_decision(application_code):
         return jsonify({"error": "Please choose Pending, Approved, or Denied."}), 400
 
     cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id FROM applications WHERE application_code = %s",
-        (application_code,),
-    )
-    row = cur.fetchone()
-    if not row:
-        cur.close()
-        return jsonify({"error": "Application not found."}), 404
+    try:
+        cur.execute(
+            "SELECT id, notes, applicant_notes FROM applications WHERE application_code = %s",
+            (application_code,),
+        )
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"error": "Application not found."}), 404
 
-    decision_note = notes or f"Application marked {status} by admin."
-    cur.execute(
-        "UPDATE applications SET status = %s, notes = %s WHERE application_code = %s",
-        (status, decision_note, application_code),
-    )
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({"message": f"Application {status.lower()}.", "status": status})
+        existing_notes = (row[1] or row[2] or "").strip()
+        decision_line = f"Admin decision: Application marked {status}."
+        if notes:
+            decision_line = f"Admin decision: {notes}"
+        decision_note = (
+            f"{existing_notes}\n{decision_line}" if existing_notes else decision_line
+        )
+        cur.execute(
+            "UPDATE applications SET status = %s, notes = %s WHERE application_code = %s",
+            (status, decision_note, application_code),
+        )
+
+        renewal_lease_code = None
+        if status == "Approved":
+            renewal_lease_code, error = _create_renewed_lease_for_application(cur, application_code)
+            if error:
+                mysql.connection.rollback()
+                return jsonify({"error": error}), 400
+
+        mysql.connection.commit()
+    except Exception:
+        mysql.connection.rollback()
+        raise
+    finally:
+        cur.close()
+
+    message = f"Application {status.lower()}."
+    if renewal_lease_code:
+        message = f"Renewal approved. Pending lease {renewal_lease_code} was created."
+    return jsonify({"message": message, "status": status})
 
 
 @app.route("/applications/<application_code>/renewal", methods=["POST"])
@@ -2458,6 +2668,20 @@ def _record_rent_payment():
     lease = _active_lease_row_for_user(current_user.id)
     if not lease:
         return jsonify({"error": "No active lease was found for this resident."}), 400
+    pending_payment = _pending_rent_payment_for_lease(current_user.id, lease["id"])
+    if pending_payment:
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "You already have a pending rent payment "
+                        f"({pending_payment['payment_code']}). Please wait for admin "
+                        "review before submitting another payment."
+                    )
+                }
+            ),
+            409,
+        )
     payment_context = _resident_dashboard_context(current_user.id)
     payment_amount = Decimal(payment_context.get("balance_due_value") or "0.00")
     if payment_amount <= 0:
@@ -2473,12 +2697,24 @@ def _record_rent_payment():
         method_raw = (request.form.get("method") or "").strip().lower()
         method = "Bank Transfer" if "bank" in method_raw else "Card"
         account_to_pay = (request.form.get("account_to_pay") or "").strip()
-        last4 = (request.form.get("last4") or "").strip()[-4:]
+        payment_type = (request.form.get("payment_type") or "").strip()
+        monthly_payment_day = (request.form.get("monthly_payment_day") or "").strip()
         billing_zip = (request.form.get("billing_zip") or "").strip()
-        if not method_raw or not account_to_pay or not last4 or not billing_zip:
+        if not method_raw or not account_to_pay or not billing_zip:
             return jsonify({"error": "Please complete the payment form before submitting."}), 400
+        is_recurring = payment_type == "recurring" or "recurring" in account_to_pay.lower()
+        if is_recurring:
+            day_labels = {"1": "1st", "5": "5th", "10": "10th"}
+            if monthly_payment_day not in day_labels:
+                return jsonify({"error": "Please choose a monthly payment day."}), 400
         payment_status = "Pending"
-        payment_notes = f"Submitted online for {account_to_pay}; ending {last4}."
+        if is_recurring:
+            payment_notes = (
+                f"Submitted online for recurring payment setup on the "
+                f"{day_labels[monthly_payment_day]} of each month through secure checkout."
+            )
+        else:
+            payment_notes = "Submitted online for one-time payment through secure checkout."
 
     cur = mysql.connection.cursor()
     payment_code = unique_code(cur, "payments", "payment_code", "P", 4)
