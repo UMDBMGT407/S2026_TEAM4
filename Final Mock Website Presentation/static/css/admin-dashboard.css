@@ -63,30 +63,10 @@ a {
   font-weight: 700;
 }
 
-.profile-btn,
 .logout-btn {
   border: none;
   font-family: "Montserrat", sans-serif;
   cursor: pointer;
-}
-
-.profile-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #5f5f5f;
-  color: #fff;
-  position: relative;
-}
-
-.profile-btn::before {
-  content: "A";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-  font-weight: 700;
 }
 
 .logout-btn {
