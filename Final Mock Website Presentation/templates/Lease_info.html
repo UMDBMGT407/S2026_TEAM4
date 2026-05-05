@@ -50,8 +50,8 @@
         <h1>My Lease</h1>
       </div>
       <div class="header-right">
-        <button class="profile-btn" type="button" aria-label="Profile"></button>
         <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
         <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
       </div>
     </header>
@@ -216,9 +216,24 @@
           fetch(renewalRequestUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
             body: JSON.stringify({ notes })
           })
-            .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+            .then((response) =>
+              response.text().then((text) => {
+                let data = {};
+                try {
+                  data = text ? JSON.parse(text) : {};
+                } catch (_error) {
+                  throw new Error(
+                    response.ok
+                      ? "Renewal request returned an unexpected response."
+                      : "Renewal request failed. Check the Flask terminal for the server error."
+                  );
+                }
+                return { ok: response.ok, data };
+              })
+            )
             .then(({ ok, data }) => {
               if (!ok) throw new Error(data.error || "Unable to send renewal request.");
               alert(data.message || "Renewal request sent to admin.");
