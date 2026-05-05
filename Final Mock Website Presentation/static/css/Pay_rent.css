@@ -315,9 +315,17 @@
 
 .checkout-fields {
   display: grid;
-  grid-template-columns: 0.75fr 1.1fr 0.8fr;
+  grid-template-columns: 0.75fr 1.1fr;
   gap: 14px;
   margin-bottom: 16px;
+}
+
+.checkout-fields.recurring-active {
+  grid-template-columns: 0.75fr 1.1fr 0.8fr;
+}
+
+.checkout-fields [hidden] {
+  display: none;
 }
 
 .checkout-fields label {
@@ -918,6 +926,11 @@ body {
   background: rgba(255, 255, 255, 0.78);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
+}
+
+.pending-payment-alert {
+  border-color: rgba(180, 83, 9, 0.35);
+  background: rgba(255, 247, 237, 0.86);
 }
 
 .checkout-empty-state h3 {
