@@ -27,6 +27,7 @@
       </div>
       <div class="header-right">
         <div class="role-indicator">Admin</div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
         <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
       </div>
     </header>
@@ -104,7 +105,7 @@
               </thead>
               <tbody id="paymentsTable">
                 {% for payment in payments %}
-                <tr data-status="{{ payment.status }}" data-building="{{ payment.building }}" data-payment="{{ payment.payment_code }}">
+                <tr data-status="{{ payment.status }}" data-building="{{ payment.building }}" data-date="{{ payment.payment_date_iso }}" data-payment="{{ payment.payment_code }}">
                   <td>{{ payment.payment_code }}</td>
                   <td>{{ payment.resident }}</td>
                   <td>{{ payment.unit }}</td>
@@ -119,8 +120,8 @@
               </tbody>
             </table>
             <div class="table-nav">
-              <button type="button">Prev</button>
-              <button type="button">Next</button>
+              <button id="prevPaymentsBtn" type="button">Prev</button>
+              <button id="nextPaymentsBtn" type="button">Next</button>
             </div>
           </div>
         </div>
@@ -168,18 +169,23 @@
     </div>
   </div>
   <script>
-    const rows = document.querySelectorAll("#paymentsTable tr");
+    const rows = Array.from(document.querySelectorAll("#paymentsTable tr[data-payment]"));
     const searchInput = document.getElementById("searchInput");
     const statusFilter = document.getElementById("statusFilter");
     const buildingFilter = document.getElementById("buildingFilter");
     const dateFilter = document.getElementById("dateFilter");
     const applyBtn = document.getElementById("applyBtn");
+    const paymentsTable = document.getElementById("paymentsTable");
+    const prevPaymentsBtn = document.getElementById("prevPaymentsBtn");
+    const nextPaymentsBtn = document.getElementById("nextPaymentsBtn");
     const paymentDetails = document.getElementById("paymentDetails");
     const notesBox = document.getElementById("notesBox");
     const actionMessage = document.getElementById("actionMessage");
     const paymentData = {{ payments_by_code | tojson }};
     const statusUrlTemplate = {{ url_for('update_payment_status', payment_code='__CODE__') | tojson }};
     let selectedPaymentId = {{ first_payment.payment_code | tojson if first_payment else "null" }};
+    let currentPage = 0;
+    const pageSize = 8;
 
     function loadPaymentDetails(paymentId) {
       const payment = paymentData[paymentId];
@@ -205,11 +211,16 @@
       `;
       notesBox.value = payment.notes || "";
     }
-    function filterPayments() {
+    function paymentRowTime(row) {
+      const value = Date.parse(row.getAttribute("data-date") || "");
+      return Number.isNaN(value) ? 0 : value;
+    }
+    function matchingPaymentRows() {
       const searchValue = searchInput.value.toLowerCase().trim();
       const statusValue = statusFilter.value;
       const buildingValue = buildingFilter.value;
-      rows.forEach((row) => {
+      const dateValue = dateFilter.value;
+      const matches = rows.filter((row) => {
         const rowText = row.textContent.toLowerCase();
         const rowStatus = row.getAttribute("data-status");
         const rowBuilding = row.getAttribute("data-building");
@@ -217,8 +228,34 @@
         const matchesStatus = statusValue === "all" || rowStatus === statusValue;
         const matchesBuilding = buildingValue === "all" || rowBuilding === buildingValue;
 
-        row.style.display = matchesSearch && matchesStatus && matchesBuilding ? "" : "none";
+        return matchesSearch && matchesStatus && matchesBuilding;
       });
+      if (dateValue === "recent") {
+        matches.sort((a, b) => paymentRowTime(b) - paymentRowTime(a));
+      } else if (dateValue === "older") {
+        matches.sort((a, b) => paymentRowTime(a) - paymentRowTime(b));
+      }
+      return matches;
+    }
+    function renderPaymentRows(resetPage) {
+      if (resetPage) currentPage = 0;
+      const matches = matchingPaymentRows();
+      const pageCount = Math.max(1, Math.ceil(matches.length / pageSize));
+      currentPage = Math.min(currentPage, pageCount - 1);
+      matches.forEach((row) => paymentsTable.appendChild(row));
+      rows.forEach((row) => {
+        row.style.display = "none";
+      });
+      matches
+        .slice(currentPage * pageSize, currentPage * pageSize + pageSize)
+        .forEach((row) => {
+          row.style.display = "";
+        });
+      if (prevPaymentsBtn) prevPaymentsBtn.disabled = currentPage === 0;
+      if (nextPaymentsBtn) nextPaymentsBtn.disabled = currentPage >= pageCount - 1;
+    }
+    function filterPayments() {
+      renderPaymentRows(true);
     }
     rows.forEach((row) => {
       row.addEventListener("click", () => {
@@ -231,10 +268,30 @@
     statusFilter.addEventListener("change", filterPayments);
     buildingFilter.addEventListener("change", filterPayments);
     dateFilter.addEventListener("change", filterPayments);
-    document.getElementById("receiptBtn").addEventListener("click", () => {
-      actionMessage.textContent = "Receipt sent.";
+    prevPaymentsBtn.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPaymentRows(false);
+      }
     });
-    function updatePaymentStatus(newStatus) {
+    nextPaymentsBtn.addEventListener("click", () => {
+      const pageCount = Math.max(1, Math.ceil(matchingPaymentRows().length / pageSize));
+      if (currentPage < pageCount - 1) {
+        currentPage++;
+        renderPaymentRows(false);
+      }
+    });
+    document.getElementById("receiptBtn").addEventListener("click", () => {
+      if (!selectedPaymentId || !paymentData[selectedPaymentId]) {
+        actionMessage.textContent = "Choose a payment first.";
+        return;
+      }
+      const payment = paymentData[selectedPaymentId];
+      const receiptNote = `Receipt prepared for ${payment.resident} (${payment.phone || "no email"}) on ${new Date().toLocaleDateString()}.`;
+      notesBox.value = [payment.notes, receiptNote].filter(Boolean).join("\n");
+      updatePaymentStatus(payment.status, "Receipt note saved.");
+    });
+    function updatePaymentStatus(newStatus, successMessage) {
       if (!selectedPaymentId || !paymentData[selectedPaymentId]) {
         actionMessage.textContent = "Choose a payment first.";
         return;
@@ -260,8 +317,8 @@
             row.cells[4].textContent = newStatus;
           }
           loadPaymentDetails(selectedPaymentId);
-          filterPayments();
-          actionMessage.textContent = data.message || "Payment updated.";
+          renderPaymentRows(false);
+          actionMessage.textContent = successMessage || data.message || "Payment updated.";
         })
         .catch(() => {
           actionMessage.textContent = "Could not update payment.";
@@ -273,6 +330,7 @@
     document.getElementById("resolveBtn").addEventListener("click", () => {
       updatePaymentStatus("Resolved");
     });
+    renderPaymentRows(false);
   </script>
 </body>
 </html>
