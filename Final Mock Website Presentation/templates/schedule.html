@@ -31,6 +31,7 @@
 
       <div class="header-right">
         <div class="role-indicator" id="roleIndicator">{{ role_label }}</div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
         <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
       </div>
     </header>
