@@ -49,9 +49,9 @@
         <h1>Maintenance Request</h1>
       </div>
       <div class="header-right">
-        <button class="profile-btn" type="button" aria-label="Profile"></button>
-        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
         <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
       </div>
     </header>
 
