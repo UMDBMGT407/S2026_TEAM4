@@ -56,9 +56,9 @@
         <h1>Pay Rent</h1>
       </div>
       <div class="header-right">
-        <button class="profile-btn" type="button" aria-label="Profile"></button>
-        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
         <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
       </div>
     </header>
 
@@ -120,7 +120,16 @@
           </div>
         </div>
 
-        {% if can_pay_rent %}
+        {% if has_pending_rent_payment %}
+        <div class="checkout-empty-state pending-payment-alert">
+          <h3>Payment Pending Admin Review</h3>
+          <p>
+            Payment {{ pending_rent_payment.payment_code }} for
+            {{ pending_rent_payment.amount_display }} is already pending.
+            Please wait for admin review before submitting another payment.
+          </p>
+        </div>
+        {% elif can_pay_rent %}
         <div class="payment-type-options" role="radiogroup" aria-label="Payment type">
           <label class="payment-type-option active" id="one-time-option">
             <input type="radio" name="rent-payment-type" value="one_time" checked>
@@ -146,9 +155,9 @@
               <option value="Card">Card through secure checkout</option>
             </select>
           </label>
-          <label for="monthly-payment-day">
+          <label for="monthly-payment-day" id="monthly-payment-day-field" hidden>
             <span>Monthly Payment Day</span>
-            <select id="monthly-payment-day">
+            <select id="monthly-payment-day" disabled>
               <option value="1">1st of each month</option>
               <option value="5">5th of each month</option>
               <option value="10">10th of each month</option>
@@ -163,7 +172,7 @@
 
         <div class="checkout-actions">
           <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
-          <button class="submit-payment-button" type="button" id="submit-payment-button" hidden>
+          <button class="submit-payment-button" type="button" id="submit-payment-button">
             Submit Payment
           </button>
         </div>
@@ -229,16 +238,32 @@
       const closeHistoryBtn = document.getElementById("close-history-button");
       const historyBackdrop = document.getElementById("payment-history-backdrop");
       const paymentTypeRadios = document.querySelectorAll('input[name="rent-payment-type"]');
+      const checkoutFields = document.querySelector(".checkout-fields");
+      const monthlyPaymentDayField = document.getElementById("monthly-payment-day-field");
+      const monthlyPaymentDay = document.getElementById("monthly-payment-day");
 
       function updatePaymentTypeCards() {
+        const selectedPaymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+        const isRecurring = selectedPaymentType && selectedPaymentType.value === "recurring";
         paymentTypeRadios.forEach((radio) => {
           radio.closest(".payment-type-option").classList.toggle("active", radio.checked);
         });
+        if (monthlyPaymentDayField) {
+          monthlyPaymentDayField.hidden = !isRecurring;
+          monthlyPaymentDayField.setAttribute("aria-hidden", String(!isRecurring));
+        }
+        if (monthlyPaymentDay) {
+          monthlyPaymentDay.disabled = !isRecurring;
+        }
+        if (checkoutFields) {
+          checkoutFields.classList.toggle("recurring-active", Boolean(isRecurring));
+        }
       }
 
       paymentTypeRadios.forEach((radio) => {
         radio.addEventListener("change", updatePaymentTypeCards);
       });
+      updatePaymentTypeCards();
 
       if (cancelBtn) {
         cancelBtn.addEventListener("click", function () {
@@ -283,20 +308,30 @@
           const authorize = document.getElementById("authorize-rent-payment");
           const method = document.getElementById("payment-method-card-bank");
           const paymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+          const isRecurring = paymentType && paymentType.value === "recurring";
 
           if (!authorize || !authorize.checked) {
             alert("Please authorize this payment setup first.");
             return;
           }
 
-          const label = paymentType && paymentType.value === "recurring" ? "recurring payment" : "one-time payment";
-          const ok = confirm(`Confirm ${label} submission?`);
+          const label = isRecurring ? "recurring payment" : "one-time payment";
+          const dayLabel = monthlyPaymentDay && monthlyPaymentDay.selectedOptions.length
+            ? monthlyPaymentDay.selectedOptions[0].textContent
+            : "";
+          const confirmText = isRecurring
+            ? `Confirm recurring payment setup for the ${dayLabel}?`
+            : "Confirm one-time payment submission?";
+          const ok = confirm(confirmText);
           if (!ok) return;
 
           const fd = new FormData();
           fd.append("method", method ? method.value : "Bank Transfer");
           fd.append("account_to_pay", label);
-          fd.append("last4", "0000");
+          fd.append("payment_type", isRecurring ? "recurring" : "one_time");
+          if (isRecurring && monthlyPaymentDay) {
+            fd.append("monthly_payment_day", monthlyPaymentDay.value);
+          }
           fd.append("billing_zip", "00000");
           fd.append("billing_address", "Secure checkout");
 
