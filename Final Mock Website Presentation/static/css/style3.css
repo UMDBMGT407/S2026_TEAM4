@@ -327,15 +327,28 @@ body {
 .schedule-actions {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 16px;
   margin-top: 15px;
 }
 
 .back-btn,
 .print-btn {
   border: none;
-  padding: 10px 16px;
+  min-width: 185px;
+  min-height: 48px;
+  padding: 10px 18px;
   border-radius: 8px;
   background: white;
+  color: #111111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
 }
 
