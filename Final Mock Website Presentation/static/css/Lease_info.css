@@ -267,7 +267,7 @@ body {
   background: #c0c0c0;
   opacity: 0.85;
   width: 1074px;
-  height: 280px;
+  height: 334px;
   position: absolute;
   left: 301px;
   top: 600px;
@@ -284,7 +284,7 @@ body {
   height: 60px;
   position: absolute;
   left: 331px;
-  top: 918px;
+  top: 972px;
 }
 .cancel {
   color: #000000;
@@ -507,6 +507,20 @@ body {
   position: absolute;
   left: 341px;
   top: 826px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.frame-12 {
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 44px;
+  position: absolute;
+  left: 341px;
+  top: 880px;
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 .document-cell {
