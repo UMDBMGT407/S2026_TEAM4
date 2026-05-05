@@ -71,13 +71,6 @@ button {
   align-items: center;
   gap: 18px;
 }
-.profile-btn {
-  width: 80px;
-  height: 38px;
-  background: #757575;
-  border: none;
-  border-radius: 999px;
-}
 .logout-btn {
   background: transparent;
   border: none;
