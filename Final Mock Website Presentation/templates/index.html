@@ -21,14 +21,14 @@
             >
           </div>
 
-          <div class="container mt-5">
+          <div class="container mt-5 login-panel">
             <h2 class="mb-4 text-center">Login</h2>
 
             {% if error %}
               <div class="alert alert-danger mx-auto" style="max-width: 420px;">{{ error }}</div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('login') }}" class="mx-auto" style="max-width: 420px;">
+            <form method="POST" action="{{ url_for('login') }}" class="mx-auto auth-form active" id="loginForm" style="max-width: 420px;">
               <input type="hidden" name="next" value="{{ next_page or '' }}">
               <div class="form-group mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -43,6 +43,9 @@
               <div class="d-grid">
                 <button type="submit" class="btn btn-primary">Login</button>
               </div>
+              <div class="text-center mt-3">
+                <button type="button" class="auth-switch" data-show="registerForm">Create an account to apply</button>
+              </div>
             </form>
 
             <div class="text-center mt-3">
@@ -51,15 +54,13 @@
               </a>
             </div>
 
-            <hr class="my-4">
-
-            <div class="mx-auto" style="max-width: 420px;">
+            <div class="mx-auto auth-form" id="registerForm" style="max-width: 420px;">
               <h3 class="h5 text-center mb-3">Create Prospective Resident Account</h3>
               <form method="POST" action="{{ url_for('prospect_register') }}">
                 <input type="hidden" name="next" value="apply">
                 <div class="form-group mb-3">
                   <label for="registerName" class="form-label">Name</label>
-                  <input id="registerName" type="text" class="form-control" name="name" required>
+                  <input id="registerName" type="text" class="form-control" name="name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
                 </div>
                 <div class="form-group mb-3">
                   <label for="registerEmail" class="form-label">Email</label>
@@ -72,6 +73,9 @@
                 <div class="d-grid">
                   <button type="submit" class="btn btn-dark">Create Account &amp; Apply</button>
                 </div>
+                <div class="text-center mt-3">
+                  <button type="button" class="auth-switch" data-show="loginForm">Back to login</button>
+                </div>
               </form>
             </div>
           </div>
@@ -79,5 +83,15 @@
       </div>
     </div>
   </main>
+  <script>
+    document.querySelectorAll(".auth-switch").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var targetId = button.getAttribute("data-show");
+        document.querySelectorAll(".auth-form").forEach(function (form) {
+          form.classList.toggle("active", form.id === targetId);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
