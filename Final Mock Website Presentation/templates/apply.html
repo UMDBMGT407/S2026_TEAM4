@@ -80,7 +80,7 @@
           <div class="rectangle-9">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name" required>
+              <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
               </div>
             </form>
           </div>
@@ -113,14 +113,14 @@
           <div class="rectangle-first-name">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name" required>
+              <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
               </div>
             </form>
           </div>
           <div class="rectangle-last-name">
             <form>
               <div class="mb-3">
-              <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name" required>
+              <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
               </div>
             </form>
           </div>
@@ -181,6 +181,14 @@
   
   <script>
     var APPLY_SUBMIT_URL = {{ url_for('apply_submit') | tojson }};
+    var MAX_APPLICATION_UPLOAD_BYTES = 900 * 1024;
+
+    function formatFileSize(bytes) {
+      if (!bytes && bytes !== 0) return 'unknown size';
+      if (bytes < 1024) return bytes + ' bytes';
+      if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
     (function () {
       function wireUpload(buttonId, inputId, labelPrefix) {
         var btn = document.getElementById(buttonId);
@@ -233,7 +241,9 @@
           }
 
           needText('first-name', 'First Name');
+          needValid('first-name', 'First Name (letters only)');
           needText('last-name', 'Last Name');
+          needValid('last-name', 'Last Name (letters only)');
           needText('email', 'Email');
           var emailEl = document.getElementById('email');
           if (emailEl && String(emailEl.value || '').trim() && typeof emailEl.checkValidity === 'function' && !emailEl.checkValidity()) {
@@ -251,6 +261,7 @@
           }
           needText('move-in-date', 'Move-In Date');
           needText('emergency-contact-name', 'Emergency Contact Name');
+          needValid('emergency-contact-name', 'Emergency Contact Name (letters only)');
           needText('emergency-contact-phone', 'Emergency Contact Phone');
           needValid('emergency-contact-phone', 'Emergency Contact Phone (10 digits)');
 
@@ -258,11 +269,32 @@
           if (!idUpload || !idUpload.files || idUpload.files.length === 0) {
             missing.push('Upload ID');
           }
+          var docsInput = document.getElementById('upload-doc-file');
 
           if (missing.length > 0) {
             alert(
               'Please complete all required fields before submitting:\n\n• ' +
                 missing.join('\n• ')
+            );
+            return false;
+          }
+
+          var uploadBytes = 0;
+          var uploadFiles = [];
+          if (idUpload && idUpload.files && idUpload.files.length) {
+            uploadFiles = uploadFiles.concat(Array.from(idUpload.files));
+          }
+          if (docsInput && docsInput.files && docsInput.files.length) {
+            uploadFiles = uploadFiles.concat(Array.from(docsInput.files));
+          }
+          uploadFiles.forEach(function (file) {
+            uploadBytes += file.size || 0;
+          });
+          if (uploadBytes > MAX_APPLICATION_UPLOAD_BYTES) {
+            alert(
+              'Your upload files are too large for the Smith server.\n\n' +
+                'Selected upload size: ' + formatFileSize(uploadBytes) + '\n' +
+                'Please use smaller files under 900 KB total, then submit again.'
             );
             return false;
           }
@@ -281,7 +313,6 @@
           var notesEl = document.getElementById('notes');
           fd.append('notes', notesEl ? String(notesEl.value || '').trim() : '');
           fd.append('id_upload', idUpload.files[0]);
-          var docsInput = document.getElementById('upload-doc-file');
           if (docsInput && docsInput.files && docsInput.files.length) {
             for (var di = 0; di < docsInput.files.length; di++) {
               fd.append('supporting_docs', docsInput.files[di]);
@@ -295,7 +326,18 @@
             credentials: 'same-origin',
           })
             .then(function (res) {
-              return res.json().then(function (data) {
+              return res.text().then(function (text) {
+                var data = {};
+                try {
+                  data = text ? JSON.parse(text) : {};
+                } catch (_error) {
+                  data = {
+                    error:
+                      res.status === 413
+                        ? 'Upload files are too large for the Smith server. Please use smaller files under 900 KB total.'
+                        : 'The server returned an unexpected response. Try a smaller upload file or check the Flask error log.',
+                  };
+                }
                 return { res: res, data: data };
               });
             })
