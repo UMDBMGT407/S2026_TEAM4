@@ -1,4 +1,5 @@
 import os
+import re
 import secrets
 import uuid
 from datetime import date, datetime, timedelta
@@ -31,9 +32,9 @@ PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
 
 # MySQL configuration
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Iliketocode123!'
-app.config['MYSQL_DB'] = '407_courtyards'
+app.config['MYSQL_USER'] = 'bmgts101t04'
+app.config['MYSQL_PASSWORD'] = 'DU_Tmd3055613'
+app.config['MYSQL_DB'] = 'bmgts101t04_407_courtyards'
 mysql = MySQL(app)
 
 login_manager = LoginManager()
@@ -57,6 +58,8 @@ ROLE_LABELS = {
     "prospect": "Prospect",
 }
 ROLE_OPTIONS = ("admin", "resident", "staff", "prospect")
+NAME_RE = re.compile(r"^[A-Za-z][A-Za-z .'-]*$")
+MAX_APPLICATION_UPLOAD_BYTES = 900 * 1024
 
 
 def canonical_role(role):
@@ -73,6 +76,11 @@ def canonical_role(role):
         if key.lower() == lower:
             return key
     return r
+
+
+def valid_person_name(value):
+    """Allow real names while rejecting numeric-only or symbol-heavy input."""
+    return bool(NAME_RE.fullmatch((value or "").strip()))
 
 
 USER_DEPENDENCIES = (
@@ -1386,6 +1394,15 @@ def prospect_register():
             ),
             400,
         )
+    if not valid_person_name(name):
+        return (
+            render_template(
+                "index.html",
+                error="Name can only include letters, spaces, hyphens, apostrophes, or periods.",
+                next_page=next_page,
+            ),
+            400,
+        )
     if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
         return (
             render_template(
@@ -1484,6 +1501,8 @@ def users():
 
     if not all([name, email, password, role]):
         return jsonify({"error": "All fields are required."}), 400
+    if not valid_person_name(name):
+        return jsonify({"error": "Name can only include letters, spaces, hyphens, apostrophes, or periods."}), 400
 
     if role not in ROLE_OPTIONS:
         return jsonify({"error": "Please choose a valid role."}), 400
@@ -2072,8 +2091,12 @@ def _apply_validation_errors(form, files):
 
     if not first:
         errors.append("First Name")
+    elif not valid_person_name(first):
+        errors.append("First Name can only include letters, spaces, hyphens, apostrophes, or periods")
     if not last:
         errors.append("Last Name")
+    elif not valid_person_name(last):
+        errors.append("Last Name can only include letters, spaces, hyphens, apostrophes, or periods")
     if not email:
         errors.append("Email")
     elif "@" not in email or "." not in email.rsplit("@", 1)[-1]:
@@ -2101,6 +2124,8 @@ def _apply_validation_errors(form, files):
             errors.append("Move-In Date must be a valid date")
     if not emergency_name:
         errors.append("Emergency Contact Name")
+    elif not valid_person_name(emergency_name):
+        errors.append("Emergency Contact Name can only include letters, spaces, hyphens, apostrophes, or periods")
     if not emergency_phone:
         errors.append("Emergency Contact Phone")
     elif not emergency_phone.isdigit() or len(emergency_phone) != 10:
@@ -2195,6 +2220,19 @@ def _applications_insert(cursor, app_columns, values_by_key):
 
 @app.route("/apply/submit", methods=["POST"])
 def apply_submit():
+    if request.content_length and request.content_length > MAX_APPLICATION_UPLOAD_BYTES:
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "Upload files are too large for the Smith server. "
+                        "Please use smaller files under 900 KB total."
+                    )
+                }
+            ),
+            413,
+        )
+
     errors = _apply_validation_errors(request.form, request.files)
     if errors:
         return (
