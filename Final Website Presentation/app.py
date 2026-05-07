@@ -2475,6 +2475,8 @@ def deposit():
 def _record_deposit_payment():
     payload = request.get_json(silent=True) or {}
     paypal_order_id = (payload.get("paypal_order_id") or "").strip()
+    if not paypal_order_id:
+        return jsonify({"error": "Please complete PayPal checkout before recording the deposit."}), 400
     cur = mysql.connection.cursor()
     try:
         cur.execute(
@@ -2514,11 +2516,7 @@ def _record_deposit_payment():
                 400,
             )
 
-        note = (
-            f"Deposit completed through PayPal order {paypal_order_id}."
-            if paypal_order_id
-            else "Deposit payment submitted online."
-        )
+        note = "Deposit completed through PayPal checkout."
         cur.execute(
             "UPDATE applications SET status = %s, notes = %s WHERE id = %s",
             ("Deposit Paid", note, application_id),
@@ -2552,12 +2550,13 @@ def _record_deposit_payment():
             "INSERT INTO payments "
             "(payment_code, lease_id, resident_user_id, amount, method, status, "
             "payment_date, confirmation_number, notes) "
-            "VALUES (%s, %s, %s, %s, 'Card', 'Paid', %s, %s, %s)",
+            "VALUES (%s, %s, %s, %s, %s, 'Paid', %s, %s, %s)",
             (
                 payment_code,
                 lease_id,
                 current_user.id,
                 payment_amount,
+                "PayPal",
                 date.today(),
                 confirmation,
                 f"Application deposit for {application_code}. {note}",
