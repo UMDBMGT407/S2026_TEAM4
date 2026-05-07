@@ -369,6 +369,48 @@ body {
   }
 }
 
+@media (max-width: 991px) {
+  .page-shell > .row > .sidebar,
+  .page-shell > .row > .main-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .sidebar {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .sidebar-nav {
+    min-height: auto;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .sidebar-nav a,
+  .nav-link-custom {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+
+  .main-content {
+    padding: 20px 18px 30px;
+  }
+
+  .filters-row,
+  .schedule-management-form {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-row button,
+  .filters-row select,
+  .filters-row input {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .top-header {
     grid-template-columns: 1fr;
