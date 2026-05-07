@@ -266,11 +266,11 @@
       applications.forEach((app) => {
         table.append(`
           <tr>
-            <td>${escapeHtml(app.id)}</td>
-            <td>${escapeHtml(app.name)}</td>
-            <td>${escapeHtml(app.date)}</td>
-            <td>${escapeHtml(app.status)}</td>
-            <td><button class="action-link action-button view-application-btn" type="button" data-app-id="${escapeHtml(app.id)}">View</button></td>
+            <td data-label="App ID">${escapeHtml(app.id)}</td>
+            <td data-label="Name">${escapeHtml(app.name)}</td>
+            <td data-label="Date">${escapeHtml(app.date)}</td>
+            <td data-label="Status">${escapeHtml(app.status)}</td>
+            <td data-label="Action"><button class="action-link action-button view-application-btn" type="button" data-app-id="${escapeHtml(app.id)}">View</button></td>
           </tr>
         `);
       });
@@ -347,11 +347,11 @@
       workOrders.forEach((order) => {
         table.append(`
           <tr>
-            <td>${escapeHtml(order.id)}</td>
-            <td>${escapeHtml(order.unit)}</td>
-            <td>${escapeHtml(order.priority)}</td>
-            <td>${escapeHtml(order.status)}</td>
-            <td><a class="action-link" href="{{ url_for('work_order') }}">View</a></td>
+            <td data-label="WO #">${escapeHtml(order.id)}</td>
+            <td data-label="Unit">${escapeHtml(order.unit)}</td>
+            <td data-label="Priority">${escapeHtml(order.priority)}</td>
+            <td data-label="Status">${escapeHtml(order.status)}</td>
+            <td data-label="Action"><a class="action-link" href="{{ url_for('work_order') }}">View</a></td>
           </tr>
         `);
       });
@@ -381,7 +381,7 @@
       }
 
       users.forEach((user) => {
-        const deleteReason = escapeHtml(user.delete_reason);
+        const deleteReason = user.delete_reason ? "Protected: linked records exist." : "Protected user.";
         const actionMarkup = user.can_delete
           ? `<button type="button" class="btn btn-outline-dark btn-sm edit-user-btn" data-user-id="${user.id}">Edit</button>
              <button type="button" class="btn btn-outline-danger btn-sm delete-user-btn" data-user-id="${user.id}" data-user-name="${escapeHtml(user.name)}">Delete</button>`
@@ -390,11 +390,11 @@
 
         table.append(`
           <tr>
-            <td>${user.id}</td>
-            <td>${escapeHtml(user.name)}</td>
-            <td>${escapeHtml(user.email)}</td>
-            <td>${escapeHtml(user.role)}</td>
-            <td class="user-action-cell">${actionMarkup}</td>
+            <td data-label="ID">${user.id}</td>
+            <td data-label="Name">${escapeHtml(user.name)}</td>
+            <td data-label="Email">${escapeHtml(user.email)}</td>
+            <td data-label="Role">${escapeHtml(user.role)}</td>
+            <td data-label="Actions" class="user-action-cell">${actionMarkup}</td>
           </tr>
         `);
       });
