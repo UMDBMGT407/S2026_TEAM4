@@ -291,11 +291,11 @@
       const tbody = document.getElementById("workOrderQueueBody");
       tbody.innerHTML = filteredOrders.map((order, index) => `
         <tr data-index="${index}" class="queue-row ${index === currentIndex ? "selected-row" : ""}">
-          <td>${order.id}</td>
-          <td>${order.unit}</td>
-          <td>${order.issue}</td>
-          <td>${order.priority}</td>
-          <td>${order.status}</td>
+          <td data-label="WO#">${order.id}</td>
+          <td data-label="Unit">${order.unit}</td>
+          <td data-label="Issue">${order.issue}</td>
+          <td data-label="Priority">${order.priority}</td>
+          <td data-label="Status">${order.status}</td>
         </tr>
       `).join("");
 
