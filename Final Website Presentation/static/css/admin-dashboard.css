@@ -452,6 +452,206 @@ a {
   }
 }
 
+/* Final dashboard table polish: keep compact table labels/buttons readable
+   at presentation widths without allowing awkward letter-by-letter wrapping. */
+.applications-panel .custom-table,
+.work-orders-panel .custom-table,
+.user-management-panel .custom-table {
+  width: 100%;
+}
+
+.applications-panel .custom-table thead th,
+.work-orders-panel .custom-table thead th,
+.user-management-panel .custom-table thead th {
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+.applications-panel .custom-table tbody td,
+.work-orders-panel .custom-table tbody td,
+.user-management-panel .custom-table tbody td {
+  max-width: none;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
+
+.applications-panel .custom-table td:first-child,
+.applications-panel .custom-table th:first-child,
+.applications-panel .custom-table td:nth-child(3),
+.applications-panel .custom-table th:nth-child(3),
+.applications-panel .custom-table td:nth-child(4),
+.applications-panel .custom-table th:nth-child(4),
+.applications-panel .custom-table td:last-child,
+.applications-panel .custom-table th:last-child,
+.work-orders-panel .custom-table td,
+.work-orders-panel .custom-table th,
+.user-management-panel .custom-table td:first-child,
+.user-management-panel .custom-table th:first-child,
+.user-management-panel .custom-table td:nth-child(4),
+.user-management-panel .custom-table th:nth-child(4),
+.user-management-panel .custom-table td:last-child,
+.user-management-panel .custom-table th:last-child {
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+.work-orders-panel .custom-table {
+  table-layout: fixed;
+}
+
+.work-orders-panel .custom-table th,
+.work-orders-panel .custom-table td {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.work-orders-panel .custom-table th:nth-child(1),
+.work-orders-panel .custom-table td:nth-child(1) {
+  width: 18%;
+}
+
+.work-orders-panel .custom-table th:nth-child(2),
+.work-orders-panel .custom-table td:nth-child(2) {
+  width: 14%;
+}
+
+.work-orders-panel .custom-table th:nth-child(3),
+.work-orders-panel .custom-table td:nth-child(3) {
+  width: 20%;
+}
+
+.work-orders-panel .custom-table th:nth-child(4),
+.work-orders-panel .custom-table td:nth-child(4) {
+  width: 27%;
+}
+
+.work-orders-panel .custom-table th:nth-child(5),
+.work-orders-panel .custom-table td:nth-child(5) {
+  width: 21%;
+  text-align: center;
+}
+
+.work-orders-panel .action-link,
+.applications-panel .action-link {
+  min-width: 68px !important;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.user-management-panel .custom-table {
+  table-layout: fixed;
+}
+
+.user-management-panel .custom-table th:nth-child(1),
+.user-management-panel .custom-table td:nth-child(1) {
+  width: 64px;
+}
+
+.user-management-panel .custom-table th:nth-child(2),
+.user-management-panel .custom-table td:nth-child(2) {
+  width: 24%;
+}
+
+.user-management-panel .custom-table th:nth-child(3),
+.user-management-panel .custom-table td:nth-child(3) {
+  width: 32%;
+}
+
+.user-management-panel .custom-table th:nth-child(4),
+.user-management-panel .custom-table td:nth-child(4) {
+  width: 110px;
+}
+
+.user-management-panel .custom-table th:nth-child(5),
+.user-management-panel .custom-table td:nth-child(5) {
+  width: 240px;
+}
+
+.user-action-cell {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 220px;
+  white-space: normal !important;
+}
+
+.user-action-cell .btn {
+  flex: 0 0 auto;
+}
+
+.delete-help-text {
+  flex: 1 1 100%;
+  max-width: 28ch;
+}
+
+@media (max-width: 767px) {
+  .applications-panel .custom-table,
+  .work-orders-panel .custom-table,
+  .user-management-panel .custom-table {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  .applications-panel .custom-table thead,
+  .work-orders-panel .custom-table thead,
+  .user-management-panel .custom-table thead {
+    display: none;
+  }
+
+  .applications-panel .custom-table tbody,
+  .applications-panel .custom-table tbody tr,
+  .applications-panel .custom-table tbody td,
+  .work-orders-panel .custom-table tbody,
+  .work-orders-panel .custom-table tbody tr,
+  .work-orders-panel .custom-table tbody td,
+  .user-management-panel .custom-table tbody,
+  .user-management-panel .custom-table tbody tr,
+  .user-management-panel .custom-table tbody td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .applications-panel .custom-table tbody tr,
+  .work-orders-panel .custom-table tbody tr,
+  .user-management-panel .custom-table tbody tr {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .applications-panel .custom-table tbody td,
+  .work-orders-panel .custom-table tbody td,
+  .user-management-panel .custom-table tbody td {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px;
+    padding: 6px 0;
+    border-radius: 0 !important;
+    white-space: normal !important;
+  }
+
+  .applications-panel .custom-table tbody td::before,
+  .work-orders-panel .custom-table tbody td::before,
+  .user-management-panel .custom-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+  }
+
+  .user-action-cell {
+    display: grid !important;
+    grid-template-columns: 88px minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .user-action-cell .btn,
+  .user-action-cell .delete-help-text {
+    grid-column: 2;
+  }
+}
+
 @media (max-width: 767px) {
   .top-header {
     grid-template-columns: 1fr;
