@@ -11,6 +11,37 @@ body {
     url("../images/background0.png") center / cover no-repeat;
 }
 
+.login-panel {
+  max-width: 560px;
+  padding: 32px 22px 36px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.auth-switch {
+  border: 0;
+  background: transparent;
+  color: #214d7a;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-switch:hover,
+.guest-link:hover {
+  color: #12395d;
+}
+
 .admin-page {
   min-height: 100vh;
   display: grid;
