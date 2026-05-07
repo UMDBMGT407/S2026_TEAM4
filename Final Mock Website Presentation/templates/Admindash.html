@@ -186,7 +186,7 @@
                       <form id="addUserForm" class="user-form">
                         <div class="mb-3">
                           <label class="form-label" for="userName">Name</label>
-                          <input id="userName" name="name" type="text" class="form-control" required />
+                          <input id="userName" name="name" type="text" class="form-control" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required />
                         </div>
                         <div class="mb-3">
                           <label class="form-label" for="userEmail">Email</label>
