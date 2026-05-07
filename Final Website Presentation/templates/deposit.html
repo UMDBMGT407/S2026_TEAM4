@@ -8,8 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/deposit.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture"></script>
-
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture&disable-funding=card,credit"></script>
 
   <style>
    a,
@@ -65,11 +64,6 @@
    .deposit-content-centered .api-settings {
      width: 100%;
      max-width: 420px;
-   }
-   .deposit-content-centered #paypal-button-container {
-     display: flex;
-     flex-wrap: wrap;
-     justify-content: center;
    }
    .deposit-content-centered h6 {
      font-family: "Montserrat-SemiBold", sans-serif;
@@ -146,13 +140,6 @@
             <span>Amount</span>
             <input id="deposit-amount" type="text" value="{{ deposit_amount }}" readonly>
           </label>
-          <label for="deposit-payment-method">
-            <span>Payment Method</span>
-            <select id="deposit-payment-method">
-              <option value="Card">Card through secure checkout</option>
-              <option value="Bank Transfer">Bank account through secure checkout</option>
-            </select>
-          </label>
         </div>
 
         <label class="checkout-authorization" for="authorize-deposit-payment">
@@ -162,9 +149,6 @@
 
         <div class="checkout-actions">
           <a href="{{ url_for('status_page') }}" class="cancel-button">Cancel</a>
-          <button class="submit-deposit-button" type="button" id="submit-deposit-button">
-            Submit Deposit Payment
-          </button>
         </div>
 
         <div id="paypal-deposit-button-container"></div>
@@ -178,107 +162,94 @@
   const DEPOSIT_PAYMENT_AMOUNT = {{ deposit_amount_value | tojson }};
 
   (function () {
-    const submitBtn = document.getElementById("submit-deposit-button");
     const authorize = document.getElementById("authorize-deposit-payment");
     const status = document.getElementById("deposit-status");
+    const paypalContainer = document.getElementById("paypal-deposit-button-container");
 
-    if (!submitBtn) return;
+    if (!paypalContainer) return;
 
-    submitBtn.addEventListener("click", function () {
-      if (!authorize || !authorize.checked) {
+    if (!window.paypal) {
+      if (status) {
+        status.className = "deposit-status-message text-danger";
+        status.textContent = "PayPal checkout could not be loaded. Please refresh and try again.";
+      }
+      return;
+    }
+
+    paypal.Buttons({
+      fundingSource: paypal.FUNDING.PAYPAL,
+      style: {
+        layout: "vertical",
+        color: "gold",
+        shape: "rect",
+        label: "paypal",
+      },
+      onClick: function (_data, actions) {
+        if (!authorize || !authorize.checked) {
+          if (status) {
+            status.className = "deposit-status-message text-danger";
+            status.textContent = "Please authorize this deposit payment first.";
+          }
+          return actions.reject();
+        }
+        return actions.resolve();
+      },
+      createOrder: function (_data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: DEPOSIT_PAYMENT_AMOUNT },
+          }],
+        });
+      },
+      onApprove: function (data, actions) {
+        return actions.order.capture().then(function () {
+          if (status) {
+            status.className = "deposit-status-message";
+            status.textContent = "Recording PayPal deposit payment...";
+          }
+          return fetch(DEPOSIT_PAYMENT_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({
+              paypal_order_id: data.orderID,
+            }),
+          })
+            .then((res) => res.json().then((payload) => ({ res, payload })))
+            .then(({ res, payload }) => {
+              if (!res.ok) {
+                throw new Error(payload.error || "Deposit was captured, but could not be recorded.");
+              }
+              if (status) {
+                status.className = "deposit-status-message text-success";
+                status.textContent = payload.message || "Deposit payment recorded.";
+              }
+              if (payload.redirect) {
+                setTimeout(function () {
+                  window.location.href = payload.redirect;
+                }, 800);
+              }
+            });
+        });
+      },
+      onCancel: function () {
+        if (status) {
+          status.className = "deposit-status-message";
+          status.textContent = "PayPal checkout was cancelled.";
+        }
+      },
+      onError: function () {
         if (status) {
           status.className = "deposit-status-message text-danger";
-          status.textContent = "Please authorize this deposit payment first.";
+          status.textContent = "PayPal checkout could not be completed.";
         }
-        return;
-      }
-
-      submitBtn.disabled = true;
+      },
+    }).render("#paypal-deposit-button-container").catch(function () {
       if (status) {
-        status.className = "deposit-status-message";
-        status.textContent = "Recording deposit payment...";
+        status.className = "deposit-status-message text-danger";
+        status.textContent = "PayPal checkout could not be displayed.";
       }
-
-      fetch(DEPOSIT_PAYMENT_API_URL, {
-        method: "POST",
-        credentials: "same-origin",
-      })
-        .then((res) => res.json().then((data) => ({ res, data })))
-        .then(({ res, data }) => {
-          if (!res.ok) {
-            throw new Error(data.error || "Could not record this deposit payment.");
-          }
-          if (status) {
-            status.className = "deposit-status-message text-success";
-            status.textContent = data.message || "Deposit payment recorded.";
-          }
-          if (data.redirect) {
-            setTimeout(function () {
-              window.location.href = data.redirect;
-            }, 800);
-          }
-        })
-        .catch((error) => {
-          submitBtn.disabled = false;
-          if (status) {
-            status.className = "deposit-status-message text-danger";
-            status.textContent = error.message;
-          }
-        });
     });
-
-    if (window.paypal) {
-      paypal.Buttons({
-        style: {
-          layout: "vertical",
-          color: "gold",
-          shape: "rect",
-          label: "paypal",
-        },
-        createOrder: function (_data, actions) {
-          return actions.order.create({
-            purchase_units: [{
-              amount: { value: DEPOSIT_PAYMENT_AMOUNT },
-            }],
-          });
-        },
-        onApprove: function (data, actions) {
-          return actions.order.capture().then(function () {
-            if (status) {
-              status.className = "deposit-status-message";
-              status.textContent = "Recording PayPal deposit payment...";
-            }
-            return fetch(DEPOSIT_PAYMENT_API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "same-origin",
-              body: JSON.stringify({ paypal_order_id: data.orderID }),
-            })
-              .then((res) => res.json().then((payload) => ({ res, payload })))
-              .then(({ res, payload }) => {
-                if (!res.ok) {
-                  throw new Error(payload.error || "Deposit was captured, but could not be recorded.");
-                }
-                if (status) {
-                  status.className = "deposit-status-message text-success";
-                  status.textContent = payload.message || "Deposit payment recorded.";
-                }
-                if (payload.redirect) {
-                  setTimeout(function () {
-                    window.location.href = payload.redirect;
-                  }, 800);
-                }
-              });
-          });
-        },
-        onError: function () {
-          if (status) {
-            status.className = "deposit-status-message text-danger";
-            status.textContent = "PayPal checkout could not be started.";
-          }
-        },
-      }).render("#paypal-deposit-button-container");
-    }
   })();
   </script>
 </body>
