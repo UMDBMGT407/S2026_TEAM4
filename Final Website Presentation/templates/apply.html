@@ -103,7 +103,7 @@
           </div>
           <div class="application-field field-wide">
             <label for="move-in-date">Move-In Date</label>
-            <input type="date" class="form-control" id="move-in-date" name="move_in_date" required>
+            <input type="date" class="form-control" id="move-in-date" name="move_in_date" min="{{ minimum_move_in_date }}" title="Choose a move-in date at least {{ minimum_move_in_days }} days from today" required>
           </div>
           <div class="application-field field-wide">
             <label for="emergency-contact-name">Emergency Contact Name</label>
@@ -139,6 +139,8 @@
   <script>
     var APPLY_SUBMIT_URL = {{ url_for('apply_submit') | tojson }};
     var MAX_APPLICATION_UPLOAD_BYTES = 900 * 1024;
+    var MINIMUM_MOVE_IN_DATE = {{ minimum_move_in_date | tojson }};
+    var MINIMUM_MOVE_IN_DAYS = {{ minimum_move_in_days | tojson }};
 
     function formatFileSize(bytes) {
       if (!bytes && bytes !== 0) return 'unknown size';
@@ -147,6 +149,11 @@
       return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
     (function () {
+      var moveInEl = document.getElementById('move-in-date');
+      if (moveInEl && MINIMUM_MOVE_IN_DATE) {
+        moveInEl.min = MINIMUM_MOVE_IN_DATE;
+      }
+
       function wireUpload(buttonId, inputId, labelPrefix) {
         var btn = document.getElementById(buttonId);
         var input = document.getElementById(inputId);
@@ -217,6 +224,9 @@
             missing.push('Preferred Floor plan/Unit');
           }
           needText('move-in-date', 'Move-In Date');
+          if (moveInEl && moveInEl.value && MINIMUM_MOVE_IN_DATE && moveInEl.value < MINIMUM_MOVE_IN_DATE) {
+            missing.push('Move-In Date (choose a date at least ' + MINIMUM_MOVE_IN_DAYS + ' days from today)');
+          }
           needText('emergency-contact-name', 'Emergency Contact Name');
           needValid('emergency-contact-name', 'Emergency Contact Name (letters only)');
           needText('emergency-contact-phone', 'Emergency Contact Phone');
