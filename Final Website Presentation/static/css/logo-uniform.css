@@ -313,3 +313,84 @@ body.login-page {
     font-size: 0.82rem !important;
   }
 }
+
+/* Project-wide table and button polish: prevent short labels from splitting
+   into letter-by-letter text while still letting long notes/emails wrap. */
+table,
+table th,
+table td {
+  word-break: normal !important;
+  hyphens: none !important;
+}
+
+table thead th,
+table td::before,
+.action-link,
+.action-button,
+.card-link,
+.panel-footer-btn,
+.table-nav button,
+.pager-btn,
+.view-all-btn,
+.back-btn,
+.btn,
+button {
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+table tbody td {
+  overflow-wrap: break-word !important;
+}
+
+table tbody td:last-child {
+  overflow-wrap: normal !important;
+}
+
+.delete-help-text,
+.empty-table-state,
+.panel-subtitle,
+.detail-card,
+.details-panel p,
+.quick-summary-list li {
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
+
+.action-link,
+.action-button,
+.card-link,
+.panel-footer-btn {
+  min-width: max-content !important;
+}
+
+@media (max-width: 767px) {
+  .admin-page .custom-table {
+    min-width: 0 !important;
+  }
+
+  .admin-page .custom-table thead {
+    display: none !important;
+  }
+
+  .admin-page .custom-table tbody,
+  .admin-page .custom-table tbody tr,
+  .admin-page .custom-table tbody td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .admin-page .custom-table tbody td {
+    display: grid !important;
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    white-space: normal !important;
+  }
+
+  .admin-page .custom-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+  }
+}
