@@ -433,8 +433,10 @@
 
 .pr-03-deposit-payment-process-1-4 {
   background: transparent;
+  height: auto;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: auto;
   padding-top: 93px;
   position: relative;
 }
@@ -601,8 +603,7 @@
   margin-top: 22px;
 }
 
-.checkout-actions .cancel-button,
-.checkout-actions .submit-deposit-button {
+.checkout-actions .cancel-button {
   background: rgba(255, 255, 255, 0.78);
   border-radius: 6px;
   color: #000000;
@@ -612,19 +613,9 @@
   padding: 12px 18px;
 }
 
-.checkout-actions .submit-deposit-button {
-  background: #4f6655;
-  color: #ffffff;
-}
-
-.checkout-actions .submit-deposit-button:disabled {
-  cursor: wait;
-  opacity: 0.7;
-}
-
 #paypal-deposit-button-container {
-  margin-top: 16px;
-  max-width: 720px;
+  margin-top: 18px;
+  max-width: 420px;
 }
 
 .deposit-status-message {
