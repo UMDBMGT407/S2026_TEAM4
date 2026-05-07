@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courtyards Admin Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}" />
+</head>
+<body>
+  <div class="admin-page">
+    <header class="top-header">
+      <div class="header-left">
+        <img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" />
+      </div>
+      <div class="header-center">
+        <h1>Admin Dashboard</h1>
+      </div>
+      <div class="header-right">
+        <div class="role-indicator">Admin</div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+      </div>
+    </header>
+
+    <div class="container-fluid page-shell">
+      <div class="row">
+        <aside class="col-lg-2 col-md-3 sidebar">
+          <nav class="sidebar-nav">
+            <a class="nav-link-custom active" href="{{ url_for('home') }}">Dashboard</a>
+            <a class="nav-link-custom" href="#applications-section">Applications</a>
+            <a class="nav-link-custom" href="{{ url_for('payments') }}">Payments</a>
+            <a class="nav-link-custom" href="{{ url_for('work_order') }}">Work Orders</a>
+            <a class="nav-link-custom" href="{{ url_for('schedule') }}">Schedule</a>
+            <a class="nav-link-custom" href="#admin-tools-section">Admin Tools</a>
+            <a class="nav-link-custom" href="#users-section">Users</a>
+          </nav>
+        </aside>
+
+        <main class="col-lg-10 col-md-9 main-content">
+          <section class="row g-4 summary-row">
+            <div class="col-xl-3 col-sm-6">
+              <div class="summary-card">
+                <h2>Scheduled Today</h2>
+                <p class="metric" id="scheduledTodayValue">{{ dashboard_summary.scheduled_today }}</p>
+                <a class="card-link" href="{{ url_for('schedule') }}">View Schedule</a>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <div class="summary-card">
+                <h2>New Applications</h2>
+                <p class="metric" id="newApplicationsValue">{{ dashboard_summary.new_applications }}</p>
+                <button class="card-link action-button" id="reviewQueueBtn" type="button">Review Queue</button>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <div class="summary-card">
+                <h2>Overdue Payments</h2>
+                <p class="metric" id="overduePaymentsValue">{{ dashboard_summary.overdue_payments }}</p>
+                <a class="card-link" href="{{ url_for('payments') }}">View Accounts</a>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <div class="summary-card">
+                <h2>Open Work Orders</h2>
+                <p class="metric" id="openWorkOrdersValue">{{ dashboard_summary.open_work_orders }}</p>
+                <a class="card-link" href="{{ url_for('work_order') }}">View Work Orders</a>
+              </div>
+            </div>
+          </section>
+
+          <section class="row g-4 panel-row">
+            <div class="col-xl-7">
+              <div class="panel-box applications-panel" id="applications-section">
+                <div class="panel-header">
+                  <h2>Applications Queue</h2>
+                </div>
+                <div class="table-responsive">
+                  <table class="table custom-table align-middle mb-3">
+                    <thead>
+                      <tr>
+                        <th>App ID</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="applicationsTableBody"></tbody>
+                  </table>
+                </div>
+                <div class="panel-footer-btn-wrap">
+                  <button class="panel-footer-btn action-button" id="reviewApplicationsBtn" type="button">Review Applications</button>
+                </div>
+                <div class="application-detail-card" id="applicationDetailCard" hidden>
+                  <h3>Application Details</h3>
+                  <p>Select an application to review applicant details.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-5">
+              <div class="panel-box work-orders-panel" id="work-orders-section">
+                <div class="panel-header">
+                  <h2>Work Orders</h2>
+                </div>
+                <div class="table-responsive">
+                  <table class="table custom-table align-middle mb-3">
+                    <thead>
+                      <tr>
+                        <th>WO #</th>
+                        <th>Unit</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="workOrdersTableBody"></tbody>
+                  </table>
+                </div>
+                <div class="panel-footer-btn-wrap">
+                  <a class="panel-footer-btn" href="{{ url_for('work_order') }}">Open Work Orders</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mt-4">
+            <div class="col-12">
+              <div class="quick-summary-box" id="quick-summary-section">
+                <h2>Quick Summaries</h2>
+                <ul class="quick-summary-list" id="quickSummaryList"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mt-4">
+            <div class="col-12">
+              <div class="panel-box admin-tools-panel" id="admin-tools-section">
+                <div class="panel-header">
+                  <div>
+                    <h2>Admin Tools</h2>
+                    <p class="panel-subtitle">Quick actions for applications, work orders, staff schedules, payments, and users.</p>
+                  </div>
+                </div>
+                <div class="admin-tools-actions">
+                  <a class="btn btn-dark" href="#applications-section">Review Applications</a>
+                  <a class="btn btn-outline-dark" href="{{ url_for('work_order') }}">Create Manual Work Order</a>
+                  <a class="btn btn-outline-dark" href="{{ url_for('schedule') }}">Manage Staff Schedule</a>
+                  <a class="btn btn-outline-dark" href="{{ url_for('payments') }}">Review Resident Payments</a>
+                  <a class="btn btn-outline-dark" href="#users-section">Manage Users</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mt-4">
+            <div class="col-12">
+              <div class="panel-box user-management-panel" id="users-section">
+                <div class="panel-header panel-header-split">
+                  <div>
+                    <h2>User Management System</h2>
+                    <p class="panel-subtitle">Add accounts, review emails, and remove unused users without leaving the dashboard.</p>
+                  </div>
+                  <span class="summary-chip" id="userCountChip">0 users</span>
+                </div>
+
+                <div id="userFeedback" class="user-feedback" hidden></div>
+
+                <div class="row g-4">
+                  <div class="col-xl-4">
+                    <div class="form-card">
+                      <h3>Add New User</h3>
+                      <form id="addUserForm" class="user-form">
+                        <div class="mb-3">
+                          <label class="form-label" for="userName">Name</label>
+                          <input id="userName" name="name" type="text" class="form-control" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label" for="userEmail">Email</label>
+                          <input id="userEmail" name="email" type="email" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label" for="userPassword">Password</label>
+                          <input id="userPassword" name="password" type="password" class="form-control" placeholder="Create a temporary password" required minlength="6" autocomplete="new-password" />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label" for="userRole">Role</label>
+                          <select id="userRole" name="role" class="form-select" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Resident">Resident</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Prospect">Prospect</option>
+                          </select>
+                        </div>
+                        <button type="submit" class="btn btn-dark submit-user-btn">Add User</button>
+                      </form>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-8">
+                    <div class="table-responsive">
+                      <table class="table custom-table align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="userTable"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    const applications = {{ dashboard_applications | tojson }};
+    const workOrders = {{ dashboard_work_orders | tojson }};
+    const quickSummaries = {{ quick_summaries | tojson }};
+
+    const usersApiUrl = "{{ url_for('users') }}";
+    const applicationDecisionUrlTemplate = {{ url_for('application_decision', application_code='__CODE__') | tojson }};
+    const applicationRenewalUrlTemplate = {{ url_for('application_renewal_cycle', application_code='__CODE__') | tojson }};
+
+    function escapeHtml(value) {
+      return $("<div>").text(value || "").html();
+    }
+
+    function showFeedback(message, type) {
+      const feedback = $("#userFeedback");
+      feedback
+        .removeClass("feedback-success feedback-error")
+        .addClass(type === "error" ? "feedback-error" : "feedback-success")
+        .text(message)
+        .prop("hidden", false);
+    }
+
+    function loadApplications() {
+      const table = $("#applicationsTableBody");
+      table.empty();
+
+      applications.forEach((app) => {
+        table.append(`
+          <tr>
+            <td>${escapeHtml(app.id)}</td>
+            <td>${escapeHtml(app.name)}</td>
+            <td>${escapeHtml(app.date)}</td>
+            <td>${escapeHtml(app.status)}</td>
+            <td><button class="action-link action-button view-application-btn" type="button" data-app-id="${escapeHtml(app.id)}">View</button></td>
+          </tr>
+        `);
+      });
+    }
+
+    function showApplicationDetails(appId) {
+      const app = applications.find((item) => item.id === appId);
+      if (!app) return;
+      const approveLabel = app.isRenewal ? "Approve Renewal" : "Approve";
+      const denyLabel = app.isRenewal ? "Deny Renewal" : "Deny";
+      const renewalCycleButton = app.isRenewal
+        ? ""
+        : `<button class="btn btn-outline-dark btn-sm application-renewal-btn" type="button" data-app-id="${escapeHtml(app.id)}">Create Renewal Cycle</button>`;
+      const documentMarkup = app.documents && app.documents.length
+        ? app.documents.map((doc) => {
+            if (doc.url) {
+              return `<li><a href="${escapeHtml(doc.url)}" target="_blank" rel="noopener">${escapeHtml(doc.label)}</a></li>`;
+            }
+            return `<li>${escapeHtml(doc.label)}: ${escapeHtml(doc.path)}</li>`;
+          }).join("")
+        : "<li>No uploaded documents found.</li>";
+      $("#applicationDetailCard")
+        .prop("hidden", false)
+        .html(`
+          <h3>${escapeHtml(app.id)} | ${escapeHtml(app.status)}</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> ${escapeHtml(app.name)}</p>
+              <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
+              <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
+              <p><strong>Student ID:</strong> ${escapeHtml(app.studentId)}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Floor Plan:</strong> ${escapeHtml(app.floorPlan)}</p>
+              <p><strong>Move-In:</strong> ${escapeHtml(app.moveIn)}</p>
+              <p><strong>Emergency Contact:</strong> ${escapeHtml(app.emergencyName)}</p>
+              <p><strong>Emergency Phone:</strong> ${escapeHtml(app.emergencyPhone)}</p>
+            </div>
+          </div>
+          <p><strong>Submitted:</strong> ${escapeHtml(app.date)}</p>
+          <p><strong>Type:</strong> ${app.isRenewal ? "Lease Renewal Request" : "New Application"}</p>
+          <p><strong>Notes:</strong> ${escapeHtml(app.notes || "No notes provided.")}</p>
+          <p><strong>Uploaded Documents:</strong></p>
+          <ul>${documentMarkup}</ul>
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button class="btn btn-success btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Approved">${approveLabel}</button>
+            <button class="btn btn-danger btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Denied">${denyLabel}</button>
+            <button class="btn btn-outline-secondary btn-sm application-decision-btn" type="button" data-app-id="${escapeHtml(app.id)}" data-status="Pending">Mark Pending</button>
+            ${renewalCycleButton}
+          </div>
+        `);
+    }
+
+    function reviewFirstApplication() {
+      if (!applications.length) {
+        $("#applicationDetailCard")
+          .prop("hidden", false)
+          .html(`
+            <h3>Application Details</h3>
+            <p>No applications are ready to review.</p>
+          `);
+      } else {
+        showApplicationDetails(applications[0].id);
+      }
+      document
+        .getElementById("applications-section")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function loadWorkOrders() {
+      const table = $("#workOrdersTableBody");
+      table.empty();
+
+      workOrders.forEach((order) => {
+        table.append(`
+          <tr>
+            <td>${escapeHtml(order.id)}</td>
+            <td>${escapeHtml(order.unit)}</td>
+            <td>${escapeHtml(order.priority)}</td>
+            <td>${escapeHtml(order.status)}</td>
+            <td><a class="action-link" href="{{ url_for('work_order') }}">View</a></td>
+          </tr>
+        `);
+      });
+    }
+
+    function loadQuickSummary() {
+      const list = $("#quickSummaryList");
+      list.empty();
+
+      quickSummaries.forEach((item) => {
+        list.append(`<li>${escapeHtml(item)}</li>`);
+      });
+    }
+
+    function renderUserTable(users) {
+      const table = $("#userTable");
+      table.empty();
+
+      if (!users.length) {
+        table.append(`
+          <tr>
+            <td colspan="5" class="empty-table-state">No users found yet.</td>
+          </tr>
+        `);
+        $("#userCountChip").text("0 users");
+        return;
+      }
+
+      users.forEach((user) => {
+        const deleteReason = escapeHtml(user.delete_reason);
+        const actionMarkup = user.can_delete
+          ? `<button type="button" class="btn btn-outline-dark btn-sm edit-user-btn" data-user-id="${user.id}">Edit</button>
+             <button type="button" class="btn btn-outline-danger btn-sm delete-user-btn" data-user-id="${user.id}" data-user-name="${escapeHtml(user.name)}">Delete</button>`
+          : `<button type="button" class="btn btn-outline-dark btn-sm edit-user-btn" data-user-id="${user.id}">Edit</button>
+             <button type="button" class="btn btn-secondary btn-sm" disabled>Protected</button><div class="delete-help-text">${deleteReason}</div>`;
+
+        table.append(`
+          <tr>
+            <td>${user.id}</td>
+            <td>${escapeHtml(user.name)}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td>${escapeHtml(user.role)}</td>
+            <td class="user-action-cell">${actionMarkup}</td>
+          </tr>
+        `);
+      });
+
+      $("#userCountChip").text(`${users.length} users`);
+    }
+
+    let cachedUsers = [];
+
+    function loadUsers() {
+      $.getJSON(usersApiUrl)
+        .done((users) => {
+          cachedUsers = users;
+          renderUserTable(users);
+        })
+        .fail((xhr) => {
+          const message = xhr.responseJSON?.error || "Unable to load users right now.";
+          showFeedback(message, "error");
+        });
+    }
+
+    $("#addUserForm").on("submit", function (event) {
+      event.preventDefault();
+
+      const payload = {
+        name: $("#userName").val().trim(),
+        email: $("#userEmail").val().trim(),
+        password: $("#userPassword").val().trim(),
+        role: $("#userRole").val()
+      };
+
+      $.ajax({
+        url: usersApiUrl,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(payload)
+      })
+        .done((response) => {
+          $("#addUserForm")[0].reset();
+          showFeedback(response.message, "success");
+          loadUsers();
+        })
+        .fail((xhr) => {
+          const message = xhr.responseJSON?.error || "Unable to add the user.";
+          showFeedback(message, "error");
+        });
+    });
+
+    $("#userTable").on("click", ".edit-user-btn", function () {
+      const userId = Number($(this).data("userId"));
+      const user = cachedUsers.find((item) => Number(item.id) === userId);
+      if (!user) return;
+
+      const name = window.prompt("Update name:", user.name);
+      if (name === null) return;
+      const email = window.prompt("Update email:", user.email);
+      if (email === null) return;
+      const role = window.prompt("Update role: admin, resident, staff, or prospect", user.role);
+      if (role === null) return;
+      const password = window.prompt("New password optional. Leave blank to keep current password:", "");
+      if (password === null) return;
+
+      $.ajax({
+        url: `${usersApiUrl}/${userId}`,
+        method: "PATCH",
+        contentType: "application/json",
+        data: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          role: role.trim(),
+          password: password.trim()
+        })
+      })
+        .done((response) => {
+          showFeedback(response.message, "success");
+          loadUsers();
+        })
+        .fail((xhr) => {
+          const message = xhr.responseJSON?.error || "Unable to update that user.";
+          showFeedback(message, "error");
+        });
+    });
+
+    $("#userTable").on("click", ".delete-user-btn", function () {
+      const userId = $(this).data("userId");
+      const userName = $(this).data("userName");
+
+      if (!window.confirm(`Delete ${userName}? This cannot be undone.`)) {
+        return;
+      }
+
+      $.ajax({
+        url: `${usersApiUrl}/${userId}`,
+        method: "DELETE"
+      })
+        .done((response) => {
+          showFeedback(response.message, "success");
+          loadUsers();
+        })
+        .fail((xhr) => {
+          const message = xhr.responseJSON?.error || "Unable to delete that user.";
+          showFeedback(message, "error");
+        });
+    });
+
+    $("#applicationsTableBody").on("click", ".view-application-btn", function () {
+      showApplicationDetails($(this).data("appId"));
+    });
+
+    $("#applicationDetailCard").on("click", ".application-decision-btn", function () {
+      const appId = $(this).data("appId");
+      const status = $(this).data("status");
+
+      $.ajax({
+        url: applicationDecisionUrlTemplate.replace("__CODE__", encodeURIComponent(appId)),
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ status })
+      })
+        .done((response) => {
+          const app = applications.find((item) => item.id === appId);
+          if (app) app.status = response.status;
+          loadApplications();
+          showApplicationDetails(appId);
+          alert(response.message || `Application marked ${response.status}.`);
+        })
+        .fail((xhr) => {
+          alert(xhr.responseJSON?.error || "Unable to update application.");
+        });
+    });
+
+    $("#applicationDetailCard").on("click", ".application-renewal-btn", function () {
+      const appId = $(this).data("appId");
+      if (!confirm(`Create a new pending application cycle from ${appId}?`)) return;
+
+      $.ajax({
+        url: applicationRenewalUrlTemplate.replace("__CODE__", encodeURIComponent(appId)),
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({})
+      })
+        .done((response) => {
+          if (response.application) {
+            applications.unshift(response.application);
+            loadApplications();
+            showApplicationDetails(response.application.id);
+          }
+          alert(response.message || "New application cycle created.");
+        })
+        .fail((xhr) => {
+          alert(xhr.responseJSON?.error || "Unable to create renewal cycle.");
+        });
+    });
+
+    $("#reviewApplicationsBtn, #reviewQueueBtn").on("click", reviewFirstApplication);
+
+    loadApplications();
+    loadWorkOrders();
+    loadQuickSummary();
+    loadUsers();
+  </script>
+</body>
+</html>

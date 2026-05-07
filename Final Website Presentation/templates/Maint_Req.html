@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/Maint_Req.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+
+  <style>
+   a,
+   button,
+   input,
+   select,
+   textarea,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+       -webkit-font-smoothing: antialiased;
+   }
+
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+  </style>
+  <title>The Courtyards | Maintenance Request</title>
+</head>
+<body>
+  <div class="cr-02-maintenance-request">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('res_dash2') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Maintenance Request</h1>
+      </div>
+      <div class="header-right">
+        <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+
+    <div class="sidebar"></div>
+
+    <div class="nav-buttons">
+      <a href="{{ url_for('res_dash2') }}" class="dashboard">Dashboard</a>
+      <a href="{{ url_for('pay_rent') }}" class="pay-rent">Pay Rent</a>
+      <a href="{{ url_for('maint_req') }}" class="maintenance">Maintenance</a>
+      <a href="{{ url_for('lease_info') }}" class="my-lease">My Lease</a>
+    </div>
+
+    <main class="maintenance-content">
+      <section class="maintenance-request-card" aria-labelledby="maintenance-request-heading">
+        <div class="card-header">
+          <div>
+            <h2 id="maintenance-request-heading">Submit a Maintenance Request</h2>
+          </div>
+        </div>
+
+        <div class="maintenance-form-grid">
+          <label for="issue-category">
+            <span>Issue Category</span>
+            <select id="issue-category" name="issue-category" required>
+              <option value="">Select category</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="hvac">HVAC / Heating</option>
+              <option value="appliance">Appliance</option>
+              <option value="pest">Pest control</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label for="location">
+            <span>Location (Unit/room)</span>
+            <input
+              id="location"
+              type="text"
+              name="location"
+              aria-label="Location (unit/room)"
+              placeholder="Enter location"
+            />
+          </label>
+
+          <label for="priority">
+            <span>Priority</span>
+            <select id="priority" name="priority" required>
+              <option value="">Select priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+
+          <label for="access-time">
+            <span>Preferred Access Time</span>
+            <select id="access-time" name="access-time" aria-label="Preferred access time">
+              <option value="">Select time</option>
+              <option value="morning">Morning (8am-12pm)</option>
+              <option value="afternoon">Afternoon (12pm-5pm)</option>
+              <option value="evening">Evening (5pm-8pm)</option>
+              <option value="any">Any time</option>
+            </select>
+          </label>
+
+          <label class="full-width" for="issue-description">
+            <span>Describe the issue</span>
+            <textarea
+              id="issue-description"
+              name="issue-description"
+              aria-label="Describe the issue"
+              placeholder="Type details"
+              rows="4"
+              required
+              minlength="5"
+            ></textarea>
+          </label>
+
+          <label for="upload-photo-file">
+            <span>Upload photo or file</span>
+            <input id="upload-photo-file" class="upload-photo-file" type="file" name="upload-photo-file" aria-label="Upload photo or file" />
+          </label>
+
+          <label for="access-notes" class="full-width-mobile">
+            <span>Access Notes / Instructions</span>
+            <textarea
+              id="access-notes"
+              class="access-notes-instructions"
+              name="access-notes"
+              aria-label="Access notes / instructions"
+              placeholder="Add gate codes, pet info, or entry instructions"
+              rows="2"
+            ></textarea>
+          </label>
+        </div>
+
+        <p class="maintenance-form-message" id="maintenance-form-message" hidden></p>
+
+        <div class="maintenance-actions">
+          <button class="cancel" type="button" id="cancel-clear">Cancel</button>
+          <button class="submit-request-button" type="button" id="submit-request-button">
+            Submit Request
+          </button>
+        </div>
+      </section>
+
+      <section class="my-requests-panel" id="my-requests-panel">
+        <div class="history-header">
+          <div>
+            <h2>My Maintenance Requests</h2>
+          </div>
+        </div>
+        <div id="requests-table-wrap" class="requests-table-wrap">
+          <table class="requests-table">
+            <thead>
+              <tr>
+                <th>Request #</th>
+                <th>Issue</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Work Order</th>
+                <th>Scheduled</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="requests-tbody">
+              <tr><td colspan="7" class="requests-message">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const MAINTENANCE_SUBMIT_URL = {{ url_for('maintenance_request_submit') | tojson }};
+    const MAINTENANCE_STATUS_URL = {{ url_for('resident_maintenance_status') | tojson }};
+
+    (function () {
+      const root = document.querySelector(".cr-02-maintenance-request");
+      const cancelBtn = document.getElementById("cancel-clear");
+      const submitBtn = document.getElementById("submit-request-button");
+      const formMessage = document.getElementById("maintenance-form-message");
+      if (!root) return;
+
+      function showFormMessage(message, isError) {
+        if (!formMessage) return;
+        formMessage.hidden = false;
+        formMessage.textContent = message;
+        formMessage.classList.remove("error", "success");
+        formMessage.classList.add(isError ? "error" : "success");
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+          root.querySelectorAll("input, select, textarea").forEach((el) => {
+            if (el.tagName === "SELECT") {
+              el.value = "";
+              return;
+            }
+            if (el.type === "file") {
+              el.value = "";
+              return;
+            }
+            el.value = "";
+          });
+          if (formMessage) {
+            formMessage.hidden = true;
+            formMessage.textContent = "";
+            formMessage.classList.remove("error", "success");
+          }
+        });
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener("click", () => {
+          const fd = new FormData();
+          const category = root.querySelector('[name="issue-category"]');
+          const location = root.querySelector('[name="location"]');
+          const priority = root.querySelector('[name="priority"]');
+          const accessTime = root.querySelector('[name="access-time"]');
+          const description = root.querySelector('[name="issue-description"]');
+          const accessNotes = root.querySelector('[name="access-notes"]');
+          const attachment = root.querySelector('[name="upload-photo-file"]');
+          const descriptionValue = String(description?.value || "").trim();
+
+          if (!String(category?.value || "").trim()) {
+            showFormMessage("Choose an issue category.", true);
+            return;
+          }
+          if (!String(priority?.value || "").trim()) {
+            showFormMessage("Choose a priority level.", true);
+            return;
+          }
+          if (!descriptionValue) {
+            showFormMessage("Describe the issue before submitting.", true);
+            return;
+          }
+          if (descriptionValue.length < 5) {
+            showFormMessage("Issue description must be at least 5 characters.", true);
+            return;
+          }
+
+          if (formMessage) {
+            formMessage.hidden = true;
+            formMessage.textContent = "";
+            formMessage.classList.remove("error", "success");
+          }
+
+          const accessTimeValue = String(accessTime?.value || "").trim();
+          const accessNotesValue = String(accessNotes?.value || "").trim();
+          const fullDescription = [
+            descriptionValue,
+            accessTimeValue ? `Preferred access time: ${accessTimeValue}` : "",
+            accessNotesValue ? `Access notes: ${accessNotesValue}` : "",
+          ].filter(Boolean).join("\n");
+
+          fd.append("category", category ? category.value : "");
+          fd.append("location", location ? location.value : "");
+          fd.append("priority", priority ? priority.value : "");
+          fd.append("access_time", accessTime ? accessTime.value : "");
+          fd.append("description", fullDescription);
+          if (attachment && attachment.files && attachment.files[0]) {
+            fd.append("attachment", attachment.files[0]);
+          }
+
+          fetch(MAINTENANCE_SUBMIT_URL, {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin",
+          })
+            .then((res) => res.json().then((data) => ({ res, data })))
+            .then(({ res, data }) => {
+              if (!res.ok) {
+                showFormMessage(data.error || "Could not submit maintenance request.", true);
+                return;
+              }
+              showFormMessage(`${data.message} Request #: ${data.request_code}`, false);
+              root.querySelectorAll("input, select, textarea").forEach((el) => {
+                if (el.tagName === "SELECT" || el.type === "file") {
+                  el.value = "";
+                  return;
+                }
+                el.value = "";
+              });
+              loadRequests();
+            })
+            .catch(() => {
+              showFormMessage("Could not submit maintenance request.", true);
+            });
+        });
+      }
+    })();
+
+    const STATUS_COLORS = {
+      "Open": "#b45309",
+      "Assigned": "#1d4ed8",
+      "In Progress": "#7c3aed",
+      "Closed": "#1a7f37",
+      "Completed": "#1a7f37",
+    };
+
+    function loadRequests() {
+      const tbody = document.getElementById("requests-tbody");
+      if (!tbody) return;
+      fetch(MAINTENANCE_STATUS_URL, { credentials: "same-origin" })
+        .then((res) => res.json())
+        .then((rows) => {
+          if (!rows.length) {
+            tbody.innerHTML =
+              '<tr><td colspan="7" class="requests-message">No maintenance requests yet.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = rows
+            .map((r) => {
+              const color = STATUS_COLORS[r.status] || "#555";
+              return `
+                <tr>
+                  <td>${r.request_code}</td>
+                  <td>${r.issue_title}</td>
+                  <td>${r.priority}</td>
+                  <td class="request-status" style="color:${color};">${r.status}</td>
+                  <td>${r.work_order_code || "-"}</td>
+                  <td>${r.scheduled_date !== "-" ? r.scheduled_date + (r.time_window !== "-" ? "<br><small>" + r.time_window + "</small>" : "") : "-"}</td>
+                  <td>${r.created_at}</td>
+                </tr>`;
+            })
+            .join("");
+        })
+        .catch(() => {
+          tbody.innerHTML =
+            '<tr><td colspan="7" class="requests-message requests-error">Could not load requests.</td></tr>';
+        });
+    }
+
+    loadRequests();
+  </script>
+</body>
+</html>

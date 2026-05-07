@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/Pay_rent.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&intent=capture"></script>
+
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+       -webkit-font-smoothing: antialiased;
+   }
+
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+
+   /* ── NEW: status pill colors in payment history ─────────────────────────── */
+   .status-pill-paid   { color: #1a7f37; font-weight: 600; }
+   .status-pill-pending { color: #b45309; font-weight: 600; }
+   .status-pill-failed  { color: #b42318; font-weight: 600; }
+   .status-pill-resolved { color: #1d4ed8; font-weight: 600; }
+   /* ── END NEW ──────────────────────────────────────────────────────────────── */
+   </style>
+  <title>The Courtyards | Pay Rent</title>
+</head>
+<body>
+  <div class="cr-03-pay-rent">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('res_dash2') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Pay Rent</h1>
+      </div>
+      <div class="header-right">
+        <div class="role-indicator"><span class="user-role">Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+
+    <div class="sidebar"></div>
+
+    <div class="nav-buttons">
+      <a href="{{ url_for('res_dash2') }}" class="dashboard">Dashboard</a>
+      <a href="{{ url_for('pay_rent') }}" class="pay-rent">Pay Rent</a>
+      <a href="{{ url_for('maint_req') }}" class="maintenance">Maintenance</a>
+      <a href="{{ url_for('lease_info') }}" class="my-lease">My Lease</a>
+    </div>
+
+    <main class="pay-rent-content">
+      <section class="pay-rent-summary-card" aria-labelledby="account-summary-heading">
+        <div>
+          <h2 id="account-summary-heading">Account Summary</h2>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Current Balance:</span>
+              <span class="summary-value">{{ balance_due }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Monthly Rent:</span>
+              <span class="summary-value">{{ monthly_rent }}</span>
+            </div>
+            {% if utility_charges %}
+            <div class="summary-item">
+              <span class="summary-label">Utility Charges:</span>
+              <span class="summary-value">{{ utility_charges }}</span>
+            </div>
+            {% endif %}
+            {% if parking_fee %}
+            <div class="summary-item">
+              <span class="summary-label">Parking Fee:</span>
+              <span class="summary-value">{{ parking_fee }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-item">
+              <span class="summary-label">Last Payment:</span>
+              <span class="summary-value">{{ last_payment_date }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Due Date:</span>
+              <span class="summary-value">{{ next_due_date }}</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="view-payment-history-button" type="button" id="view-payment-history-button">
+          View Payment History
+        </button>
+      </section>
+
+      <section class="secure-checkout" aria-labelledby="checkout-heading">
+        <div class="checkout-header">
+          <div>
+            <p class="checkout-kicker">Secure Checkout</p>
+            <h2 id="checkout-heading">Choose Payment Type</h2>
+          </div>
+        </div>
+
+        {% if has_pending_rent_payment %}
+        <div class="checkout-empty-state pending-payment-alert">
+          <h3>Payment Pending Admin Review</h3>
+          <p>
+            Payment {{ pending_rent_payment.payment_code }} for
+            {{ pending_rent_payment.amount_display }} is already pending.
+            Please wait for admin review before submitting another payment.
+          </p>
+        </div>
+        {% elif can_pay_rent %}
+        <div class="payment-type-options" role="radiogroup" aria-label="Payment type">
+          <label class="payment-type-option active" id="one-time-option">
+            <input type="radio" name="rent-payment-type" value="one_time" checked>
+            <span>One-Time Payment</span>
+            <small>Pay the current balance today.</small>
+          </label>
+          <label class="payment-type-option" id="recurring-option">
+            <input type="radio" name="rent-payment-type" value="recurring">
+            <span>Set Up Recurring Payment</span>
+            <small>Automatically pay rent each month.</small>
+          </label>
+        </div>
+
+        <div class="checkout-fields">
+          <label for="payment-amount">
+            <span>Amount</span>
+            <input id="payment-amount" type="text" value="{{ balance_due }}" readonly>
+          </label>
+          <label for="payment-method-card-bank">
+            <span>Payment Method</span>
+            <select id="payment-method-card-bank">
+              <option value="Bank Transfer">Bank account through secure checkout</option>
+              <option value="Card">Card through secure checkout</option>
+            </select>
+          </label>
+          <label for="monthly-payment-day" id="monthly-payment-day-field" hidden>
+            <span>Monthly Payment Day</span>
+            <select id="monthly-payment-day" disabled>
+              <option value="1">1st of each month</option>
+              <option value="5">5th of each month</option>
+              <option value="10">10th of each month</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="checkout-authorization" for="authorize-rent-payment">
+          <input class="authorize-checkbox" type="checkbox" id="authorize-rent-payment" name="authorize-rent-payment" />
+          <span>I authorize this payment setup</span>
+        </label>
+
+        <div class="checkout-actions">
+          <button class="cancel-button" type="button" id="cancel-button">Cancel</button>
+          <button class="submit-payment-button" type="button" id="submit-payment-button">
+            Submit Payment
+          </button>
+        </div>
+
+        <div id="paypal-rent-button-container"></div>
+        {% else %}
+        <div class="checkout-empty-state">
+          <h3>No active rent balance</h3>
+          <p>Rent checkout will appear after this resident has an active lease and a balance from the database.</p>
+        </div>
+        {% endif %}
+      </section>
+
+      <!-- ── CHANGED: Payment History panel now shows resident-only data.       -->
+      <!-- The payment_history variable comes from _resident_dashboard_context()  -->
+      <!-- which filters by resident_user_id — no other residents' data leaks in. -->
+      <div
+        class="payment-history-backdrop"
+        id="payment-history-backdrop"
+        hidden
+        aria-hidden="true"
+      ></div>
+      <section class="payment-history-panel" id="payment-history-panel" hidden>
+        <div class="history-panel-header">
+          <h2>My Payment History</h2><!-- ← CHANGED: label clarified -->
+          <button class="close-history-button" type="button" id="close-history-button">Close</button>
+        </div>
+        <div class="payment-history-table">
+          <div class="payment-history-head">
+            <span>Date</span>
+            <span>Payment #</span>
+            <span>Amount</span>
+            <span>Status</span>
+          </div>
+          {% for payment in payment_history %}
+          <div class="payment-history-row">
+            <span>{{ payment.payment_date_display }}</span>
+            <span>{{ payment.payment_code }}</span>
+            <span>{{ payment.amount_display }}</span><!-- ← CHANGED: was payment.amount (raw Decimal); now uses pre-formatted display value -->
+            <span class="status-pill-{{ payment.status | lower }}">{{ payment.status }}</span><!-- ← CHANGED: added status CSS class for color coding -->
+          </div>
+          {% else %}
+          <div class="payment-history-row">
+            <span>--</span>
+            <span>No payments on record.</span><!-- ← CHANGED: clearer empty state -->
+            <span>--</span>
+            <span>--</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const PAY_RENT_PAYMENT_API_URL = {{ url_for('api_rent_payment') | tojson }};
+    const RENT_PAYMENT_AMOUNT = {{ balance_due_value | tojson }};
+    (function () {
+      const cancelBtn = document.getElementById("cancel-button");
+      const submitBtn = document.getElementById("submit-payment-button");
+      const historyBtn = document.getElementById("view-payment-history-button");
+      const historyPanel = document.getElementById("payment-history-panel");
+      const closeHistoryBtn = document.getElementById("close-history-button");
+      const historyBackdrop = document.getElementById("payment-history-backdrop");
+      const paymentTypeRadios = document.querySelectorAll('input[name="rent-payment-type"]');
+      const checkoutFields = document.querySelector(".checkout-fields");
+      const monthlyPaymentDayField = document.getElementById("monthly-payment-day-field");
+      const monthlyPaymentDay = document.getElementById("monthly-payment-day");
+
+      function updatePaymentTypeCards() {
+        const selectedPaymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+        const isRecurring = selectedPaymentType && selectedPaymentType.value === "recurring";
+        paymentTypeRadios.forEach((radio) => {
+          radio.closest(".payment-type-option").classList.toggle("active", radio.checked);
+        });
+        if (monthlyPaymentDayField) {
+          monthlyPaymentDayField.hidden = !isRecurring;
+          monthlyPaymentDayField.setAttribute("aria-hidden", String(!isRecurring));
+        }
+        if (monthlyPaymentDay) {
+          monthlyPaymentDay.disabled = !isRecurring;
+        }
+        if (checkoutFields) {
+          checkoutFields.classList.toggle("recurring-active", Boolean(isRecurring));
+        }
+      }
+
+      paymentTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", updatePaymentTypeCards);
+      });
+      updatePaymentTypeCards();
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", function () {
+          const authorize = document.getElementById("authorize-rent-payment");
+          const oneTime = document.querySelector('input[name="rent-payment-type"][value="one_time"]');
+          if (authorize) authorize.checked = false;
+          if (oneTime) oneTime.checked = true;
+          updatePaymentTypeCards();
+        });
+      }
+
+      if (historyBtn && historyPanel) {
+        historyBtn.addEventListener("click", function () {
+          historyPanel.hidden = false;
+          if (historyBackdrop) {
+            historyBackdrop.hidden = false;
+            historyBackdrop.setAttribute("aria-hidden", "false");
+          }
+        });
+      }
+
+      if (closeHistoryBtn && historyPanel) {
+        closeHistoryBtn.addEventListener("click", function () {
+          historyPanel.hidden = true;
+          if (historyBackdrop) {
+            historyBackdrop.hidden = true;
+            historyBackdrop.setAttribute("aria-hidden", "true");
+          }
+        });
+      }
+
+      if (historyBackdrop) {
+        historyBackdrop.addEventListener("click", function () {
+          if (historyPanel) historyPanel.hidden = true;
+          historyBackdrop.hidden = true;
+          historyBackdrop.setAttribute("aria-hidden", "true");
+        });
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener("click", function () {
+          const authorize = document.getElementById("authorize-rent-payment");
+          const method = document.getElementById("payment-method-card-bank");
+          const paymentType = document.querySelector('input[name="rent-payment-type"]:checked');
+          const isRecurring = paymentType && paymentType.value === "recurring";
+
+          if (!authorize || !authorize.checked) {
+            alert("Please authorize this payment setup first.");
+            return;
+          }
+
+          const label = isRecurring ? "recurring payment" : "one-time payment";
+          const dayLabel = monthlyPaymentDay && monthlyPaymentDay.selectedOptions.length
+            ? monthlyPaymentDay.selectedOptions[0].textContent
+            : "";
+          const confirmText = isRecurring
+            ? `Confirm recurring payment setup for the ${dayLabel}?`
+            : "Confirm one-time payment submission?";
+          const ok = confirm(confirmText);
+          if (!ok) return;
+
+          const fd = new FormData();
+          fd.append("method", method ? method.value : "Bank Transfer");
+          fd.append("account_to_pay", label);
+          fd.append("payment_type", isRecurring ? "recurring" : "one_time");
+          if (isRecurring && monthlyPaymentDay) {
+            fd.append("monthly_payment_day", monthlyPaymentDay.value);
+          }
+          fd.append("billing_zip", "00000");
+          fd.append("billing_address", "Secure checkout");
+
+          fetch(PAY_RENT_PAYMENT_API_URL, {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin",
+          })
+            .then((res) => res.json().then((data) => ({ res, data })))
+            .then(({ res, data }) => {
+              if (!res.ok) {
+                alert(data.error || "Could not submit payment.");
+                return;
+              }
+              alert(`Payment submitted. Payment #: ${data.payment_code}. Confirmation #: ${data.confirmation}.`);
+              window.location.reload();
+            })
+            .catch(() => {
+              alert("Could not submit payment.");
+            });
+        });
+      }
+
+      if ({{ can_pay_rent | tojson }} && window.paypal) {
+        paypal.Buttons({
+          style: {
+            layout: "vertical",
+            color: "gold",
+            shape: "rect",
+            label: "paypal",
+          },
+          createOrder: function (_data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                amount: { value: RENT_PAYMENT_AMOUNT },
+              }],
+            });
+          },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function () {
+              return fetch(PAY_RENT_PAYMENT_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify({ paypal_order_id: data.orderID }),
+              })
+                .then((res) => res.json().then((payload) => ({ res, payload })))
+                .then(({ res, payload }) => {
+                  if (!res.ok) {
+                    alert(payload.error || "Payment was captured, but could not be recorded.");
+                    return;
+                  }
+                  alert(`Payment recorded. Payment #: ${payload.payment_code}. Confirmation #: ${payload.confirmation}.`);
+                  window.location.reload();
+                });
+            });
+          },
+          onError: function () {
+            alert("PayPal checkout could not be started.");
+          },
+        }).render("#paypal-rent-button-container");
+      }
+    })();
+  </script>
+</body>
+</html>

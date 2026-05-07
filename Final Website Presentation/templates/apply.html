@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/apply.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>The Courtyards | Application</title>
+</head>
+<body>
+  <div class="pr-02-lease-application-form-process-1-2">
+    <img class="background" src="{{ url_for('static', filename='images/background0.png') }}" alt="" />
+    <header class="top-header">
+      <div class="header-left">
+        <a href="{{ url_for('floorplan') }}"><img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo" /></a>
+      </div>
+      <div class="header-center">
+        <h1>Application</h1>
+      </div>
+      <div class="header-right">
+        <div class="role-indicator"><span class="user-role">Prospective Resident</span></div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </header>
+    <div class="sidebar"></div>
+    <div class="nav-btns">
+      <div class="nav-buttons">
+        <a href="{{ url_for('floorplan') }}" class="floor-plans">Floor plans</a>
+        <a href="{{ url_for('apply') }}" class="apply">Apply</a>
+        <a href="{{ url_for('status_page') }}" class="application-status">Application Status</a>
+      </div>
+    </div>
+    <div class="page">
+      <div class="frame-2 application-card">
+        <div class="form-content application-form-grid">
+          <div class="application-field">
+            <label for="first-name">First Name</label>
+            <input type="text" class="form-control" id="first-name" name="first_name" autocomplete="given-name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
+          </div>
+          <div class="application-field">
+            <label for="last-name">Last Name</label>
+            <input type="text" class="form-control" id="last-name" name="last_name" autocomplete="family-name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
+          </div>
+          <div class="application-field">
+            <label for="student-id">Student ID</label>
+            <input type="text" class="form-control" id="student-id" name="student_id" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" title="Enter a 9-digit student ID" required>
+          </div>
+          <div class="application-field field-wide">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" autocomplete="email" value="{{ current_user.email if current_user.is_authenticated else '' }}" required>
+          </div>
+          <div class="application-field field-wide">
+            <label for="phone-number">Phone Number</label>
+            <input type="tel" class="form-control" id="phone-number" name="phone" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number" required>
+          </div>
+          <div class="application-field field-wide">
+            <label for="application-password">Password</label>
+            <div class="password-field-wrap">
+              <input type="password" class="form-control form-control-password" id="application-password" name="application_password" autocomplete="new-password" required minlength="8">
+              <button type="button" class="password-toggle" id="password-toggle" aria-pressed="false" aria-label="Show password">Show</button>
+            </div>
+          </div>
+          <div class="application-field field-wide">
+            <label for="floor-plan">Preferred Floor plan/Unit</label>
+            <select class="form-control" id="floor-plan" name="floor_plan" aria-label="Preferred Floor plan/Unit" required>
+              <option value="">Select floor plan...</option>
+              {% for floorplan in floorplans %}
+              <option value="{{ floorplan.name }}">{{ floorplan.name }} - {{ floorplan.rent_display }}/Month</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="application-field field-wide">
+            <label for="move-in-date">Move-In Date</label>
+            <input type="date" class="form-control" id="move-in-date" name="move_in_date" required>
+          </div>
+          <div class="application-field field-wide">
+            <label for="emergency-contact-name">Emergency Contact Name</label>
+            <input type="text" class="form-control" id="emergency-contact-name" name="emergency_contact_name" autocomplete="name" pattern="[A-Za-z][A-Za-z .'-]*" title="Use letters, spaces, hyphens, apostrophes, or periods only" required>
+          </div>
+          <div class="application-field field-wide">
+            <label for="emergency-contact-phone">Emergency Contact Phone</label>
+            <input type="tel" class="form-control" id="emergency-contact-phone" name="emergency_contact_phone" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number" required>
+          </div>
+          <div class="application-uploads-title">Uploads</div>
+          <div class="application-upload-control">
+            <input type="file" id="upload-id-file" class="upload-id-file" accept="image/*,application/pdf" required hidden />
+            <button type="button" class="upload-id-button" id="upload-id-button">Upload ID</button>
+          </div>
+          <div class="application-upload-control">
+            <input type="file" id="upload-doc-file" name="supporting_docs" class="upload-doc-file" accept="image/*,application/pdf,.doc,.docx,.txt" multiple hidden />
+            <button type="button" class="upload-doc-button" id="upload-doc-button">Upload Documents</button>
+          </div>
+          <div class="application-field field-full">
+            <label for="notes">Notes (optional)</label>
+            <input type="text" class="form-control1" id="notes" name="notes" placeholder="Any additional information you'd like to provide">
+          </div>
+        </div>
+      </div>
+      <div class="bottom-btns">
+        <div class="simple-button">
+          <a href="{{ url_for('deposit') }}" class="submit-application" id="submit-application">Submit Application</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    var APPLY_SUBMIT_URL = {{ url_for('apply_submit') | tojson }};
+    var MAX_APPLICATION_UPLOAD_BYTES = 900 * 1024;
+
+    function formatFileSize(bytes) {
+      if (!bytes && bytes !== 0) return 'unknown size';
+      if (bytes < 1024) return bytes + ' bytes';
+      if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+    (function () {
+      function wireUpload(buttonId, inputId, labelPrefix) {
+        var btn = document.getElementById(buttonId);
+        var input = document.getElementById(inputId);
+        if (!btn || !input) return;
+
+        btn.addEventListener('click', function () {
+          input.click();
+        });
+
+        input.addEventListener('change', function () {
+          var files = input.files ? Array.from(input.files) : [];
+          if (files.length === 0) return;
+          if (files.length === 1) btn.textContent = labelPrefix + files[0].name;
+          else btn.textContent = labelPrefix + files.length + ' files selected';
+        });
+      }
+
+      wireUpload('upload-id-button', 'upload-id-file', 'ID: ');
+      wireUpload('upload-doc-button', 'upload-doc-file', 'Docs: ');
+
+      var pwInput = document.getElementById('application-password');
+      var pwToggle = document.getElementById('password-toggle');
+      if (pwInput && pwToggle) {
+        pwToggle.addEventListener('click', function () {
+          var show = pwInput.type === 'password';
+          pwInput.type = show ? 'text' : 'password';
+          pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+          pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+          pwToggle.textContent = show ? 'Hide' : 'Show';
+        });
+      }
+
+      var submitLink = document.getElementById('submit-application');
+      if (submitLink) {
+        submitLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          var missing = [];
+
+          function needText(id, label) {
+            var el = document.getElementById(id);
+            if (!el || !String(el.value || '').trim()) missing.push(label);
+          }
+
+          function needValid(id, label) {
+            var el = document.getElementById(id);
+            if (el && String(el.value || '').trim() && typeof el.checkValidity === 'function' && !el.checkValidity()) {
+              missing.push(label);
+            }
+          }
+
+          needText('first-name', 'First Name');
+          needValid('first-name', 'First Name (letters only)');
+          needText('last-name', 'Last Name');
+          needValid('last-name', 'Last Name (letters only)');
+          needText('email', 'Email');
+          var emailEl = document.getElementById('email');
+          if (emailEl && String(emailEl.value || '').trim() && typeof emailEl.checkValidity === 'function' && !emailEl.checkValidity()) {
+            missing.push('Email (valid address required)');
+          }
+          needText('application-password', 'Password');
+          needValid('application-password', 'Password (at least 8 characters)');
+          needText('student-id', 'Student ID');
+          needValid('student-id', 'Student ID (9 digits)');
+          needText('phone-number', 'Phone Number');
+          needValid('phone-number', 'Phone Number (10 digits)');
+          var floorPlan = document.getElementById('floor-plan');
+          if (!floorPlan || !String(floorPlan.value || '').trim()) {
+            missing.push('Preferred Floor plan/Unit');
+          }
+          needText('move-in-date', 'Move-In Date');
+          needText('emergency-contact-name', 'Emergency Contact Name');
+          needValid('emergency-contact-name', 'Emergency Contact Name (letters only)');
+          needText('emergency-contact-phone', 'Emergency Contact Phone');
+          needValid('emergency-contact-phone', 'Emergency Contact Phone (10 digits)');
+
+          var idUpload = document.getElementById('upload-id-file');
+          if (!idUpload || !idUpload.files || idUpload.files.length === 0) {
+            missing.push('Upload ID');
+          }
+          var docsInput = document.getElementById('upload-doc-file');
+
+          if (missing.length > 0) {
+            alert(
+              'Please complete all required fields before submitting:\n\n• ' +
+                missing.join('\n• ')
+            );
+            return false;
+          }
+
+          var uploadBytes = 0;
+          var uploadFiles = [];
+          if (idUpload && idUpload.files && idUpload.files.length) {
+            uploadFiles = uploadFiles.concat(Array.from(idUpload.files));
+          }
+          if (docsInput && docsInput.files && docsInput.files.length) {
+            uploadFiles = uploadFiles.concat(Array.from(docsInput.files));
+          }
+          uploadFiles.forEach(function (file) {
+            uploadBytes += file.size || 0;
+          });
+          if (uploadBytes > MAX_APPLICATION_UPLOAD_BYTES) {
+            alert(
+              'Your upload files are too large for the Smith server.\n\n' +
+                'Selected upload size: ' + formatFileSize(uploadBytes) + '\n' +
+                'Please use smaller files under 900 KB total, then submit again.'
+            );
+            return false;
+          }
+
+          var fd = new FormData();
+          fd.append('first_name', document.getElementById('first-name').value.trim());
+          fd.append('last_name', document.getElementById('last-name').value.trim());
+          fd.append('email', document.getElementById('email').value.trim());
+          fd.append('password', document.getElementById('application-password').value);
+          fd.append('student_id', document.getElementById('student-id').value.trim());
+          fd.append('phone', document.getElementById('phone-number').value.trim());
+          fd.append('floor_plan', document.getElementById('floor-plan').value);
+          fd.append('move_in_date', document.getElementById('move-in-date').value);
+          fd.append('emergency_contact_name', document.getElementById('emergency-contact-name').value.trim());
+          fd.append('emergency_contact_phone', document.getElementById('emergency-contact-phone').value.trim());
+          var notesEl = document.getElementById('notes');
+          fd.append('notes', notesEl ? String(notesEl.value || '').trim() : '');
+          fd.append('id_upload', idUpload.files[0]);
+          if (docsInput && docsInput.files && docsInput.files.length) {
+            for (var di = 0; di < docsInput.files.length; di++) {
+              fd.append('supporting_docs', docsInput.files[di]);
+            }
+          }
+
+          submitLink.style.pointerEvents = 'none';
+          fetch(APPLY_SUBMIT_URL, {
+            method: 'POST',
+            body: fd,
+            credentials: 'same-origin',
+          })
+            .then(function (res) {
+              return res.text().then(function (text) {
+                var data = {};
+                try {
+                  data = text ? JSON.parse(text) : {};
+                } catch (_error) {
+                  data = {
+                    error:
+                      res.status === 413
+                        ? 'Upload files are too large for the Smith server. Please use smaller files under 900 KB total.'
+                        : 'The server returned an unexpected response. Try a smaller upload file or check the Flask error log.',
+                  };
+                }
+                return { res: res, data: data };
+              });
+            })
+            .then(function (out) {
+              submitLink.style.pointerEvents = '';
+              if (!out.res.ok) {
+                alert(out.data.error || 'Could not submit application. Please try again.');
+                return;
+              }
+              if (out.data.redirect) {
+                window.location.href = out.data.redirect;
+              }
+            })
+            .catch(function () {
+              submitLink.style.pointerEvents = '';
+              alert('Could not submit application. Please check your connection and try again.');
+            });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

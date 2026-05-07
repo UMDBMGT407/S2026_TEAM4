@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vars.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/logo-uniform.css') }}">
+</head>
+<body>
+  <div class="admin-page">
+    <header class="top-header">
+      <div class="header-left">
+        <img class="logo" src="{{ url_for('static', filename='images/logo0.png') }}" alt="Courtyards logo">
+      </div>
+      <div class="header-center">
+        <h1>Payments</h1>
+      </div>
+      <div class="header-right">
+        <div class="role-indicator">Admin</div>
+        <a class="profile-name-btn" href="{{ url_for('home') }}">{{ current_user_first_name }}</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+      </div>
+    </header>
+
+    <div class="container-fluid page-shell px-0">
+      <div class="row g-0">
+        <aside class="col-lg-2 col-md-3 sidebar">
+          <nav class="sidebar-nav">
+            <a href="{{ url_for('home') }}">Dashboard</a>
+            <a href="{{ url_for('home') }}#applications-section">Applications</a>
+            <a href="{{ url_for('payments') }}" class="active">Payments</a>
+            <a href="{{ url_for('work_order') }}">Work Orders</a>
+            <a href="{{ url_for('schedule') }}">Schedule</a>
+            <a href="{{ url_for('home') }}#admin-tools-section">Admin Tools</a>
+            <a href="{{ url_for('home') }}#users-section">Users</a>
+          </nav>
+        </aside>
+
+        <main class="col-lg-10 col-md-9 main-content">
+      <section class="filters-card">
+        <h2>Filters</h2>
+        <div class="filters-row">
+          <select id="statusFilter">
+            <option value="all">Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Failed">Failed</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+          <select id="buildingFilter">
+            <option value="all">Building</option>
+            {% for building in building_options %}
+            <option value="{{ building }}">{{ building }}</option>
+            {% endfor %}
+          </select>
+          <select id="dateFilter">
+            <option value="all">Date Range</option>
+            <option value="recent">Most Recent</option>
+            <option value="older">Older</option>
+          </select>
+          <input id="searchInput" type="text" placeholder="Resident / Lease ID / Unit">
+          <button id="applyBtn" type="button">Apply</button>
+        </div>
+      </section>
+      <section class="summary-row">
+        <div class="summary-card">
+          <p>Total Collected (7D)</p>
+          <h3>{{ payments_summary.total_collected }}</h3>
+          <span>Details</span>
+        </div>
+        <div class="summary-card">
+          <p>Overdue Accounts</p>
+          <h3>{{ payments_summary.overdue_accounts }}</h3>
+          <span>Details</span>
+        </div>
+        <div class="summary-card">
+          <p>Failed Payment</p>
+          <h3>{{ payments_summary.failed_payments }}</h3>
+          <span>Details</span>
+        </div>
+      </section>
+      <section class="payments-layout">
+        <div class="payments-left">
+          <div class="content-card">
+            <h2>Payments Queue</h2>
+            <table class="payments-table">
+              <thead>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>Resident</th>
+                  <th>Unit</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTable">
+                {% for payment in payments %}
+                <tr data-status="{{ payment.status }}" data-building="{{ payment.building }}" data-date="{{ payment.payment_date_iso }}" data-payment="{{ payment.payment_code }}">
+                  <td>{{ payment.payment_code }}</td>
+                  <td>{{ payment.resident }}</td>
+                  <td>{{ payment.unit }}</td>
+                  <td>{{ payment.amount }}</td>
+                  <td>{{ payment.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="5">No payments found in the database.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="table-nav">
+              <button id="prevPaymentsBtn" type="button">Prev</button>
+              <button id="nextPaymentsBtn" type="button">Next</button>
+            </div>
+          </div>
+        </div>
+        <div class="payments-right">
+          <div class="content-card">
+            <h2>Payment Details</h2>
+            <div id="paymentDetails">
+              {% if first_payment %}
+              <p><strong>Payment ID:</strong> {{ first_payment.payment_code }}</p>
+              <p><strong>Status:</strong> {{ first_payment.status }}</p>
+              <p><strong>Resident:</strong> {{ first_payment.resident }}</p>
+              <p><strong>Phone:</strong> {{ first_payment.phone }}</p>
+              <p><strong>Lease ID:</strong> {{ first_payment.leaseId }}</p>
+              <p><strong>Building:</strong> {{ first_payment.building }}</p>
+              <p><strong>Unit:</strong> {{ first_payment.unit }}</p>
+              <p><strong>Amount:</strong> {{ first_payment.amount }}</p>
+              <p><strong>Method:</strong> {{ first_payment.method }}</p>
+              <p><strong>Date:</strong> {{ first_payment.date }}</p>
+              <p><strong>Confirmation #:</strong> {{ first_payment.confirmation }}</p>
+              {% else %}
+              <p>No payment selected.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="content-card">
+            <h2>Notes / Flags</h2>
+            <textarea id="notesBox" rows="6" placeholder="Add notes about this payment...">{{ first_payment.notes if first_payment else "" }}</textarea>
+          </div>
+          <div class="content-card">
+            <h2>Actions</h2>
+            <div class="action-buttons">
+              <button id="receiptBtn" type="button">Send Receipt</button>
+              <button id="retryBtn" type="button">Retry Payment</button>
+              <button id="resolveBtn" type="button">Mark Resolved</button>
+            </div>
+            <p id="actionMessage"></p>
+              <div class="back-dashboard">
+              <a href="{{ url_for('home') }}" class="back-btn">Back to Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </section>
+        </main>
+      </div>
+    </div>
+  </div>
+  <script>
+    const rows = Array.from(document.querySelectorAll("#paymentsTable tr[data-payment]"));
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const buildingFilter = document.getElementById("buildingFilter");
+    const dateFilter = document.getElementById("dateFilter");
+    const applyBtn = document.getElementById("applyBtn");
+    const paymentsTable = document.getElementById("paymentsTable");
+    const prevPaymentsBtn = document.getElementById("prevPaymentsBtn");
+    const nextPaymentsBtn = document.getElementById("nextPaymentsBtn");
+    const paymentDetails = document.getElementById("paymentDetails");
+    const notesBox = document.getElementById("notesBox");
+    const actionMessage = document.getElementById("actionMessage");
+    const paymentData = {{ payments_by_code | tojson }};
+    const statusUrlTemplate = {{ url_for('update_payment_status', payment_code='__CODE__') | tojson }};
+    let selectedPaymentId = {{ first_payment.payment_code | tojson if first_payment else "null" }};
+    let currentPage = 0;
+    const pageSize = 8;
+
+    function loadPaymentDetails(paymentId) {
+      const payment = paymentData[paymentId];
+      if (!payment) {
+        selectedPaymentId = null;
+        paymentDetails.innerHTML = "<p>No payment selected.</p>";
+        notesBox.value = "";
+        return;
+      }
+      selectedPaymentId = paymentId;
+      paymentDetails.innerHTML = `
+        <p><strong>Payment ID:</strong> ${paymentId}</p>
+        <p><strong>Status:</strong> ${payment.status}</p>
+        <p><strong>Resident:</strong> ${payment.resident}</p>
+        <p><strong>Phone:</strong> ${payment.phone}</p>
+        <p><strong>Lease ID:</strong> ${payment.leaseId}</p>
+        <p><strong>Building:</strong> ${payment.building}</p>
+        <p><strong>Unit:</strong> ${payment.unit}</p>
+        <p><strong>Amount:</strong> ${payment.amount}</p>
+        <p><strong>Method:</strong> ${payment.method}</p>
+        <p><strong>Date:</strong> ${payment.date}</p>
+        <p><strong>Confirmation #:</strong> ${payment.confirmation}</p>
+      `;
+      notesBox.value = payment.notes || "";
+    }
+    function paymentRowTime(row) {
+      const value = Date.parse(row.getAttribute("data-date") || "");
+      return Number.isNaN(value) ? 0 : value;
+    }
+    function matchingPaymentRows() {
+      const searchValue = searchInput.value.toLowerCase().trim();
+      const statusValue = statusFilter.value;
+      const buildingValue = buildingFilter.value;
+      const dateValue = dateFilter.value;
+      const matches = rows.filter((row) => {
+        const rowText = row.textContent.toLowerCase();
+        const rowStatus = row.getAttribute("data-status");
+        const rowBuilding = row.getAttribute("data-building");
+        const matchesSearch = rowText.includes(searchValue);
+        const matchesStatus = statusValue === "all" || rowStatus === statusValue;
+        const matchesBuilding = buildingValue === "all" || rowBuilding === buildingValue;
+
+        return matchesSearch && matchesStatus && matchesBuilding;
+      });
+      if (dateValue === "recent") {
+        matches.sort((a, b) => paymentRowTime(b) - paymentRowTime(a));
+      } else if (dateValue === "older") {
+        matches.sort((a, b) => paymentRowTime(a) - paymentRowTime(b));
+      }
+      return matches;
+    }
+    function renderPaymentRows(resetPage) {
+      if (resetPage) currentPage = 0;
+      const matches = matchingPaymentRows();
+      const pageCount = Math.max(1, Math.ceil(matches.length / pageSize));
+      currentPage = Math.min(currentPage, pageCount - 1);
+      matches.forEach((row) => paymentsTable.appendChild(row));
+      rows.forEach((row) => {
+        row.style.display = "none";
+      });
+      matches
+        .slice(currentPage * pageSize, currentPage * pageSize + pageSize)
+        .forEach((row) => {
+          row.style.display = "";
+        });
+      if (prevPaymentsBtn) prevPaymentsBtn.disabled = currentPage === 0;
+      if (nextPaymentsBtn) nextPaymentsBtn.disabled = currentPage >= pageCount - 1;
+    }
+    function filterPayments() {
+      renderPaymentRows(true);
+    }
+    rows.forEach((row) => {
+      row.addEventListener("click", () => {
+        const paymentId = row.getAttribute("data-payment");
+        loadPaymentDetails(paymentId);
+      });
+    });
+    applyBtn.addEventListener("click", filterPayments);
+    searchInput.addEventListener("input", filterPayments);
+    statusFilter.addEventListener("change", filterPayments);
+    buildingFilter.addEventListener("change", filterPayments);
+    dateFilter.addEventListener("change", filterPayments);
+    prevPaymentsBtn.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPaymentRows(false);
+      }
+    });
+    nextPaymentsBtn.addEventListener("click", () => {
+      const pageCount = Math.max(1, Math.ceil(matchingPaymentRows().length / pageSize));
+      if (currentPage < pageCount - 1) {
+        currentPage++;
+        renderPaymentRows(false);
+      }
+    });
+    document.getElementById("receiptBtn").addEventListener("click", () => {
+      if (!selectedPaymentId || !paymentData[selectedPaymentId]) {
+        actionMessage.textContent = "Choose a payment first.";
+        return;
+      }
+      const payment = paymentData[selectedPaymentId];
+      const receiptNote = `Receipt prepared for ${payment.resident} (${payment.phone || "no email"}) on ${new Date().toLocaleDateString()}.`;
+      notesBox.value = [payment.notes, receiptNote].filter(Boolean).join("\n");
+      updatePaymentStatus(payment.status, "Receipt note saved.");
+    });
+    function updatePaymentStatus(newStatus, successMessage) {
+      if (!selectedPaymentId || !paymentData[selectedPaymentId]) {
+        actionMessage.textContent = "Choose a payment first.";
+        return;
+      }
+
+      fetch(statusUrlTemplate.replace("__CODE__", encodeURIComponent(selectedPaymentId)), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ status: newStatus, notes: notesBox.value }),
+      })
+        .then((res) => res.json().then((data) => ({ res, data })))
+        .then(({ res, data }) => {
+          if (!res.ok) {
+            actionMessage.textContent = data.error || "Could not update payment.";
+            return;
+          }
+          paymentData[selectedPaymentId].status = newStatus;
+          paymentData[selectedPaymentId].notes = notesBox.value;
+          const row = document.querySelector(`[data-payment="${selectedPaymentId}"]`);
+          if (row) {
+            row.dataset.status = newStatus;
+            row.cells[4].textContent = newStatus;
+          }
+          loadPaymentDetails(selectedPaymentId);
+          renderPaymentRows(false);
+          actionMessage.textContent = successMessage || data.message || "Payment updated.";
+        })
+        .catch(() => {
+          actionMessage.textContent = "Could not update payment.";
+        });
+    }
+    document.getElementById("retryBtn").addEventListener("click", () => {
+      updatePaymentStatus("Pending");
+    });
+    document.getElementById("resolveBtn").addEventListener("click", () => {
+      updatePaymentStatus("Resolved");
+    });
+    renderPaymentRows(false);
+  </script>
+</body>
+</html>
