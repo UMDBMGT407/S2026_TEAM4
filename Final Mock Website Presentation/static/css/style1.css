@@ -64,6 +64,8 @@ button {
   text-align: center;
   font-size: 2.2rem;
   font-weight: 700;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
 }
 .header-right {
   display: flex;
@@ -104,13 +106,15 @@ button {
   gap: 28px;
 }
 .nav-link-custom {
-  display: inline-block;
+  display: block;
   width: fit-content;
   font-size: 22px;
   font-weight: 700;
   padding: 10px 14px;
   border-radius: 10px;
   transition: background 0.2s ease;
+  line-height: 1.16;
+  overflow-wrap: anywhere;
 }
 .nav-link-custom:hover,
 .nav-link-custom.active {
@@ -141,6 +145,8 @@ button {
   background: rgba(217, 217, 217, 0.95);
   padding: 10px 12px;
   width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .apply-btn {
   font-weight: 600;
@@ -151,6 +157,7 @@ button {
   background: rgba(217, 217, 217, 0.82);
   padding: 14px 16px 18px;
   min-height: 620px;
+  overflow-wrap: anywhere;
 }
 .create-workorder-panel {
   min-height: auto;
@@ -173,6 +180,7 @@ button {
 .custom-table {
   --bs-table-bg: transparent;
   margin-bottom: 0;
+  table-layout: auto;
 }
 .custom-table thead th {
   background: #ffffff;
@@ -189,6 +197,9 @@ button {
   font-size: 0.95rem;
   border-top: 4px solid rgba(217, 217, 217, 0.82);
   padding: 10px 12px;
+  max-width: 220px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .queue-row {
   cursor: pointer;
@@ -212,11 +223,14 @@ button {
   background: rgba(217, 217, 217, 0.95);
   padding: 12px 14px;
   margin-bottom: 14px;
+  overflow-wrap: anywhere;
 }
 .detail-card p {
   margin: 0 0 8px;
   font-size: 1rem;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .description-card {
   min-height: 72px;
@@ -261,23 +275,67 @@ button {
   .filters-bar {
     grid-template-columns: 1fr 1fr;
   }
+
+  .content-row > [class*="col-"] {
+    width: 100%;
+  }
 }
 @media (max-width: 992px) {
   .top-header {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(128px, auto) minmax(0, 1fr);
+    gap: 8px 12px;
     height: auto;
-    padding: 12px 20px;
+    padding: 12px 18px 14px 0;
+  }
+  .header-left {
+    min-width: 0;
   }
   .header-center h1 {
     text-align: left;
+    font-size: clamp(1.45rem, 4vw, 2rem);
   }
   .header-right {
+    grid-column: 1 / -1;
     justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-left: 24px;
+  }
+  .page-shell > .row > .sidebar,
+  .page-shell > .row > .main-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+  .role-indicator,
+  .top-header .btn,
+  .top-header .profile-name-btn {
+    min-width: 82px;
+    max-width: 180px;
+    white-space: normal;
+    line-height: 1.05;
+    text-align: center;
   }
   .sidebar {
     padding-top: 30px;
     min-height: auto;
+  }
+  .sidebar-nav {
+    min-height: auto;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .sidebar-nav a,
+  .nav-link-custom {
+    font-size: 18px;
+    padding: 10px 12px;
+    width: auto;
+    min-width: 140px;
+  }
+  .page-shell .row {
+    --bs-gutter-x: 1rem;
   }
   .panel-box,
   .details-panel {
@@ -290,6 +348,56 @@ button {
   }
   .filters-bar {
     grid-template-columns: 1fr;
+  }
+  .sidebar {
+    padding: 14px;
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .sidebar-nav a,
+  .nav-link-custom {
+    width: auto;
+    font-size: 15px;
+  }
+  .workorder-scroll {
+    overflow-x: visible;
+  }
+  .custom-table {
+    min-width: 0;
+    width: 100%;
+  }
+  .custom-table thead {
+    display: none;
+  }
+  .custom-table tbody,
+  .custom-table tbody tr,
+  .custom-table tbody td {
+    display: block;
+    width: 100%;
+  }
+  .custom-table tbody tr {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #ffffff;
+  }
+  .custom-table tbody td {
+    display: grid;
+    grid-template-columns: minmax(82px, auto) minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    max-width: none;
+    padding: 6px 0;
+    border-top: 0;
+    background: transparent;
+  }
+  .custom-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
   }
   .assign-grid {
     grid-template-columns: 1fr;
