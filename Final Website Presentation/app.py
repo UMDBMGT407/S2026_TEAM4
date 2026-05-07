@@ -60,6 +60,7 @@ ROLE_LABELS = {
 ROLE_OPTIONS = ("admin", "resident", "staff", "prospect")
 NAME_RE = re.compile(r"^[A-Za-z][A-Za-z .'-]*$")
 MAX_APPLICATION_UPLOAD_BYTES = 900 * 1024
+MIN_MOVE_IN_DAYS = 14
 
 
 def canonical_role(role):
@@ -81,6 +82,29 @@ def canonical_role(role):
 def valid_person_name(value):
     """Allow real names while rejecting numeric-only or symbol-heavy input."""
     return bool(NAME_RE.fullmatch((value or "").strip()))
+
+
+def minimum_move_in_date(reference_date=None):
+    """Prospects must choose a move-in date far enough ahead for review/deposit."""
+    base = reference_date or date.today()
+    return base + timedelta(days=MIN_MOVE_IN_DAYS)
+
+
+def application_deposit_due_date(submitted_at, desired_move_in):
+    """Deposit is due within 30 days, but always before the requested move-in date."""
+    if isinstance(submitted_at, datetime):
+        due = submitted_at.date() + timedelta(days=30)
+    elif isinstance(submitted_at, date):
+        due = submitted_at + timedelta(days=30)
+    else:
+        due = date.today() + timedelta(days=30)
+
+    move_in_date = parse_iso_date(desired_move_in)
+    if move_in_date:
+        latest_due_before_move_in = move_in_date - timedelta(days=1)
+        if due > latest_due_before_move_in:
+            due = latest_due_before_move_in
+    return due
 
 
 USER_DEPENDENCIES = (
@@ -276,7 +300,7 @@ def _deposit_page_context(email):
     application_code = None
     due_date_display = None
     row = db_one(
-        "SELECT a.application_code, a.submitted_at, fp.rent AS deposit_amount "
+        "SELECT a.application_code, a.submitted_at, a.desired_move_in, fp.rent AS deposit_amount "
         "FROM applications a "
         "JOIN floorplans fp ON a.floorplan_id = fp.id "
         "WHERE LOWER(TRIM(a.applicant_email)) = %s "
@@ -287,16 +311,9 @@ def _deposit_page_context(email):
         application_code = row.get("application_code") or None
         deposit_amount = Decimal(str(row.get("deposit_amount") or "0.00"))
         submitted_at = row.get("submitted_at")
-        if submitted_at is not None:
-            if isinstance(submitted_at, datetime):
-                base = submitted_at
-            elif isinstance(submitted_at, date):
-                base = datetime.combine(submitted_at, datetime.min.time())
-            else:
-                base = None
-            if base is not None:
-                due = base + timedelta(days=30)
-                due_date_display = due.strftime("%B %d, %Y")
+        due_date_display = application_deposit_due_date(
+            submitted_at, row.get("desired_move_in")
+        ).strftime("%B %d, %Y")
     return {
         "application_code": application_code,
         "deposit_amount": money(deposit_amount),
@@ -325,10 +342,9 @@ def _latest_application_for_email(email):
         "status": row.get("status") or "Pending",
         "submitted_at": date_display(submitted_at),
         "due_date": date_display(
-            submitted_at + timedelta(days=30), "%B %d, %Y"
-        )
-        if isinstance(submitted_at, (date, datetime))
-        else None,
+            application_deposit_due_date(submitted_at, row.get("desired_move_in")),
+            "%B %d, %Y",
+        ),
         "desired_move_in": date_display(row.get("desired_move_in")),
         "applicant_name": row.get("applicant_name"),
         "applicant_email": row.get("applicant_email"),
@@ -2072,7 +2088,12 @@ def apply():
         return redirect(url_for("login", next="apply"))
     if canonical_role(current_user.role) != "prospect":
         return redirect(url_for("home"))
-    return render_template("apply.html", floorplans=_floorplan_rows())
+    return render_template(
+        "apply.html",
+        floorplans=_floorplan_rows(),
+        minimum_move_in_date=minimum_move_in_date().isoformat(),
+        minimum_move_in_days=MIN_MOVE_IN_DAYS,
+    )
 
 
 def _apply_validation_errors(form, files):
@@ -2119,9 +2140,15 @@ def _apply_validation_errors(form, files):
         errors.append("Move-In Date")
     else:
         try:
-            datetime.strptime(move_in, "%Y-%m-%d")
+            move_in_date = datetime.strptime(move_in, "%Y-%m-%d").date()
         except ValueError:
             errors.append("Move-In Date must be a valid date")
+        else:
+            earliest_move_in = minimum_move_in_date()
+            if move_in_date < earliest_move_in:
+                errors.append(
+                    f"Move-In Date must be at least {MIN_MOVE_IN_DAYS} days from today"
+                )
     if not emergency_name:
         errors.append("Emergency Contact Name")
     elif not valid_person_name(emergency_name):
@@ -2429,7 +2456,11 @@ def deposit():
         return redirect(url_for("home"))
     ctx = _deposit_page_context(current_user.email)
     application = _latest_application_for_email(current_user.email)
-    if not application or application.get("status") not in {"Approved", "Deposit Paid"}:
+    if not application:
+        return redirect(url_for("status_page"))
+    if application.get("status") == "Deposit Paid":
+        return redirect(url_for("status_page"))
+    if application.get("status") != "Approved":
         return redirect(url_for("status_page"))
     return render_template(
         "deposit.html",
@@ -2447,7 +2478,7 @@ def _record_deposit_payment():
     cur = mysql.connection.cursor()
     try:
         cur.execute(
-            "SELECT a.id, a.application_code, a.status, fp.rent AS deposit_amount "
+            "SELECT a.id, a.application_code, a.status, a.desired_move_in, fp.rent AS deposit_amount "
             "FROM applications a "
             "JOIN floorplans fp ON a.floorplan_id = fp.id "
             "WHERE LOWER(TRIM(a.applicant_email)) = %s "
@@ -2458,11 +2489,30 @@ def _record_deposit_payment():
         if not row:
             return jsonify({"error": "Application not found."}), 404
 
-        application_id, application_code, status, deposit_amount = row
+        application_id, application_code, status, desired_move_in, deposit_amount = row
         if status == "Deposit Paid":
-            return jsonify({"message": "Deposit is already marked as paid.", "redirect": url_for("status_page")})
+            return jsonify(
+                {
+                    "message": "Deposit is already paid; no new payment was recorded.",
+                    "redirect": url_for("status_page"),
+                }
+            )
         if status != "Approved":
             return jsonify({"error": "Your application must be approved before paying the deposit."}), 400
+
+        move_in_date = parse_iso_date(desired_move_in)
+        if move_in_date and date.today() >= move_in_date:
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            "Deposit must be paid before the move-in date. "
+                            "Please contact the leasing office to choose a new move-in date."
+                        )
+                    }
+                ),
+                400,
+            )
 
         note = (
             f"Deposit completed through PayPal order {paypal_order_id}."
