@@ -439,9 +439,11 @@ button {
     padding: 12px 18px;
     border-radius: 12px;
     color: #111111;
-    font-size: 24px;
+    font-size: clamp(20px, 1.45vw, 24px);
     font-weight: 700;
     line-height: 1.18;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
     transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
   }
 
@@ -452,5 +454,21 @@ button {
     background: rgba(255, 255, 255, 0.72);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
     transform: translateX(2px);
+  }
+}
+
+/* Keep the Work Orders sidebar visually aligned with the admin Payments page. */
+@media (min-width: 769px) {
+  .workorders-page .sidebar-nav a,
+  .workorders-page .nav-link-custom {
+    font-size: clamp(20px, 1.35vw, 22px);
+    overflow-wrap: normal !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  .workorders-page .sidebar-nav a.active,
+  .workorders-page .nav-link-custom.active {
+    padding-right: 14px;
   }
 }
