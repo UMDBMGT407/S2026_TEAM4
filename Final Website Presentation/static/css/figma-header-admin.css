@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+/*
+ * Admin-dashboard-style top bar for Figma layout pages (scoped per root).
+ * Matches admin-dashboard.css .top-header; absolutely positioned to replace the legacy 93px header strip.
+ */
+.pr-01-unit-search-inquiry-process-1-1 .top-header,
+.pr-02-lease-application-form-process-1-2 .top-header,
+.pr-03-deposit-payment-process-1-4 .top-header,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header,
+.cr-01-resident-dashboard .top-header,
+.cr-02-maintenance-request .top-header,
+.cr-03-pay-rent .top-header,
+.cr-04-my-lease .top-header {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 28px;
+  min-height: 93px;
+  box-sizing: border-box;
+  background: rgba(179, 179, 179, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  font-family: "Montserrat", sans-serif;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .header-left,
+.pr-01-unit-search-inquiry-process-1-1 .top-header .header-right,
+.pr-02-lease-application-form-process-1-2 .top-header .header-left,
+.pr-02-lease-application-form-process-1-2 .top-header .header-right,
+.pr-03-deposit-payment-process-1-4 .top-header .header-left,
+.pr-03-deposit-payment-process-1-4 .top-header .header-right,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .header-left,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .header-right,
+.cr-01-resident-dashboard .top-header .header-left,
+.cr-01-resident-dashboard .top-header .header-right,
+.cr-02-maintenance-request .top-header .header-left,
+.cr-02-maintenance-request .top-header .header-right,
+.cr-03-pay-rent .top-header .header-left,
+.cr-03-pay-rent .top-header .header-right,
+.cr-04-my-lease .top-header .header-left,
+.cr-04-my-lease .top-header .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .header-right,
+.pr-02-lease-application-form-process-1-2 .top-header .header-right,
+.pr-03-deposit-payment-process-1-4 .top-header .header-right,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .header-right,
+.cr-01-resident-dashboard .top-header .header-right,
+.cr-02-maintenance-request .top-header .header-right,
+.cr-03-pay-rent .top-header .header-right,
+.cr-04-my-lease .top-header .header-right {
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .logo,
+.pr-02-lease-application-form-process-1-2 .top-header .logo,
+.pr-03-deposit-payment-process-1-4 .top-header .logo,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .logo,
+.cr-01-resident-dashboard .top-header .logo,
+.cr-02-maintenance-request .top-header .logo,
+.cr-03-pay-rent .top-header .logo,
+.cr-04-my-lease .top-header .logo {
+  width: 168px;
+  height: auto;
+  max-height: 72px;
+  object-fit: contain;
+  position: relative;
+  left: auto;
+  top: auto;
+  display: block;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .header-center h1,
+.pr-02-lease-application-form-process-1-2 .top-header .header-center h1,
+.pr-03-deposit-payment-process-1-4 .top-header .header-center h1,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .header-center h1,
+.cr-01-resident-dashboard .top-header .header-center h1,
+.cr-02-maintenance-request .top-header .header-center h1,
+.cr-03-pay-rent .top-header .header-center h1,
+.cr-04-my-lease .top-header .header-center h1 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 700;
+  color: #131313;
+  font-family: "Montserrat", sans-serif;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .logout-btn,
+.pr-02-lease-application-form-process-1-2 .top-header .logout-btn,
+.pr-03-deposit-payment-process-1-4 .top-header .logout-btn,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .logout-btn,
+.cr-01-resident-dashboard .top-header .logout-btn,
+.cr-02-maintenance-request .top-header .logout-btn,
+.cr-03-pay-rent .top-header .logout-btn,
+.cr-04-my-lease .top-header .logout-btn {
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #787878;
+  color: #111;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .logout-btn:hover,
+.pr-02-lease-application-form-process-1-2 .top-header .logout-btn:hover,
+.pr-03-deposit-payment-process-1-4 .top-header .logout-btn:hover,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .logout-btn:hover,
+.cr-01-resident-dashboard .top-header .logout-btn:hover,
+.cr-02-maintenance-request .top-header .logout-btn:hover,
+.cr-03-pay-rent .top-header .logout-btn:hover,
+.cr-04-my-lease .top-header .logout-btn:hover {
+  opacity: 0.92;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .role-indicator,
+.pr-02-lease-application-form-process-1-2 .top-header .role-indicator,
+.pr-03-deposit-payment-process-1-4 .top-header .role-indicator,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .role-indicator,
+.cr-01-resident-dashboard .top-header .role-indicator,
+.cr-02-maintenance-request .top-header .role-indicator,
+.cr-03-pay-rent .top-header .role-indicator,
+.cr-04-my-lease .top-header .role-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #6b6b6b;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+  font-family: "Montserrat", sans-serif;
+}
+
+.pr-01-unit-search-inquiry-process-1-1 .top-header .role-indicator .user-role,
+.pr-02-lease-application-form-process-1-2 .top-header .role-indicator .user-role,
+.pr-03-deposit-payment-process-1-4 .top-header .role-indicator .user-role,
+.pr-04-application-status-process-1-3-decision-updated-records .top-header .role-indicator .user-role,
+.cr-01-resident-dashboard .top-header .role-indicator .user-role,
+.cr-02-maintenance-request .top-header .role-indicator .user-role,
+.cr-03-pay-rent .top-header .role-indicator .user-role,
+.cr-04-my-lease .top-header .role-indicator .user-role {
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .pr-01-unit-search-inquiry-process-1-1 .top-header,
+  .pr-02-lease-application-form-process-1-2 .top-header,
+  .pr-03-deposit-payment-process-1-4 .top-header,
+  .pr-04-application-status-process-1-3-decision-updated-records .top-header,
+  .cr-01-resident-dashboard .top-header,
+  .cr-02-maintenance-request .top-header,
+  .cr-03-pay-rent .top-header,
+  .cr-04-my-lease .top-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    padding: 18px 16px;
+  }
+
+  .pr-01-unit-search-inquiry-process-1-1 .top-header .header-right,
+  .pr-02-lease-application-form-process-1-2 .top-header .header-right,
+  .pr-03-deposit-payment-process-1-4 .top-header .header-right,
+  .pr-04-application-status-process-1-3-decision-updated-records .top-header .header-right,
+  .cr-01-resident-dashboard .top-header .header-right,
+  .cr-02-maintenance-request .top-header .header-right,
+  .cr-03-pay-rent .top-header .header-right,
+  .cr-04-my-lease .top-header .header-right {
+    justify-content: center;
+  }
+}

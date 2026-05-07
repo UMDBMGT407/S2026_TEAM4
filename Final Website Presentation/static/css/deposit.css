@@ -1,0 +1,762 @@
+@import url("figma-header-admin.css");
+@import url("figma-fullbleed.css");
+
+.pr-03-deposit-payment-process-1-4,
+.pr-03-deposit-payment-process-1-4 * {
+  box-sizing: border-box;
+}
+.pr-03-deposit-payment-process-1-4 {
+  background: #ffffff;
+  height: 1024px;
+  position: relative;
+  overflow: hidden;
+}
+.background {
+  opacity: 0.7;
+  width: 1440px;
+  height: 1025px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 1440/1025;
+}
+.header {
+  background: #b3b3b3;
+  opacity: 0.85;
+  width: 1440px;
+  height: 93px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.action-items {
+  width: 430px;
+  height: 66px;
+  position: absolute;
+  left: 930px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.image-1 {
+  width: 109px;
+  height: 66px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
+  object-fit: cover;
+  aspect-ratio: 109/66;
+}
+.logout {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
+}
+.role-indicator {
+  background: #757575;
+  border-radius: 999px;
+  min-width: 140px;
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+.logo {
+  width: 205px;
+  height: 105px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 205/105;
+}
+.deposit {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 426px;
+  top: 20px;
+  width: 501px;
+  height: 66px;
+}
+.sidebar {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 244px;
+  height: calc(100% - 93px);
+  min-height: 931px;
+  position: absolute;
+  left: 0px;
+  top: 93px;
+}
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 261px;
+  position: absolute;
+  left: 26px;
+  top: 240px;
+}
+.nav-buttons a {
+  font-size: 22px;
+  line-height: 1.2;
+}
+.floor-plans {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.apply {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.application-status {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.frame-5 {
+  display: flex;
+  flex-direction: column;
+  gap: 69px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 1074px;
+  position: absolute;
+  left: 297px;
+  top: 140px;
+}
+.frame-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.rectangle-2 {
+  background: #d9d9d9;
+  opacity: 0.8;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 171px;
+  position: relative;
+}
+.rectangle-5 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 477px;
+  position: relative;
+}
+.deposit-summary-card {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: absolute;
+  left: 42px;
+  top: 22px;
+  width: 294px;
+  height: 30px;
+}
+.expiration-date {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 547px;
+  top: 281px;
+  width: 400px;
+  height: 28px;
+}
+.card-number-account-number {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 30px;
+  top: 281px;
+  width: 378px;
+  height: 28px;
+}
+.rectangle-9 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 30px;
+  top: 384px;
+}
+.rectangle-8 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 30px;
+  top: 308px;
+}
+.rectangle-7 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 30px;
+  top: 235px;
+}
+.rectangle-13 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 547px;
+  top: 235px;
+}
+.rectangle-14 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 547px;
+  top: 308px;
+}
+.rectangle-15 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 491px;
+  height: 43px;
+  position: absolute;
+  left: 547px;
+  top: 384px;
+}
+.billing-zip {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 30px;
+  top: 357px;
+  width: 117px;
+  height: 28px;
+}
+.payment-method-card-bank {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 30px;
+  top: 207px;
+  width: 343px;
+  height: 28px;
+}
+.name-on-card-account-holder {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 547px;
+  top: 208px;
+  width: 368px;
+  height: 28px;
+}
+.billing-address {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 547px;
+  top: 357px;
+  width: 173px;
+  height: 28px;
+}
+.simple-button {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 280px;
+  height: 40px;
+  position: absolute;
+  left: 758px;
+  top: 105px;
+}
+.view-application {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+}
+.application-id-deposit-amount-due-date {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: absolute;
+  left: 59px;
+  top: 62px;
+}
+.rectangle-17 {
+  background: #d9d9d9;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 56px;
+  top: 525px;
+}
+.i-authorize-this-deposit-payment-placeholder-text {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  position: absolute;
+  left: 136px;
+  top: 537px;
+  width: 582px;
+  height: 28px;
+}
+.frame-4 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.simple-button2 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 262px;
+  height: 60px;
+  position: relative;
+}
+.back {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+}
+.pay-deposit {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+}
+.form-control {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  border: 0px solid #ccc;
+  border-radius: 4px;
+}
+
+.pr-03-deposit-payment-process-1-4 {
+  background: transparent;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: 93px;
+  position: relative;
+}
+
+.pr-03-deposit-payment-process-1-4 .background {
+  height: calc(100% - 93px);
+  left: 0;
+  min-height: 760px;
+  object-fit: cover;
+  opacity: 0.55;
+  position: absolute;
+  top: 93px;
+  width: 100%;
+}
+
+.pr-03-deposit-payment-process-1-4 .top-header {
+  z-index: 3;
+}
+
+.deposit-flow-content {
+  margin: 0 40px 0 280px;
+  padding: 48px 28px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.deposit-info-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  margin: 0 auto 46px;
+  min-height: 170px;
+  padding: 28px 44px;
+  width: 100%;
+}
+
+.deposit-info-card h2,
+.deposit-checkout-card h2 {
+  color: #000000;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.deposit-summary-grid {
+  column-gap: 70px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  row-gap: 10px;
+}
+
+.summary-item {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.summary-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-weight: 600;
+}
+
+.summary-value {
+  margin-left: 7px;
+}
+
+.view-application-button {
+  background: rgba(255, 255, 255, 0.78);
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  min-width: 260px;
+  padding: 17px 28px;
+  text-align: center;
+}
+
+.deposit-checkout-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  margin: 0 auto;
+  min-height: 340px;
+  padding: 26px 34px 28px;
+  position: relative;
+  width: min(100%, 1060px);
+}
+
+.checkout-header {
+  margin-bottom: 20px;
+}
+
+.checkout-kicker {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.checkout-fields {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 24px;
+}
+
+.checkout-fields label {
+  display: grid;
+  gap: 8px;
+}
+
+.checkout-fields span {
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.checkout-fields input,
+.checkout-fields select {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  height: 45px;
+  padding: 0 13px;
+  width: 100%;
+}
+
+.checkout-authorization {
+  align-items: center;
+  display: flex;
+  gap: 13px;
+  margin-top: 8px;
+}
+
+.checkout-authorization .authorize-checkbox {
+  accent-color: #456553;
+  height: 24px;
+  position: static;
+  width: 24px;
+}
+
+.checkout-authorization span {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 20px;
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.checkout-actions .cancel-button,
+.checkout-actions .submit-deposit-button {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 6px;
+  color: #000000;
+  cursor: pointer;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  padding: 12px 18px;
+}
+
+.checkout-actions .submit-deposit-button {
+  background: #4f6655;
+  color: #ffffff;
+}
+
+.checkout-actions .submit-deposit-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+#paypal-deposit-button-container {
+  margin-top: 16px;
+  max-width: 720px;
+}
+
+.deposit-status-message {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  margin-top: 18px;
+  min-height: 22px;
+}
+
+.text-success {
+  color: #1a7f37;
+}
+
+.text-danger {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .pr-03-deposit-payment-process-1-4 .sidebar {
+    display: none;
+  }
+
+  .pr-03-deposit-payment-process-1-4 .nav-buttons {
+    background: rgba(255, 255, 255, 0.78);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    left: 16px;
+    padding: 14px;
+    right: 16px;
+    top: 108px;
+    width: auto;
+    z-index: 2;
+  }
+
+  .pr-03-deposit-payment-process-1-4 .nav-buttons a {
+    font-size: 18px;
+    width: auto;
+  }
+
+  .deposit-flow-content {
+    margin: 96px 0 0;
+    padding: 28px 16px 60px;
+  }
+
+  .deposit-info-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .deposit-summary-grid,
+  .checkout-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .view-application-button {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Unified floating sidebar */
+@media (min-width: 901px) {
+  .sidebar {
+    background: rgba(217, 217, 217, 0.86);
+    border-radius: 24px;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    left: 20px;
+    top: 122px;
+    width: 260px;
+    height: calc(100% - 146px);
+    min-height: auto;
+    z-index: 1;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns {
+    left: 46px;
+    top: 150px;
+    width: 210px;
+    z-index: 2;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .nav-btns .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .nav-buttons a,
+  .left-side-options a,
+  .nav-btns .nav-buttons a {
+    display: block;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #111111;
+    font-family: "Montserrat-SemiBold", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.18;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .nav-buttons a:hover,
+  .left-side-options a:hover,
+  .nav-btns .nav-buttons a:hover,
+  .cr-01-resident-dashboard .nav-buttons .dashboard,
+  .cr-03-pay-rent .nav-buttons .pay-rent,
+  .cr-02-maintenance-request .nav-buttons .maintenance,
+  .cr-04-my-lease .nav-buttons .my-lease,
+  .cr-04-my-lease .nav-buttons .my-lease2,
+  .pr-01-unit-search-inquiry-process-1-1 .left-side-options .floor-plans2,
+  .pr-02-lease-application-form-process-1-2 .nav-buttons .apply,
+  .pr-03-deposit-payment-process-1-4 .nav-buttons .application-status,
+  .pr-04-application-status-process-1-3-decision-updated-records .nav-buttons .application-status2 {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
+  }
+}

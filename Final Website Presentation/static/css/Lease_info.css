@@ -1,0 +1,810 @@
+@import url("figma-header-admin.css");
+@import url("figma-fullbleed.css");
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)),
+    url("../images/background0.png") center / cover no-repeat fixed;
+}
+
+.cr-04-my-lease,
+.cr-04-my-lease * {
+  box-sizing: border-box;
+}
+.cr-04-my-lease {
+  background: transparent;
+  height: 100vh;
+  min-height: 1024px;
+  position: relative;
+  overflow-x: hidden;
+}
+.background {
+  opacity: 0.7;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+}
+.header {
+  background: #b3b3b3;
+  opacity: 0.85;
+  width: 100%;
+  height: 93px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.action-items {
+  width: 430px;
+  height: 66px;
+  position: absolute;
+  left: 930px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.image-1 {
+  width: 109px;
+  height: 66px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
+  object-fit: cover;
+  aspect-ratio: 109/66;
+}
+.Logout {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
+}
+.role-indicator {
+  background: #757575;
+  border-radius: 999px;
+  min-width: 140px;
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+.logo {
+  width: 205px;
+  height: 105px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: cover;
+  aspect-ratio: 205/105;
+}
+.my-lease {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 426px;
+  top: 20px;
+  width: 501px;
+  height: 66px;
+}
+.sidebar {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 244px;
+  height: calc(100% - 93px);
+  min-height: 931px;
+  position: absolute;
+  left: 0px;
+  top: 93px;
+}
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 261px;
+  position: absolute;
+  left: 26px;
+  top: 240px;
+}
+.nav-buttons a {
+  font-size: 22px;
+  line-height: 1.2;
+}
+.dashboard {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.pay-rent {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.maintenance {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.my-lease2 {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+.rectangle-1 {
+  border-radius: 0px;
+  opacity: 0.5;
+  width: 140px;
+  height: 46px;
+  position: absolute;
+  left: 26px;
+  top: 449px;
+  overflow: visible;
+}
+.rectangle-2 {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 1074px;
+  height: 171px;
+  position: absolute;
+  left: 297px;
+  top: 151px;
+}
+.lease-summary {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 339px;
+  top: 162px;
+}
+.rectangle-5 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  width: 1074px;
+  height: 241px;
+  position: absolute;
+  left: 297px;
+  top: 341px;
+}
+.simple-button {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 323px;
+  height: 54px;
+  position: absolute;
+  left: 1012px;
+  top: 356px;
+}
+.request-renewal-button {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+}
+
+.request-renewal-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.options-notes {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 331px;
+  top: 472px;
+}
+.renewal {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 331px;
+  top: 350px;
+}
+.rectangle-16 {
+  background: #c0c0c0;
+  opacity: 0.85;
+  width: 1074px;
+  height: 334px;
+  position: absolute;
+  left: 301px;
+  top: 600px;
+}
+.simple-button2 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 262px;
+  height: 60px;
+  position: absolute;
+  left: 331px;
+  top: 972px;
+}
+.cancel {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+}
+.cancel:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.simple-button3 {
+  background: #e9e9e9;
+  padding: 0px 30px 0px 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 323px;
+  height: 54px;
+  position: absolute;
+  left: 1012px;
+  top: 231px;
+}
+.download-lease-pdf-button {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+}
+
+.download-lease-pdf-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+.lease-summary-details {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 356px;
+  top: 200px;
+  width: 620px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 24px;
+}
+.lease-summary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.lease-summary-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.lease-summary-value {
+  font-size: 16px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.documents-notices {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  position: absolute;
+  left: 331px;
+  top: 624px;
+}
+.renewal-details {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 356px;
+  top: 390px;
+  width: 620px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 24px;
+}
+.renewal-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.renewal-label {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.renewal-value {
+  font-size: 16px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rectangle-19 {
+  display: none;
+}
+.options-notes-textbox {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  position: absolute;
+  left: 341px;
+  top: 510px;
+  width: 994px;
+  height: 56px;
+  padding: 12px 16px;
+  background: #d9d9d9;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  resize: none;
+  outline: none;
+  line-height: 1.35;
+}
+.options-notes-textbox:focus {
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+.frame-8 {
+  background: #d9d9d9;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 42px;
+  position: absolute;
+  left: 341px;
+  top: 662px;
+}
+.document-table-header {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+.document-name-date-type-action {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  position: relative;
+  width: 510px;
+}
+.frame-9 {
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 44px;
+  position: absolute;
+  left: 341px;
+  top: 718px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.lease-addendum-notice-view-download {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  position: absolute;
+  left: 0px;
+  top: 5px;
+  width: 638px;
+  height: 27px;
+}
+.frame-10 {
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 44px;
+  position: absolute;
+  left: 341px;
+  top: 772px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.frame-11 {
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 44px;
+  position: absolute;
+  left: 341px;
+  top: 826px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.frame-12 {
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) 1fr 0.9fr 190px;
+  gap: 12px;
+  align-items: center;
+  width: 994px;
+  height: 44px;
+  position: absolute;
+  left: 341px;
+  top: 880px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.document-cell {
+  color: #000000;
+  font-family: "Montserrat-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.document-title {
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-weight: 600;
+}
+.document-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+.doc-action-button {
+  min-width: 82px;
+  padding: 7px 10px;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.doc-action-button:hover {
+  background: #ffffff;
+}
+.doc-action-button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* Unified floating sidebar */
+@media (min-width: 901px) {
+  .sidebar {
+    background: rgba(217, 217, 217, 0.86);
+    border-radius: 24px;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    left: 20px;
+    top: 122px;
+    width: 260px;
+    height: calc(100% - 146px);
+    min-height: auto;
+    z-index: 1;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns {
+    left: 46px;
+    top: 150px;
+    width: 210px;
+    z-index: 2;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .nav-btns .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .nav-buttons a,
+  .left-side-options a,
+  .nav-btns .nav-buttons a {
+    display: block;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #111111;
+    font-family: "Montserrat-SemiBold", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.18;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .nav-buttons a:hover,
+  .left-side-options a:hover,
+  .nav-btns .nav-buttons a:hover,
+  .cr-01-resident-dashboard .nav-buttons .dashboard,
+  .cr-03-pay-rent .nav-buttons .pay-rent,
+  .cr-02-maintenance-request .nav-buttons .maintenance,
+  .cr-04-my-lease .nav-buttons .my-lease,
+  .cr-04-my-lease .nav-buttons .my-lease2,
+  .pr-01-unit-search-inquiry-process-1-1 .left-side-options .floor-plans2,
+  .pr-02-lease-application-form-process-1-2 .nav-buttons .apply,
+  .pr-03-deposit-payment-process-1-4 .nav-buttons .application-status,
+  .pr-04-application-status-process-1-3-decision-updated-records .nav-buttons .application-status2 {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
+  }
+}
+
+@media (max-width: 1400px) {
+  .cr-04-my-lease {
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: visible;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 0 clamp(16px, 4vw, 32px) 36px;
+  }
+
+  .background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .top-header {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    margin: 0 calc(clamp(16px, 4vw, 32px) * -1);
+  }
+
+  .sidebar,
+  .rectangle-2,
+  .rectangle-5,
+  .rectangle-16,
+  .header {
+    display: none;
+  }
+
+  .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-buttons a {
+    flex: 1 1 170px;
+    min-width: min(100%, 150px);
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    font-size: clamp(1rem, 2.4vw, 1.15rem);
+    line-height: 1.2;
+  }
+
+  .lease-summary,
+  .renewal,
+  .options-notes,
+  .documents-notices {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+  }
+
+  .lease-summary {
+    margin-top: 10px;
+  }
+
+  .lease-summary-details,
+  .renewal-details {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(217, 217, 217, 0.88);
+  }
+
+  .lease-summary-value,
+  .renewal-value,
+  .document-cell {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+
+  .simple-button,
+  .simple-button2,
+  .simple-button3 {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 54px;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .request-renewal-button,
+  .download-lease-pdf-button,
+  .cancel {
+    text-align: center;
+    font-size: clamp(1rem, 2.4vw, 1.2rem);
+    line-height: 1.2;
+  }
+
+  .options-notes-textbox {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    min-height: 88px;
+  }
+
+  .document-table-header,
+  .document-row {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    min-height: 48px;
+    height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .lease-summary-details,
+  .renewal-details {
+    grid-template-columns: 1fr;
+  }
+
+  .lease-summary-item,
+  .renewal-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .document-table-header {
+    display: none;
+  }
+
+  .document-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .document-actions {
+    flex-wrap: wrap;
+  }
+
+  .doc-action-button {
+    flex: 1 1 120px;
+  }
+
+  .simple-button,
+  .simple-button2,
+  .simple-button3 {
+    width: 100%;
+  }
+}

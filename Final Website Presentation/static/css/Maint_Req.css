@@ -1,0 +1,551 @@
+
+@import url("figma-header-admin.css");
+@import url("figma-fullbleed.css");
+
+.cr-02-maintenance-request,
+.cr-02-maintenance-request * {
+  box-sizing: border-box;
+}
+
+.cr-02-maintenance-request {
+  background: #ffffff;
+  min-height: 1380px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.background {
+  opacity: 0.48;
+  width: 1440px;
+  height: 1200px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+}
+
+.header {
+  background: #b3b3b3;
+  opacity: 0.85;
+  width: 1440px;
+  height: 93px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.action-items {
+  width: 430px;
+  height: 66px;
+  position: absolute;
+  left: 930px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.image-1 {
+  width: 109px;
+  height: 66px;
+  position: relative;
+  order: 1;
+  flex-shrink: 0;
+  object-fit: cover;
+  aspect-ratio: 109/66;
+}
+
+.Logout {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  order: 3;
+  width: auto;
+  height: auto;
+}
+
+.role-indicator {
+  background: #757575;
+  border-radius: 999px;
+  min-width: 140px;
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  flex-shrink: 0;
+}
+
+.user-role {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  width: auto;
+  line-height: 1.15;
+}
+
+.logo {
+  width: 205px;
+  height: 105px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+  aspect-ratio: 205/105;
+}
+
+.maintenance-request {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 426px;
+  top: 20px;
+  width: 501px;
+  height: 66px;
+}
+
+.sidebar {
+  background: #d9d9d9;
+  opacity: 0.8;
+  width: 244px;
+  height: calc(100% - 93px);
+  min-height: 1287px;
+  position: absolute;
+  left: 0;
+  top: 93px;
+}
+
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 261px;
+  position: absolute;
+  left: 26px;
+  top: 240px;
+}
+
+.nav-buttons a {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.dashboard {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+
+.pay-rent {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+
+.maintenance {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+
+.my-lease {
+  color: #000000;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  position: relative;
+  align-self: stretch;
+}
+
+.maintenance-content {
+  position: relative;
+  z-index: 1;
+  width: 1040px;
+  margin-left: 300px;
+  padding: 140px 0 56px;
+}
+
+.maintenance-request-card,
+.my-requests-panel {
+  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(5px);
+}
+
+.maintenance-request-card {
+  padding: 34px 40px 30px;
+  margin-bottom: 28px;
+}
+
+.card-header {
+  margin-bottom: 24px;
+}
+
+.maintenance-request-card h2,
+.my-requests-panel h2 {
+  color: #000000;
+  font-family: "Montserrat-Bold", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.maintenance-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 26px;
+}
+
+.maintenance-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #000000;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.maintenance-form-grid label span {
+  display: block;
+}
+
+.maintenance-form-grid input,
+.maintenance-form-grid select,
+.maintenance-form-grid textarea {
+  width: 100%;
+  background: rgba(245, 245, 245, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  color: #000000;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 16px 18px;
+}
+
+.maintenance-form-grid select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #303030 50%),
+    linear-gradient(135deg, #303030 50%, transparent 50%);
+  background-position:
+    calc(100% - 24px) calc(50% - 3px),
+    calc(100% - 16px) calc(50% - 3px);
+  background-size: 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+  padding-right: 46px;
+}
+
+.maintenance-form-grid textarea {
+  resize: vertical;
+  min-height: 92px;
+}
+
+.maintenance-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.upload-photo-file {
+  padding: 12px 14px !important;
+}
+
+.upload-photo-file::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  color: #000000;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.upload-photo-file::file-selector-button:hover {
+  background: #f8f8f8;
+}
+
+.access-notes-instructions {
+  min-height: 64px;
+}
+
+.maintenance-form-message {
+  margin-top: 20px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 15px;
+}
+
+.maintenance-form-message.error {
+  background: rgba(180, 35, 24, 0.12);
+  color: #8f1d14;
+  border: 1px solid rgba(180, 35, 24, 0.18);
+}
+
+.maintenance-form-message.success {
+  background: rgba(26, 127, 55, 0.12);
+  color: #166534;
+  border: 1px solid rgba(26, 127, 55, 0.18);
+}
+
+.maintenance-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cancel,
+.submit-request-button {
+  min-width: 180px;
+  height: 56px;
+  border-radius: 12px;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.cancel {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.submit-request-button {
+  background: #60785f;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(46, 76, 54, 0.2);
+}
+
+.cancel:hover,
+.submit-request-button:hover {
+  transform: translateY(-1px);
+}
+
+.my-requests-panel {
+  padding: 28px 30px 24px;
+}
+
+.history-header {
+  margin-bottom: 18px;
+}
+
+.requests-table-wrap {
+  overflow-x: auto;
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+}
+
+.requests-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 13px 14px;
+  background: rgba(238, 238, 238, 0.96);
+  color: #111111;
+  text-align: left;
+  font-family: "Montserrat-SemiBold", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.requests-table tbody td {
+  padding: 14px;
+  color: #111111;
+  font-family: "Montserrat-Medium", sans-serif;
+  font-size: 0.95rem;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.requests-table tbody tr:hover td {
+  background: rgba(238, 238, 238, 0.72);
+}
+
+.requests-table small {
+  display: inline-block;
+  margin-top: 4px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 0.82rem;
+}
+
+.requests-message {
+  padding: 16px 14px !important;
+  color: #666 !important;
+}
+
+.requests-error {
+  color: #b42318 !important;
+}
+
+.request-status {
+  font-weight: 700;
+}
+
+.my-requests-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.my-requests-panel::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.5);
+  border-radius: 999px;
+}
+
+.my-requests-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (max-width: 1200px) {
+  .maintenance-content {
+    width: calc(100% - 330px);
+  }
+}
+
+@media (max-width: 900px) {
+  .maintenance-content {
+    width: calc(100% - 44px);
+    margin-left: 22px;
+    padding-top: 190px;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: calc(100% - 44px);
+    margin: 110px 22px 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 14px;
+    z-index: 1;
+  }
+
+  .nav-buttons a {
+    background: rgba(255, 255, 255, 0.55);
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
+
+  .maintenance-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .maintenance-actions {
+    flex-direction: column;
+  }
+
+  .cancel,
+  .submit-request-button {
+    width: 100%;
+  }
+}
+
+/* Unified floating sidebar */
+@media (min-width: 901px) {
+  .sidebar {
+    background: rgba(217, 217, 217, 0.86);
+    border-radius: 24px;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    left: 20px;
+    top: 122px;
+    width: 260px;
+    height: calc(100% - 146px);
+    min-height: auto;
+    z-index: 1;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns {
+    left: 46px;
+    top: 150px;
+    width: 210px;
+    z-index: 2;
+  }
+
+  .nav-buttons,
+  .left-side-options,
+  .nav-btns .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .nav-btns .nav-buttons {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .nav-buttons a,
+  .left-side-options a,
+  .nav-btns .nav-buttons a {
+    display: block;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #111111;
+    font-family: "Montserrat-SemiBold", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.18;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .nav-buttons a:hover,
+  .left-side-options a:hover,
+  .nav-btns .nav-buttons a:hover,
+  .cr-02-maintenance-request .nav-buttons .maintenance {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
+  }
+}
